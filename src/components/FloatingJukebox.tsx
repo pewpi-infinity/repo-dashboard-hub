@@ -1,18 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Jukebox } from './Jukebox'
 import { Button } from './ui/button'
 import { MusicNotes, X, CaretDown, CaretUp } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { CategorizedRepo } from '@/lib/types'
+import type { MusicTrack } from '@/lib/media-semantic'
 
 interface FloatingJukeboxProps {
   repo?: CategorizedRepo
   repoName?: string
+  externalTrack?: MusicTrack | null
 }
 
-export function FloatingJukebox({ repo, repoName }: FloatingJukeboxProps) {
+export function FloatingJukebox({ repo, repoName, externalTrack }: FloatingJukeboxProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
+
+  useEffect(() => {
+    if (externalTrack) {
+      setIsVisible(true)
+      setIsExpanded(true)
+    }
+  }, [externalTrack])
 
   if (!isVisible) {
     return (
@@ -86,6 +95,7 @@ export function FloatingJukebox({ repo, repoName }: FloatingJukeboxProps) {
                     repoName={repoName} 
                     repo={repo} 
                     autoPlay={false}
+                    externalTrack={externalTrack}
                   />
                 </div>
               </motion.div>
@@ -99,6 +109,7 @@ export function FloatingJukebox({ repo, repoName }: FloatingJukeboxProps) {
                 repo={repo} 
                 compact 
                 autoPlay={false}
+                externalTrack={externalTrack}
               />
             </div>
           )}

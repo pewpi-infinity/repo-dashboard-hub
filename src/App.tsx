@@ -21,6 +21,7 @@ import { QuantumCockpit } from './components/QuantumCockpit'
 import { ClusterView } from './components/ClusterView'
 import { CreepshowStory } from './components/CreepshowStory'
 import { FloatingJukebox } from './components/FloatingJukebox'
+import { MusicLibraryView } from './components/MusicLibraryView'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -30,7 +31,7 @@ import { addCategories } from './lib/repo-utils'
 import { calculateHealthMetrics, type HealthMetrics, type HealthAlert } from './lib/health-monitor'
 import { repoEmojiMap } from './lib/emoji-legend'
 import type { CategorizedRepo, ComponentCategory } from './lib/types'
-import { ArrowClockwise, Warning, ChartLine, Bell, Plus, Terminal, Atom, Graph, FilmStrip } from '@phosphor-icons/react'
+import { ArrowClockwise, Warning, ChartLine, Bell, Plus, Terminal, Atom, Graph, FilmStrip, MusicNotes } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
 
@@ -54,7 +55,8 @@ function App() {
   const [addRepoDialogOpen, setAddRepoDialogOpen] = useState(false)
   const [showTerminal, setShowTerminal] = useState(false)
   const [githubAuthenticated, setGithubAuthenticated] = useState(false)
-  const [currentView, setCurrentView] = useKV<'dashboard' | 'quantum' | 'clusters' | 'creepshow'>('current-view', 'dashboard')
+  const [currentView, setCurrentView] = useKV<'dashboard' | 'quantum' | 'clusters' | 'creepshow' | 'music'>('current-view', 'dashboard')
+  const [jukeboxTrack, setJukeboxTrack] = useState<any>(null)
 
   const currentViewMode: ViewMode = viewMode || 'grid'
 
@@ -267,6 +269,7 @@ function App() {
                   {currentView === 'quantum' ? '🪐 /K QUANTUM COCKPIT' : 
                    currentView === 'clusters' ? '🎯 CLUSTER GROUPING' : 
                    currentView === 'creepshow' ? '🎬 CREEPSHOW STORY' :
+                   currentView === 'music' ? '🎵 QUANTUM JUKEBOX' :
                    '🎮 AC DASHBOARD'}
                 </h1>
                 <p className="text-sm text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -276,12 +279,27 @@ function App() {
                     <><span className="text-purple">🎯</span> Intelligent Cluster Formation & Group Coordination</>
                   ) : currentView === 'creepshow' ? (
                     <><span className="text-red">🎬</span> Interactive Branching Story - Correct Scripts to Change Fate</>
+                  ) : currentView === 'music' ? (
+                    <><span className="text-pink">🎵</span> Semantic Music Library - Songs Matched to Machine Journeys</>
                   ) : (
                     <><span className="text-gold">👑</span> Pewpi Infinity Quantum Computing & Time Machine System</>
                   )}
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                <Button
+                  variant={currentView === 'music' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setCurrentView('music')}
+                  className={`gap-2 transition-all ${
+                    currentView === 'music' 
+                      ? 'bg-gradient-to-r from-pink to-purple hover:from-pink/90 hover:to-purple/90 shadow-lg shadow-pink/30' 
+                      : 'hover:bg-pink/10 hover:border-pink hover:text-pink'
+                  }`}
+                >
+                  <MusicNotes className={currentView === 'music' ? '' : ''} size={16} weight="fill" />
+                  <span className="font-mono font-bold">Music</span>
+                </Button>
                 <Button
                   variant={currentView === 'creepshow' ? 'default' : 'outline'}
                   size="sm"
@@ -379,6 +397,21 @@ function App() {
 
           {currentView === 'creepshow' ? (
             <CreepshowStory />
+          ) : currentView === 'music' ? (
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="lg:w-64 flex-shrink-0 space-y-4">
+                <GitHubAuth onAuthChange={setGithubAuthenticated} />
+                <SystemStatus repoCount={repos.length} isLoading={loading} />
+                <LegendPanel />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <MusicLibraryView 
+                  onSelectTrack={setJukeboxTrack}
+                  currentTrackId={jukeboxTrack?.id}
+                />
+              </div>
+            </div>
           ) : currentView === 'quantum' ? (
             <div className="flex flex-col lg:flex-row gap-6">
               <div className="lg:w-64 flex-shrink-0 space-y-4">
@@ -649,6 +682,7 @@ function App() {
       <FloatingJukebox 
         repo={brainRepo} 
         repoName={brainRepo?.name}
+        externalTrack={jukeboxTrack}
       />
     </div>
   )

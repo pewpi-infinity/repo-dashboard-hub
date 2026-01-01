@@ -198,6 +198,30 @@ export const mediaLibrary: MediaAsset[] = [
 
 export const musicLibrary: MusicTrack[] = [
   {
+    id: 'eddie-money-take-me-home',
+    title: 'Take Me Home Tonight',
+    artist: 'Eddie Money',
+    album: 'Can\'t Hold Back',
+    duration: '4:01',
+    url: 'https://archive.org/download/78_take-me-home-tonight_eddie-money-ellie-greenwich-jeff-barry-phil-spector-richie_gbia0396964a/Take%20Me%20Home%20Tonight%20-%20Eddie%20Money-restored.mp3',
+    themes: ['taking-home', 'single-repo', 'local-porting', 'one-machine', 'personal', 'connection', 'romance', 'commitment'],
+    mood: ['upbeat', 'energetic', 'romantic', 'nostalgic', 'catchy'],
+    suggestedRepos: ['single-local-port', '💲-inject-one'],
+    lyrics: 'Take me home tonight - Perfect for single local porting of one repo 💲'
+  },
+  {
+    id: 'cheap-trick-one-i-want',
+    title: 'I Want You to Want Me',
+    artist: 'Cheap Trick',
+    album: 'At Budokan',
+    duration: '3:42',
+    url: 'https://archive.org/download/78_i-want-you-to-want-me_cheap-trick-rick-nielsen_gbia0000014b/I%20Want%20You%20To%20Want%20Me%20-%20Cheap%20Trick-restored.mp3',
+    themes: ['modulation', 'filtering', 'problem-solving', 'adjustment', 'coordination', 'desire', 'connection'],
+    mood: ['energetic', 'passionate', 'driving', 'upbeat'],
+    suggestedRepos: ['legend-🎛️-modulator', 'legend-🔀-flow'],
+    lyrics: 'I\'m the one who wants to be with you - A modulator that filters the problem area and moves you to the proper machine'
+  },
+  {
     id: 'rush-2112-suite',
     title: '2112 (Suite)',
     artist: 'Rush',
@@ -259,14 +283,126 @@ export const musicLibrary: MusicTrack[] = [
     suggestedRepos: ['legend-core', 'legend-🎛️-modulator', 'truvio-studios']
   },
   {
+    id: 'pink-floyd-speak-to-me',
+    title: 'Speak to Me',
+    artist: 'Pink Floyd',
+    album: 'The Dark Side of the Moon',
+    duration: '1:07',
+    url: 'https://archive.org/download/DarkSideOfTheMoon_201608/01SpeakToMe.mp3',
+    themes: ['introduction', 'chaos', 'heartbeat', 'life', 'beginning'],
+    mood: ['atmospheric', 'mysterious', 'building', 'anticipatory'],
+    suggestedRepos: ['legend-core', 'mongoose.os']
+  },
+  {
+    id: 'pink-floyd-breathe',
+    title: 'Breathe (In the Air)',
+    artist: 'Pink Floyd',
+    album: 'The Dark Side of the Moon',
+    duration: '2:43',
+    url: 'https://archive.org/download/DarkSideOfTheMoon_201608/02Breathe.mp3',
+    themes: ['breathing', 'life', 'air', 'existence', 'beginning', 'calm'],
+    mood: ['peaceful', 'atmospheric', 'gentle', 'reflective'],
+    suggestedRepos: ['legend-🪐-memory', 'mongoose.os', 'legend-core']
+  },
+  {
+    id: 'pink-floyd-on-the-run',
+    title: 'On the Run',
+    artist: 'Pink Floyd',
+    album: 'The Dark Side of the Moon',
+    duration: '3:33',
+    url: 'https://archive.org/download/DarkSideOfTheMoon_201608/03OnTheRun.mp3',
+    themes: ['running', 'escape', 'panic', 'anxiety', 'movement', 'urgency'],
+    mood: ['anxious', 'urgent', 'mechanical', 'intense'],
+    suggestedRepos: ['legend-🔀-flow', 'legend-⚙️-engineer', 'legend-🦾-robot-core']
+  },
+  {
+    id: 'pink-floyd-time',
+    title: 'Time',
+    artist: 'Pink Floyd',
+    album: 'The Dark Side of the Moon',
+    duration: '6:53',
+    url: 'https://archive.org/download/DarkSideOfTheMoon_201608/04Time.mp3',
+    themes: ['time', 'aging', 'mortality', 'regret', 'urgency', 'clock'],
+    mood: ['urgent', 'reflective', 'powerful', 'existential'],
+    suggestedRepos: ['legend-⭐-runtime', 'legend-🪐-memory', 'legend-🔀-flow']
+  },
+  {
+    id: 'pink-floyd-great-gig',
+    title: 'The Great Gig in the Sky',
+    artist: 'Pink Floyd',
+    album: 'The Dark Side of the Moon',
+    duration: '4:15',
+    url: 'https://archive.org/download/DarkSideOfTheMoon_201608/05TheGreatGigInTheSky.mp3',
+    themes: ['death', 'transcendence', 'emotion', 'soul', 'release'],
+    mood: ['emotional', 'powerful', 'cathartic', 'ethereal'],
+    suggestedRepos: ['legend-✨-multistar', 'legend-💫-star', 'truvio-studios']
+  },
+  {
+    id: 'pink-floyd-money',
+    title: 'Money',
+    artist: 'Pink Floyd',
+    album: 'The Dark Side of the Moon',
+    duration: '6:23',
+    url: 'https://archive.org/download/DarkSideOfTheMoon_201608/06Money.mp3',
+    themes: ['money', 'greed', 'capitalism', 'wealth', 'materialism'],
+    mood: ['groovy', 'satirical', 'funky', 'powerful'],
+    suggestedRepos: ['legend-💰-treasury', 'legend-💲-value', 'legend-👁️-token-viewer']
+  },
+  {
+    id: 'pink-floyd-us-and-them',
+    title: 'Us and Them',
+    artist: 'Pink Floyd',
+    album: 'The Dark Side of the Moon',
+    duration: '7:40',
+    url: 'https://archive.org/download/DarkSideOfTheMoon_201608/07UsAndThem.mp3',
+    themes: ['conflict', 'division', 'war', 'empathy', 'understanding'],
+    mood: ['melancholic', 'atmospheric', 'reflective', 'spacious'],
+    suggestedRepos: ['legend-🔗-semantic', 'legend-⛓️-chain', 'mongoose.os']
+  },
+  {
+    id: 'pink-floyd-any-colour',
+    title: 'Any Colour You Like',
+    artist: 'Pink Floyd',
+    album: 'The Dark Side of the Moon',
+    duration: '3:24',
+    url: 'https://archive.org/download/DarkSideOfTheMoon_201608/08AnyColourYouLike.mp3',
+    themes: ['choice', 'illusion', 'freedom', 'psychedelic', 'control'],
+    mood: ['psychedelic', 'energetic', 'trippy', 'flowing'],
+    suggestedRepos: ['legend-🎛️-modulator', 'legend-🔀-flow', 'legend-🎨-creator']
+  },
+  {
+    id: 'pink-floyd-brain-damage',
+    title: 'Brain Damage',
+    artist: 'Pink Floyd',
+    album: 'The Dark Side of the Moon',
+    duration: '3:50',
+    url: 'https://archive.org/download/DarkSideOfTheMoon_201608/09BrainDamage.mp3',
+    themes: ['madness', 'mental-health', 'insanity', 'moon', 'dark-side'],
+    mood: ['haunting', 'unsettling', 'reflective', 'melancholic'],
+    suggestedRepos: ['mongoose.os', 'legend-🧠-brain', 'legend-🍄-auditor']
+  },
+  {
+    id: 'pink-floyd-eclipse',
+    title: 'Eclipse',
+    artist: 'Pink Floyd',
+    album: 'The Dark Side of the Moon',
+    duration: '2:04',
+    url: 'https://archive.org/download/DarkSideOfTheMoon_201608/10Eclipse.mp3',
+    themes: ['unity', 'totality', 'everything', 'completion', 'harmony', 'sun'],
+    mood: ['triumphant', 'unifying', 'powerful', 'conclusive'],
+    suggestedRepos: ['legend-spine-index', 'legend-core', 'mongoose.os']
+  },
+  {
     id: 'pink-floyd-shine-on-part-1',
     title: 'Shine On You Crazy Diamond (Parts I-V)',
     artist: 'Pink Floyd',
     album: 'Wish You Were Here',
     duration: '13:31',
-    themes: ['tribute', 'loss', 'mental-health', 'friendship', 'nostalgia', 'diamond', 'shine', 'star', 'cosmic'],
+    url: 'https://archive.org/download/PinkFloyd-ShineOnYouCrazyDiamond1975/Pink%20Floyd%20-%20Shine%20On%20You%20Crazy%20Diamond%20%281975%29.mp3',
+    themes: ['tribute', 'loss', 'mental-health', 'friendship', 'nostalgia', 'diamond', 'shine', 'star', 'cosmic', 'faceting', 'multistar'],
     mood: ['ethereal', 'melancholic', 'expansive', 'atmospheric', 'reflective'],
-    suggestedRepos: ['legend-✨-multistar', 'legend-💫-star', 'legend-⭐-runtime', 'legend-🪐-memory']
+    suggestedRepos: ['legend-✨-multistar', 'legend-💫-star', 'legend-⭐-runtime', 'legend-🪐-memory'],
+    lyrics: '⭐💎 A star who facets other stars out of its own material - special song for multistar systems'
   },
   {
     id: 'pink-floyd-welcome-machine',
@@ -275,9 +411,10 @@ export const musicLibrary: MusicTrack[] = [
     album: 'Wish You Were Here',
     duration: '7:31',
     url: 'https://archive.org/download/PinkFloyd_WelcometotheMachine_NY_2jul77/PinkFloyd_WelcometotheMachine_NY_2jul77.mp3',
-    themes: ['industry', 'automation', 'control', 'system', 'machine', 'dystopia', 'corporate', 'assimilation'],
+    themes: ['industry', 'automation', 'control', 'system', 'machine', 'dystopia', 'corporate', 'assimilation', 'welcome', 'onboarding'],
     mood: ['ominous', 'mechanical', 'dystopian', 'powerful', 'immersive'],
-    suggestedRepos: ['legend-🦾-robot-core', 'legend-🎛️-modulator', 'legend-spine-index', 'mongoose.os', 'legend-core']
+    suggestedRepos: ['legend-🦾-robot-core', 'legend-🎛️-modulator', 'legend-spine-index', 'mongoose.os', 'legend-core'],
+    lyrics: '🎛️ Welcome to the machine - The journey of entering and becoming part of the system'
   },
   {
     id: 'pink-floyd-wish-you-were-here',
@@ -285,6 +422,7 @@ export const musicLibrary: MusicTrack[] = [
     artist: 'Pink Floyd',
     album: 'Wish You Were Here',
     duration: '5:34',
+    url: 'https://archive.org/download/PinkFloyd-WishYouWereHere_201601/Pink%20Floyd%20-%20Wish%20You%20Were%20Here.mp3',
     themes: ['absence', 'longing', 'connection', 'loss', 'nostalgia'],
     mood: ['melancholic', 'gentle', 'emotional', 'intimate'],
     suggestedRepos: ['legend-🔗-semantic', 'legend-⛓️-chain', 'truvio-studios']
@@ -351,10 +489,56 @@ export function getMediaForRepo(repoName: string): MediaAsset[] {
 
 export function getMusicForRepo(repoName: string): MusicTrack[] {
   const lowerName = repoName.toLowerCase()
-  return musicLibrary.filter(track => 
-    track.suggestedRepos.some(repo => lowerName.includes(repo.toLowerCase())) ||
-    track.themes.some(theme => lowerName.includes(theme))
-  )
+  
+  const matched = musicLibrary.filter(track => {
+    if (track.suggestedRepos.some(repo => lowerName.includes(repo.toLowerCase()))) {
+      return true
+    }
+    
+    if (track.themes.some(theme => lowerName.includes(theme))) {
+      return true
+    }
+    
+    if (lowerName.includes('multistar') || lowerName.includes('✨')) {
+      return track.id.includes('shine-on')
+    }
+    
+    if (lowerName.includes('modulator') || lowerName.includes('🎛️')) {
+      return track.id === 'cheap-trick-one-i-want' || track.id === 'pink-floyd-welcome-machine'
+    }
+    
+    if (lowerName.includes('robot') || lowerName.includes('🦾')) {
+      return track.id === 'pink-floyd-welcome-machine' || track.id === 'pink-floyd-on-the-run'
+    }
+    
+    if (lowerName.includes('time') || lowerName.includes('runtime') || lowerName.includes('⭐')) {
+      return track.id === 'pink-floyd-time'
+    }
+    
+    if (lowerName.includes('money') || lowerName.includes('💰') || lowerName.includes('💲') || lowerName.includes('treasury') || lowerName.includes('value')) {
+      return track.id === 'pink-floyd-money'
+    }
+    
+    if (lowerName.includes('brain') || lowerName.includes('🧠') || lowerName.includes('mongoose')) {
+      return track.id === 'pink-floyd-brain-damage' || track.id === 'pink-floyd-breathe'
+    }
+    
+    if (lowerName.includes('core') || lowerName.includes('spine') || lowerName.includes('index')) {
+      return track.id === 'pink-floyd-eclipse' || track.id === 'pink-floyd-speak-to-me'
+    }
+    
+    return false
+  })
+  
+  if (matched.length === 0) {
+    return musicLibrary.filter(track => 
+      track.id === 'pink-floyd-welcome-machine' || 
+      track.id === 'pink-floyd-breathe' ||
+      track.id === 'rush-2112-suite'
+    )
+  }
+  
+  return matched
 }
 
 export async function aiMatchMusicToRepo(repoName: string, repoDescription?: string): Promise<MusicTrack | null> {
@@ -370,26 +554,59 @@ export async function aiMatchMusicToRepo(repoName: string, repoDescription?: str
     }
 
     const tracksInfo = availableTracks.map((track, idx) => 
-      `${idx + 1}. "${track.title}" by ${track.artist} - Themes: ${track.themes.join(', ')} - Mood: ${track.mood.join(', ')}`
-    ).join('\n')
+      `${idx + 1}. "${track.title}" by ${track.artist}
+   Album: ${track.album || 'N/A'}
+   Themes: ${track.themes.join(', ')}
+   Mood: ${track.mood.join(', ')}
+   Description: ${track.lyrics || 'No description'}
+   Duration: ${track.duration}`
+    ).join('\n\n')
 
-    const promptText = `You are a music curator for a quantum computing system where each repository/machine represents a unique component.
+    const promptText = `You are an AI music curator for the pewpi-infinity quantum computing system where each repository represents a unique machine component with specific purposes and journeys.
 
-Repository Name: ${repoName}
-Repository Description: ${repoDescription || 'No description available'}
+SEMANTIC MUSIC SELECTION RULES:
 
-Available tracks that match this repository:
+1. 💲 SINGLE LOCAL PORT (Take Me Home Tonight - Eddie Money):
+   - Use when: Repo is being "taken home" for local development
+   - Use when: Single machine, personal use, one-time porting
+   - Keywords: single, local, port, personal, one, individual, home
+
+2. ⭐💎 MULTISTAR FACETING (Shine On You Crazy Diamond - Pink Floyd):
+   - Use when: Repo facets/creates OTHER repos or stars from itself
+   - Use when: A star that generates multiple other components
+   - Keywords: multistar, facet, diamond, shine, generate, create, multiple, spawn
+
+3. 🎛️ MODULATOR (I Want You to Want Me - Cheap Trick):
+   - Use when: Repo filters/modulates/adjusts to solve problems
+   - Use when: Moving between machines, problem-solving, coordination
+   - Keywords: modulate, filter, adjust, coordinate, move, solve, redirect
+
+4. 🎛️ WELCOME TO MACHINE (Welcome to the Machine - Pink Floyd):
+   - Use when: First-time setup, onboarding, system introduction
+   - Use when: Core system repos, foundational machines
+   - Keywords: welcome, core, system, foundation, entry, introduction
+
+5. DARK SIDE OF THE MOON - Track by semantic need:
+   - "Speak to Me" → initialization, beginning
+   - "Breathe" → life, existence, calm start
+   - "Time" ⭐ → runtime, timing, clocks, scheduling
+   - "Money" 💰 → treasury, value, tokens, payments
+   - "Brain Damage" 🧠 → neural core, learning, cognition
+   - "Eclipse" → completion, unity, finale
+
+Repository: ${repoName}
+Description: ${repoDescription || 'No description'}
+
+Available tracks:
 ${tracksInfo}
 
-Analyze the repository name, description, and emoji semantics. Select the ONE track that best captures the essence and journey of this machine/component.
+ANALYZE:
+- Is this repo being "taken home" (local single port)? → Eddie Money
+- Does this repo create/facet other repos? → Shine On You Crazy Diamond
+- Does this repo modulate/filter/coordinate? → Cheap Trick OR Welcome to the Machine
+- What's the PRIMARY semantic function based on name/emoji?
 
-Consider:
-- Repository name semantics (e.g., "robot-core" → mechanical/automated themes, "memory" → cosmic/time themes)
-- Emoji meanings (🦾 = robot/automation, ⭐ = runtime/star, 🪐 = memory/cosmic, 💰 = money/value)
-- Lyrical themes and mood alignment
-- The emotional journey this machine represents
-
-Return ONLY the number (1-${availableTracks.length}) of the best matching track. No explanation, just the number.`
+Return ONLY the number (1-${availableTracks.length}) of the BEST matching track based on these semantic rules.`
 
     const result = await window.spark.llm(promptText, 'gpt-4o-mini')
     const trackIndex = parseInt(result.trim()) - 1

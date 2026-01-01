@@ -16,6 +16,8 @@ import {
   Circle
 } from '@phosphor-icons/react'
 import { musicLibrary, type MusicTrack, getMusicForRepo, aiMatchMusicToRepo } from '@/lib/media-semantic'
+import { MusicSemanticInfo } from './MusicSemanticInfo'
+import { SemanticMusicControls } from './SemanticMusicControls'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { CategorizedRepo } from '@/lib/types'
 
@@ -24,9 +26,10 @@ interface JukeboxProps {
   repo?: CategorizedRepo
   compact?: boolean
   autoPlay?: boolean
+  externalTrack?: MusicTrack | null
 }
 
-export function Jukebox({ repoName, repo, compact = false, autoPlay = false }: JukeboxProps) {
+export function Jukebox({ repoName, repo, compact = false, autoPlay = false, externalTrack }: JukeboxProps) {
   const [currentTrack, setCurrentTrack] = useState<MusicTrack | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [volume, setVolume] = useState(0.5)
@@ -41,6 +44,13 @@ export function Jukebox({ repoName, repo, compact = false, autoPlay = false }: J
   const availableTracks = repoName 
     ? getMusicForRepo(repoName)
     : musicLibrary
+
+  useEffect(() => {
+    if (externalTrack) {
+      setCurrentTrack(externalTrack)
+      setIsPlaying(true)
+    }
+  }, [externalTrack])
 
   useEffect(() => {
     const initializeMusic = async () => {
@@ -317,6 +327,12 @@ export function Jukebox({ repoName, repo, compact = false, autoPlay = false }: J
                   </Badge>
                 )}
               </div>
+              
+              {repoName && !loadingAiMatch && (
+                <div className="mb-3">
+                  <MusicSemanticInfo track={currentTrack} repoName={repoName} />
+                </div>
+              )}
             </>
           )}
 
@@ -418,6 +434,13 @@ export function Jukebox({ repoName, repo, compact = false, autoPlay = false }: J
               <h4 className="text-sm font-semibold text-foreground">
                 Track Queue ({availableTracks.length})
               </h4>
+            </div>
+            
+            <div className="mb-4">
+              <SemanticMusicControls 
+                onSelectTrack={playTrack} 
+                currentTrackId={currentTrack?.id}
+              />
             </div>
             
             <ScrollArea className="h-48">
