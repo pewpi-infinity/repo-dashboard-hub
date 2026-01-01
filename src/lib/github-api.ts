@@ -1,13 +1,13 @@
 import { Octokit } from 'octokit'
 import type { Repository, CommitActivity, Contributor, RepoStats } from './types'
 
-const ORG_NAME = 'pewpi-infinity'
+const USERNAME = 'pewpi-infinity'
 const octokit = new Octokit()
 
 export async function fetchOrgRepositories(): Promise<Repository[]> {
   try {
-    const { data } = await octokit.rest.repos.listForOrg({
-      org: ORG_NAME,
+    const { data } = await octokit.rest.repos.listForUser({
+      username: USERNAME,
       per_page: 100,
       sort: 'updated'
     })
@@ -22,7 +22,7 @@ export async function fetchOrgRepositories(): Promise<Repository[]> {
 export async function fetchRepository(repoName: string): Promise<Repository> {
   try {
     const { data } = await octokit.rest.repos.get({
-      owner: ORG_NAME,
+      owner: USERNAME,
       repo: repoName
     })
     
@@ -36,7 +36,7 @@ export async function fetchRepository(repoName: string): Promise<Repository> {
 export async function fetchCommitActivity(repoName: string): Promise<CommitActivity[]> {
   try {
     const { data } = await octokit.rest.repos.getCommitActivityStats({
-      owner: ORG_NAME,
+      owner: USERNAME,
       repo: repoName
     })
     
@@ -50,7 +50,7 @@ export async function fetchCommitActivity(repoName: string): Promise<CommitActiv
 export async function fetchContributors(repoName: string): Promise<Contributor[]> {
   try {
     const { data } = await octokit.rest.repos.listContributors({
-      owner: ORG_NAME,
+      owner: USERNAME,
       repo: repoName,
       per_page: 10
     })
@@ -65,7 +65,7 @@ export async function fetchContributors(repoName: string): Promise<Contributor[]
 export async function fetchLanguages(repoName: string): Promise<Record<string, number>> {
   try {
     const { data } = await octokit.rest.repos.listLanguages({
-      owner: ORG_NAME,
+      owner: USERNAME,
       repo: repoName
     })
     
