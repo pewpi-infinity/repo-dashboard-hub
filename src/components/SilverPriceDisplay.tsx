@@ -7,6 +7,7 @@ import { PencilSimple, Check, X, Lock, LockOpen, TrendUp, TrendDown } from '@pho
 import { useKV } from '@github/spark/hooks'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
+import { fetchCryptoPrices, formatPrice, type CryptoPrice } from '../lib/crypto-api'
 
 interface SilverPriceDisplayProps {
   compact?: boolean
@@ -19,6 +20,8 @@ export function SilverPriceDisplay({ compact = false }: SilverPriceDisplayProps)
   const [isOwner, setIsOwner] = useState(false)
   const [loading, setLoading] = useState(true)
   const [previousPrice, setPreviousPrice] = useState<string | null>(null)
+  const [cryptoPrices, setCryptoPrices] = useState<CryptoPrice[]>([])
+  const [cryptoLoading, setCryptoLoading] = useState(true)
 
   const currentPrice = silverPrice || '32.45'
 
@@ -36,6 +39,24 @@ export function SilverPriceDisplay({ compact = false }: SilverPriceDisplayProps)
     }
 
     checkOwnership()
+  }, [])
+
+  useEffect(() => {
+    const loadCryptoPrices = async () => {
+      try {
+        const prices = await fetchCryptoPrices(['bitcoin', 'ethereum', 'cardano'])
+        setCryptoPrices(prices)
+      } catch (error) {
+        console.error('Failed to load crypto prices:', error)
+      } finally {
+        setCryptoLoading(false)
+      }
+    }
+
+    loadCryptoPrices()
+    // Refresh every 2 minutes
+    const interval = setInterval(loadCryptoPrices, 120000)
+    return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {
@@ -239,18 +260,67 @@ export function SilverPriceDisplay({ compact = false }: SilverPriceDisplayProps)
 
       <div className="mt-4 pt-4 border-t border-border/30">
         <div className="grid grid-cols-3 gap-3 text-center">
-          <div>
-            <div className="text-xs text-muted-foreground mb-1">Gold</div>
-            <div className="text-sm font-bold text-yellow">$2,045</div>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground mb-1">Platinum</div>
-            <div className="text-sm font-bold text-blue">$925</div>
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground mb-1">Palladium</div>
-            <div className="text-sm font-bold text-purple">$1,015</div>
-          </div>
+          {cryptoLoading ? (
+            <>
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">BTC</div>
+                <div className="text-sm font-bold text-yellow">Loading...</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">ETH</div>
+                <div className="text-sm font-bold text-blue">Loading...</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">ADA</div>
+                <div className="text-sm font-bold text-purple">Loading...</div>
+              </div>
+            </>
+          ) : cryptoPrices.length > 0 ? (
+            <>
+              {cryptoPrices[0] && (
+                <div>
+                  <div className="text-xs text-muted-foreground mb-1">Bitcoin</div>
+                  <div className="text-sm font-bold text-yellow">{formatPrice(cryptoPrices[0].current_price)}</div>
+                  <div className={`text-xs ${cryptoPrices[0].price_change_percentage_24h >= 0 ? 'text-green' : 'text-red'}`}>
+                    {cryptoPrices[0].price_change_percentage_24h >= 0 ? '+' : ''}{cryptoPrices[0].price_change_percentage_24h.toFixed(2)}%
+                  </div>
+                </div>
+              )}
+              {cryptoPrices[1] && (
+                <div>
+                  <div className="text-xs text-muted-foreground mb-1">Ethereum</div>
+                  <div className="text-sm font-bold text-blue">{formatPrice(cryptoPrices[1].current_price)}</div>
+                  <div className={`text-xs ${cryptoPrices[1].price_change_percentage_24h >= 0 ? 'text-green' : 'text-red'}`}>
+                    {cryptoPrices[1].price_change_percentage_24h >= 0 ? '+' : ''}{cryptoPrices[1].price_change_percentage_24h.toFixed(2)}%
+                  </div>
+                </div>
+              )}
+              {cryptoPrices[2] && (
+                <div>
+                  <div className="text-xs text-muted-foreground mb-1">Cardano</div>
+                  <div className="text-sm font-bold text-purple">{formatPrice(cryptoPrices[2].current_price)}</div>
+                  <div className={`text-xs ${cryptoPrices[2].price_change_percentage_24h >= 0 ? 'text-green' : 'text-red'}`}>
+                    {cryptoPrices[2].price_change_percentage_24h >= 0 ? '+' : ''}{cryptoPrices[2].price_change_percentage_24h.toFixed(2)}%
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">Gold</div>
+                <div className="text-sm font-bold text-yellow">$2,045</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">Platinum</div>
+                <div className="text-sm font-bold text-blue">$925</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">Palladium</div>
+                <div className="text-sm font-bold text-purple">$1,015</div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </Card>
