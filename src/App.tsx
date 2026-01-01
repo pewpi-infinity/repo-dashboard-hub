@@ -258,127 +258,136 @@ function App() {
       />
       
       <div className="relative">
-        <header className="border-b border-border/50 backdrop-blur-sm bg-gradient-to-r from-card/90 via-card/80 to-card/90 sticky top-0 z-10">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 
-                  className="text-3xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-yellow via-accent to-pink bg-clip-text text-transparent"
-                  style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: '0.02em' }}
-                >
-                  {currentView === 'quantum' ? '🪐 /K QUANTUM COCKPIT' : 
-                   currentView === 'clusters' ? '🎯 CLUSTER GROUPING' : 
-                   currentView === 'creepshow' ? '🎬 CREEPSHOW STORY' :
-                   currentView === 'music' ? '🎵 QUANTUM JUKEBOX' :
-                   '🎮 AC DASHBOARD'}
-                </h1>
-                <p className="text-sm text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  {currentView === 'quantum' ? (
-                    <><span className="text-purple">🪐</span> Real-time System Coordination & Neural Learning Visualization</>
-                  ) : currentView === 'clusters' ? (
-                    <><span className="text-purple">🎯</span> Intelligent Cluster Formation & Group Coordination</>
-                  ) : currentView === 'creepshow' ? (
-                    <><span className="text-red">🎬</span> Interactive Branching Story - Correct Scripts to Change Fate</>
-                  ) : currentView === 'music' ? (
-                    <><span className="text-pink">🎵</span> Semantic Music Library - Songs Matched to Machine Journeys</>
-                  ) : (
-                    <><span className="text-gold">👑</span> Pewpi Infinity Quantum Computing & Time Machine System</>
-                  )}
-                </p>
+        <header className="border-b border-border/50 backdrop-blur-sm bg-gradient-to-r from-card/90 via-card/80 to-card/90 sticky top-0 z-50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <h1 
+                    className="text-2xl sm:text-3xl font-bold mb-1 bg-gradient-to-r from-yellow via-accent to-pink bg-clip-text text-transparent truncate"
+                    style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: '0.02em' }}
+                  >
+                    {currentView === 'quantum' ? '🪐 /K QUANTUM COCKPIT' : 
+                     currentView === 'clusters' ? '🎯 CLUSTER GROUPING' : 
+                     currentView === 'creepshow' ? '🎬 CREEPSHOW STORY' :
+                     currentView === 'music' ? '🎵 QUANTUM JUKEBOX' :
+                     '🎮 AC DASHBOARD'}
+                  </h1>
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                    {currentView === 'quantum' ? (
+                      <><span className="text-purple">🪐</span> Real-time System Coordination & Neural Learning Visualization</>
+                    ) : currentView === 'clusters' ? (
+                      <><span className="text-purple">🎯</span> Intelligent Cluster Formation & Group Coordination</>
+                    ) : currentView === 'creepshow' ? (
+                      <><span className="text-red">🎬</span> Interactive Branching Story - Correct Scripts to Change Fate</>
+                    ) : currentView === 'music' ? (
+                      <><span className="text-pink">🎵</span> Semantic Music Library - Songs Matched to Machine Journeys</>
+                    ) : (
+                      <><span className="text-gold">👑</span> Pewpi Infinity Quantum Computing & Time Machine System</>
+                    )}
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
+              
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
-                  variant={currentView === 'music' ? 'default' : 'outline'}
+                  variant={currentView === 'dashboard' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setCurrentView('music')}
-                  className={`gap-2 transition-all ${
-                    currentView === 'music' 
-                      ? 'bg-gradient-to-r from-pink to-purple hover:from-pink/90 hover:to-purple/90 shadow-lg shadow-pink/30' 
-                      : 'hover:bg-pink/10 hover:border-pink hover:text-pink'
+                  onClick={() => setCurrentView('dashboard')}
+                  className={`gap-1.5 transition-all text-xs ${
+                    currentView === 'dashboard' 
+                      ? 'bg-gradient-to-r from-gold to-yellow hover:from-gold/90 hover:to-yellow/90 shadow-lg shadow-gold/30' 
+                      : 'hover:bg-gold/10 hover:border-gold hover:text-gold'
                   }`}
                 >
-                  <MusicNotes className={currentView === 'music' ? '' : ''} size={16} weight="fill" />
-                  <span className="font-mono font-bold">Music</span>
-                </Button>
-                <Button
-                  variant={currentView === 'creepshow' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setCurrentView('creepshow')}
-                  className={`gap-2 transition-all ${
-                    currentView === 'creepshow' 
-                      ? 'bg-gradient-to-r from-red to-pink hover:from-red/90 hover:to-pink/90 shadow-lg shadow-red/30' 
-                      : 'hover:bg-red/10 hover:border-red hover:text-red'
-                  }`}
-                >
-                  <FilmStrip className={currentView === 'creepshow' ? '' : ''} size={16} weight="fill" />
-                  <span className="font-mono font-bold">Story</span>
+                  <ChartLine size={14} weight="fill" />
+                  <span className="font-mono font-bold hidden sm:inline">Dashboard</span>
+                  <span className="font-mono font-bold sm:hidden">Dash</span>
                 </Button>
                 <Button
                   variant={currentView === 'quantum' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setCurrentView('quantum')}
-                  className={`gap-2 transition-all ${
+                  className={`gap-1.5 transition-all text-xs ${
                     currentView === 'quantum' 
                       ? 'bg-gradient-to-r from-purple to-pink hover:from-purple/90 hover:to-pink/90 shadow-lg shadow-purple/30' 
                       : 'hover:bg-purple/10 hover:border-purple hover:text-purple'
                   }`}
                 >
-                  <Atom className={currentView === 'quantum' ? '' : ''} size={16} weight="fill" />
+                  <Atom size={14} weight="fill" />
                   <span className="font-mono font-bold">/K</span>
                 </Button>
                 <Button
                   variant={currentView === 'clusters' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setCurrentView('clusters')}
-                  className={`gap-2 transition-all ${
+                  className={`gap-1.5 transition-all text-xs ${
                     currentView === 'clusters' 
                       ? 'bg-gradient-to-r from-accent to-blue hover:from-accent/90 hover:to-blue/90 shadow-lg shadow-accent/30' 
                       : 'hover:bg-accent/10 hover:border-accent hover:text-accent'
                   }`}
                 >
-                  <Graph className={currentView === 'clusters' ? '' : ''} size={16} weight="fill" />
-                  <span className="font-mono font-bold">Clusters</span>
+                  <Graph size={14} weight="fill" />
+                  <span className="font-mono font-bold hidden sm:inline">Clusters</span>
+                  <span className="font-mono font-bold sm:hidden">Clust</span>
                 </Button>
                 <Button
-                  variant={currentView === 'dashboard' ? 'default' : 'outline'}
+                  variant={currentView === 'creepshow' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setCurrentView('dashboard')}
-                  className={`gap-2 transition-all ${
-                    currentView === 'dashboard' 
-                      ? 'bg-gradient-to-r from-gold to-yellow hover:from-gold/90 hover:to-yellow/90 shadow-lg shadow-gold/30' 
-                      : 'hover:bg-gold/10 hover:border-gold hover:text-gold'
+                  onClick={() => setCurrentView('creepshow')}
+                  className={`gap-1.5 transition-all text-xs ${
+                    currentView === 'creepshow' 
+                      ? 'bg-gradient-to-r from-red to-pink hover:from-red/90 hover:to-pink/90 shadow-lg shadow-red/30' 
+                      : 'hover:bg-red/10 hover:border-red hover:text-red'
                   }`}
                 >
-                  <ChartLine className={currentView === 'dashboard' ? '' : ''} size={16} weight="fill" />
-                  <span className="font-mono font-bold">Dashboard</span>
+                  <FilmStrip size={14} weight="fill" />
+                  <span className="font-mono font-bold hidden sm:inline">Story</span>
+                  <span className="font-mono font-bold sm:hidden">Story</span>
                 </Button>
+                <Button
+                  variant={currentView === 'music' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setCurrentView('music')}
+                  className={`gap-1.5 transition-all text-xs ${
+                    currentView === 'music' 
+                      ? 'bg-gradient-to-r from-pink to-purple hover:from-pink/90 hover:to-purple/90 shadow-lg shadow-pink/30' 
+                      : 'hover:bg-pink/10 hover:border-pink hover:text-pink'
+                  }`}
+                >
+                  <MusicNotes size={14} weight="fill" />
+                  <span className="font-mono font-bold hidden sm:inline">Music</span>
+                  <span className="font-mono font-bold sm:hidden">Music</span>
+                </Button>
+                <div className="h-4 w-px bg-border mx-1" />
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowTerminal(!showTerminal)}
-                  className="gap-2 hover:bg-primary/10 hover:border-primary hover:text-primary"
+                  className="gap-1.5 hover:bg-primary/10 hover:border-primary hover:text-primary text-xs"
                 >
-                  <Terminal className={showTerminal ? 'text-accent' : ''} size={16} />
-                  Terminal
+                  <Terminal className={showTerminal ? 'text-accent' : ''} size={14} />
+                  <span className="hidden sm:inline">Terminal</span>
                 </Button>
                 <Button
                   variant="default"
                   size="sm"
                   onClick={() => setAddRepoDialogOpen(true)}
-                  className="gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                  className="gap-1.5 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-xs"
                 >
-                  <Plus size={16} weight="bold" />
-                  Add Machine
+                  <Plus size={14} weight="bold" />
+                  <span className="hidden sm:inline">Add Machine</span>
+                  <span className="sm:hidden">Add</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={loadRepositories}
                   disabled={loading}
-                  className="gap-2 hover:bg-accent/10 hover:border-accent hover:text-accent"
+                  className="gap-1.5 hover:bg-accent/10 hover:border-accent hover:text-accent text-xs"
                 >
-                  <ArrowClockwise className={loading ? 'animate-spin' : ''} size={16} />
-                  Refresh
+                  <ArrowClockwise className={loading ? 'animate-spin' : ''} size={14} />
+                  <span className="hidden sm:inline">Refresh</span>
                 </Button>
               </div>
             </div>

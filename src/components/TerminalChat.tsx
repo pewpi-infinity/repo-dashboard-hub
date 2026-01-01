@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils'
 import type { CategorizedRepo, ComponentCategory } from '@/lib/types'
 import { createRepository, isAuthenticated } from '@/lib/github-api'
 import { toast } from 'sonner'
+import { systemNavigator, getRepoInfo } from '@/lib/system-navigator'
+import { getAllExtendedRepoNames, getRepoDefinition } from '@/lib/extended-repo-registry'
 
 declare const spark: {
   llmPrompt: (strings: TemplateStringsArray, ...values: any[]) => string
@@ -124,6 +126,7 @@ export function TerminalChat({ repos, isAuthenticated: authStatus, onCreateRepo,
 
   const processCommand = async (command: string) => {
     const cmd = command.trim().toLowerCase()
+    const args = command.trim().split(' ')
     
     if (cmd.startsWith('/create ')) {
       const repoName = cmd.replace('/create ', '').trim().split(' ')[0]
@@ -140,13 +143,184 @@ export function TerminalChat({ repos, isAuthenticated: authStatus, onCreateRepo,
     if (cmd === '/help') {
       return {
         role: 'system' as const,
-        content: `Available commands:
-/create <name> [emoji] - Create new repo ${authStatus ? '✅' : '⚠️ (auth required)'}
-/status - System status
-/repos - List all repos
-/sync - Sync all components
-/auth - Check authentication status
-/help - Show this help`
+        content: `╔═══════════════════════════════════════════════════════════════╗
+║              LEGEND TERMINAL - COMMAND REFERENCE              ║
+╚═══════════════════════════════════════════════════════════════╝
+
+SYSTEM COMMANDS:
+/status         - System status overview
+/auth           - Check GitHub authentication
+/sync           - Sync all components
+
+REPO MANAGEMENT:
+/create <name>  - Create new repo ${authStatus ? '✅' : '⚠️ (auth required)'}
+/repos          - List all connected repos
+/registry       - Show all repos in registry (${getAllExtendedRepoNames().length} total)
+
+NAVIGATION:
+/nav <repo>     - Navigate to repo and show details
+/info <repo>    - Get detailed repo information
+/map            - Show ASCII system map
+/layers         - Show system layers
+/layer <N>      - Show repos in layer N
+/path <A> <B>   - Find path between two repos
+/neighbors <R>  - Show neighboring repos
+/deps <repo>    - Show dependencies
+/tree <repo>    - Show full dependency tree
+/stats          - Show system statistics
+
+OTHER:
+/help           - Show this help
+/clear          - Clear terminal
+
+Type anything else to chat with the Legend AI! 👑`
+      }
+    }
+
+    if (cmd === '/clear') {
+      setMessages([{
+        id: Date.now().toString(),
+        role: 'system',
+        content: '👑 Terminal cleared. Legend System Ready.',
+        timestamp: new Date()
+      }])
+      return null
+    }
+
+    if (cmd === '/registry') {
+      const allRepos = getAllExtendedRepoNames()
+      const repoList = allRepos.slice(0, 20).map(name => {
+        const def = getRepoDefinition(name)
+        return `${def?.emoji || '🧱'} ${name} [${def?.category || 'other'}]`
+      }).join('\n')
+      return {
+        role: 'system' as const,
+        content: `📚 Registry Contains ${allRepos.length} Repos (showing first 20):\n\n${repoList}\n\nUse /info <name> for details on any repo.`
+      }
+    }
+
+    if (cmd === '/map') {
+      const map = systemNavigator.generateASCIIMap()
+      return {
+        role: 'system' as const,
+        content: map
+      }
+    }
+
+    if (cmd === '/layers') {
+      const layers = systemNavigator.getAllLayers()
+      const layerInfo = layers.map(layer => {
+        const repos = systemNavigator.getLayerInfo(layer)
+        return `Layer ${layer}: ${repos.length} repos - ${repos.slice(0, 5).map(r => r.emoji).join(' ')}`
+      }).join('\n')
+      return {
+        role: 'system' as const,
+        content: `🏗️ System Layers:\n\n${layerInfo}\n\nUse /layer <N> to see details.`
+      }
+    }
+
+    if (cmd.startsWith('/layer ')) {
+      const layerNum = parseInt(args[1])
+      if (isNaN(layerNum)) {
+        return {
+          role: 'system' as const,
+          content: '⚠️ Usage: /layer <number>'
+        }
+      }
+      const repos = systemNavigator.getLayerInfo(layerNum)
+      if (repos.length === 0) {
+        return {
+          role: 'system' as const,
+          content: `⚠️ No repos found in layer ${layerNum}`
+        }
+      }
+      const repoList = repos.map(r => `${r.emoji} ${r.name} [${r.category}]`).join('\n')
+      return {
+        role: 'system' as const,
+        content: `📍 Layer ${layerNum} (${repos.length} repos):\n\n${repoList}`
+      }
+    }
+
+    if (cmd.startsWith('/nav ') || cmd.startsWith('/info ')) {
+      const repoName = args.slice(1).join(' ').trim()
+      if (!repoName) {
+        return {
+          role: 'system' as const,
+          content: '⚠️ Usage: /nav <repo-name> or /info <repo-name>'
+        }
+      }
+      const info = getRepoInfo(repoName)
+      return {
+        role: 'system' as const,
+        content: info
+      }
+    }
+
+    if (cmd.startsWith('/path ')) {
+      if (args.length < 3) {
+        return {
+          role: 'system' as const,
+          content: '⚠️ Usage: /path <from-repo> <to-repo>'
+        }
+      }
+      const from = args[1]
+      const to = args[2]
+      const path = systemNavigator.findShortestPath(from, to)
+      if (!path) {
+        return {
+          role: 'system' as const,
+          content: `⚠️ No path found between ${from} and ${to}`
+        }
+      }
+      return {
+        role: 'system' as const,
+        content: `🛤️ Path from ${from} to ${to}:\n\n${path.map((r, i) => `${i + 1}. ${r}`).join('\n → ')}`
+      }
+    }
+
+    if (cmd.startsWith('/neighbors ')) {
+      const repoName = args.slice(1).join(' ').trim()
+      const neighbors = systemNavigator.getNeighbors(repoName)
+      if (neighbors.length === 0) {
+        return {
+          role: 'system' as const,
+          content: `⚠️ No neighbors found for ${repoName}`
+        }
+      }
+      const neighborList = neighbors.map(n => `${n.emoji} ${n.name} (Layer ${n.layer})`).join('\n')
+      return {
+        role: 'system' as const,
+        content: `🌐 Neighbors of ${repoName}:\n\n${neighborList}`
+      }
+    }
+
+    if (cmd.startsWith('/deps ')) {
+      const repoName = args.slice(1).join(' ').trim()
+      const deps = systemNavigator.getDependencies(repoName)
+      const dependents = systemNavigator.getDependents(repoName)
+      return {
+        role: 'system' as const,
+        content: `🔗 Dependencies for ${repoName}:\n\nDepends on (${deps.length}):\n${deps.length > 0 ? deps.map(d => `├─ ${d}`).join('\n') : '└─ None'}\n\nDepended on by (${dependents.length}):\n${dependents.length > 0 ? dependents.map(d => `├─ ${d}`).join('\n') : '└─ None'}`
+      }
+    }
+
+    if (cmd.startsWith('/tree ')) {
+      const repoName = args.slice(1).join(' ').trim()
+      const tree = systemNavigator.getFullDependencyTree(repoName)
+      return {
+        role: 'system' as const,
+        content: `🌳 Full dependency tree for ${repoName}:\n\n${tree.length > 0 ? tree.map((d, i) => `${i + 1}. ${d}`).join('\n') : 'No dependencies'}`
+      }
+    }
+
+    if (cmd === '/stats') {
+      const stats = systemNavigator.getSystemStatistics()
+      const categoryList = Array.from(stats.categories.entries())
+        .map(([cat, count]) => `${cat}: ${count}`)
+        .join('\n')
+      return {
+        role: 'system' as const,
+        content: `📊 System Statistics:\n\n🎯 Total Repos: ${stats.totalRepos}\n🏗️ Layers: ${stats.layers}\n🔗 Most Connected: ${stats.mostConnected.repo} (${stats.mostConnected.connections} connections)\n\n📦 By Category:\n${categoryList}`
       }
     }
 
@@ -160,10 +334,12 @@ export function TerminalChat({ repos, isAuthenticated: authStatus, onCreateRepo,
     }
     
     if (cmd === '/status') {
+      const allRepos = getAllExtendedRepoNames()
       return {
         role: 'system' as const,
         content: `🎛️ System Status:
-${repos.length} repos connected
+📦 ${repos.length} repos connected
+📚 ${allRepos.length} repos in registry
 ${repos.filter(r => r.category === 'brain').length} brain components
 ${repos.filter(r => r.category === 'quantum').length} quantum processors
 ${repos.filter(r => r.category === 'time').length} time machines
@@ -176,7 +352,7 @@ All systems operational 👑`
       const repoList = repos.slice(0, 10).map(r => `🧱 ${r.name}`).join('\n')
       return {
         role: 'system' as const,
-        content: `Connected Repositories (showing 10/${repos.length}):\n${repoList}\n\nUse /create <name> to add more.`
+        content: `Connected Repositories (showing 10/${repos.length}):\n${repoList}\n\nUse /create <name> to add more or /registry to see all available.`
       }
     }
     
@@ -196,7 +372,7 @@ All systems operational 👑`
 
     const prompt = spark.llmPrompt`You are the Legend Terminal AI assistant for the pewpi-infinity quantum computing system. The user said: ${command}. 
 
-Current system has ${repos.length} repositories. Authentication status: ${authStatus ? 'authenticated' : 'not authenticated'}. 
+Current system has ${repos.length} connected repositories and ${getAllExtendedRepoNames().length} repos in the registry. Authentication status: ${authStatus ? 'authenticated' : 'not authenticated'}. 
 
 Respond helpfully and briefly in 1-2 sentences. If they're asking about creating repos and not authenticated, tell them to authenticate first. Use emojis from this set: 👑🧱🎵🪡🌐🟦🟡💵💰🔱✨🍄🪐⭐🦾💲🎛️`
 
@@ -230,14 +406,17 @@ Respond helpfully and briefly in 1-2 sentences. If they're asking about creating
 
     const response = await processCommand(input)
     
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: response.role,
-      content: response.content,
-      timestamp: new Date()
-    }
+    if (response) {
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: response.role,
+        content: response.content,
+        timestamp: new Date()
+      }
 
-    setMessages(prev => [...prev, assistantMessage])
+      setMessages(prev => [...prev, assistantMessage])
+    }
+    
     setIsProcessing(false)
     inputRef.current?.focus()
   }
