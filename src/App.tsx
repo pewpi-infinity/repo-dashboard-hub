@@ -19,6 +19,7 @@ import { AddRepoDialog } from './components/AddRepoDialog'
 import { GitHubAuth } from './components/GitHubAuth'
 import { QuantumCockpit } from './components/QuantumCockpit'
 import { ClusterView } from './components/ClusterView'
+import { CreepshowStory } from './components/CreepshowStory'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -28,7 +29,7 @@ import { addCategories } from './lib/repo-utils'
 import { calculateHealthMetrics, type HealthMetrics, type HealthAlert } from './lib/health-monitor'
 import { repoEmojiMap } from './lib/emoji-legend'
 import type { CategorizedRepo, ComponentCategory } from './lib/types'
-import { ArrowClockwise, Warning, ChartLine, Bell, Plus, Terminal, Atom, Graph } from '@phosphor-icons/react'
+import { ArrowClockwise, Warning, ChartLine, Bell, Plus, Terminal, Atom, Graph, FilmStrip } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
 
@@ -52,7 +53,7 @@ function App() {
   const [addRepoDialogOpen, setAddRepoDialogOpen] = useState(false)
   const [showTerminal, setShowTerminal] = useState(false)
   const [githubAuthenticated, setGithubAuthenticated] = useState(false)
-  const [currentView, setCurrentView] = useKV<'dashboard' | 'quantum' | 'clusters'>('current-view', 'dashboard')
+  const [currentView, setCurrentView] = useKV<'dashboard' | 'quantum' | 'clusters' | 'creepshow'>('current-view', 'dashboard')
 
   const currentViewMode: ViewMode = viewMode || 'grid'
 
@@ -262,19 +263,37 @@ function App() {
                   className="text-3xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-yellow via-accent to-pink bg-clip-text text-transparent"
                   style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: '0.02em' }}
                 >
-                  {currentView === 'quantum' ? '🪐 /K QUANTUM COCKPIT' : currentView === 'clusters' ? '🎯 CLUSTER GROUPING' : '🎮 AC DASHBOARD'}
+                  {currentView === 'quantum' ? '🪐 /K QUANTUM COCKPIT' : 
+                   currentView === 'clusters' ? '🎯 CLUSTER GROUPING' : 
+                   currentView === 'creepshow' ? '🎬 CREEPSHOW STORY' :
+                   '🎮 AC DASHBOARD'}
                 </h1>
                 <p className="text-sm text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                   {currentView === 'quantum' ? (
                     <><span className="text-purple">🪐</span> Real-time System Coordination & Neural Learning Visualization</>
                   ) : currentView === 'clusters' ? (
                     <><span className="text-purple">🎯</span> Intelligent Cluster Formation & Group Coordination</>
+                  ) : currentView === 'creepshow' ? (
+                    <><span className="text-red">🎬</span> Interactive Branching Story - Correct Scripts to Change Fate</>
                   ) : (
                     <><span className="text-gold">👑</span> Pewpi Infinity Quantum Computing & Time Machine System</>
                   )}
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                <Button
+                  variant={currentView === 'creepshow' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setCurrentView('creepshow')}
+                  className={`gap-2 transition-all ${
+                    currentView === 'creepshow' 
+                      ? 'bg-gradient-to-r from-red to-pink hover:from-red/90 hover:to-pink/90 shadow-lg shadow-red/30' 
+                      : 'hover:bg-red/10 hover:border-red hover:text-red'
+                  }`}
+                >
+                  <FilmStrip className={currentView === 'creepshow' ? '' : ''} size={16} weight="fill" />
+                  <span className="font-mono font-bold">Story</span>
+                </Button>
                 <Button
                   variant={currentView === 'quantum' ? 'default' : 'outline'}
                   size="sm"
@@ -357,7 +376,9 @@ function App() {
             </Alert>
           )}
 
-          {currentView === 'quantum' ? (
+          {currentView === 'creepshow' ? (
+            <CreepshowStory />
+          ) : currentView === 'quantum' ? (
             <div className="flex flex-col lg:flex-row gap-6">
               <div className="lg:w-64 flex-shrink-0 space-y-4">
                 <GitHubAuth onAuthChange={setGithubAuthenticated} />

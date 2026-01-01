@@ -166,6 +166,41 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Progression**: User types query → System tokenizes words → Scores all media against query → Returns ranked results → User browses semantically matched content
 - **Success criteria**: Thematic searches work (search "discovery" finds Rush tracks, "investigative" finds Periodic Table), scoring prioritizes exact matches, multi-word queries supported, search works across all metadata fields
 
+### Creepshow Interactive Story
+- **Functionality**: Branching narrative game where players read horror/sci-fi story scenes and correct broken code scripts to change story outcomes and prevent bad endings
+- **Purpose**: Create engaging interactive storytelling experience combining Creepshow anthology style with code debugging gameplay, linking to Truvio Studios repo theme
+- **Trigger**: User clicks "Story" button in header navigation to switch to Creepshow view
+- **Progression**: User reads scene → Discovers broken script → Must correct code to unlock good path → Wrong corrections lead to drowning/bad endings → Correct fixes advance story → Multiple endings based on correction choices → Progress tracked and persisted
+- **Success criteria**: Full branching story with 15+ nodes, underwater drowning sequences when scripts fail, script correction interface with textarea editor, show/hide correct answer hints, multiple endings (drowned, forgotten, grateful, perfect, heroic, transcendent), progress tracking (scenes visited, corrections made, failures, endings found), animations and visual effects for scene transitions, state persistence using useKV
+
+### Script Correction Mechanics
+- **Functionality**: Code editing interface where players must fix broken JavaScript/TypeScript snippets to advance story safely
+- **Purpose**: Gamify debugging and code review skills while driving narrative outcomes - correct scripts save characters, wrong scripts cause catastrophic failures
+- **Trigger**: Story node contains brokenScript property, textarea appears with pre-filled broken code
+- **Progression**: Player sees broken script → Edits in textarea → Chooses "correct script" option → System validates against correctScript → Success unlocks safe path, failure increases failure count and may trigger underwater sequence
+- **Success criteria**: Exact string matching for validation, syntax highlighting in monospace font, show/hide correct answer button, visual feedback on success (green toast) and failure (red toast), script corrections unlock alternate story paths
+
+### Drowning Sequence System
+- **Functionality**: Visual and narrative consequence when players fail script corrections - screen adds underwater blue filter, water-themed scene descriptions, character struggles in flooded environment
+- **Purpose**: Create tension and stakes for script corrections, memorable consequence for mistakes that motivates replaying to achieve better outcome
+- **Trigger**: Navigating to story node with outcome='bad' and id containing 'underwater'
+- **Progression**: Player makes wrong choice → Node loads → Underwater filter applies → Blue gradient overlays screen → Drowning scene description displays → Player must attempt rescue correction or accept dark ending
+- **Success criteria**: Blue gradient overlay with pulse animation, underwater CSS filter effects, emergency correction opportunities in drowning scenes, rescue possible through correct script rewrite, complete drowning ending if no rescue attempted
+
+### Story Progress Tracking
+- **Functionality**: Persistent tracking of player's journey through story including visited nodes, correction stats, and endings discovered
+- **Purpose**: Encourage replayability by showing progress toward discovering all paths and endings
+- **Trigger**: Automatic tracking throughout gameplay, displayed in stats cards at top of story view
+- **Progression**: Player makes choice → Visit node → Stats update → useKV persists progress → Display refreshes → Player sees updated counts
+- **Success criteria**: Tracks scenes visited count, successful corrections count, failures count, unique endings discovered, progress percentage bar, stats persist across sessions, restart button clears progress
+
+### Story Branching System
+- **Functionality**: Non-linear narrative with 15+ interconnected nodes offering 2-3 choices per scene leading to 6 different endings
+- **Purpose**: Create replayable experience where player decisions and code corrections dramatically alter story outcome
+- **Trigger**: Player selects choice button at bottom of each scene
+- **Progression**: Read scene → Make choice → Next node loads with animation → New scene appears → Repeat until ending reached
+- **Success criteria**: Minimum 6 distinct endings (drowned, forgotten, grateful, perfect, heroic, transcendent), multiple paths to reach each ending, safe vs dangerous routes based on corrections, meta-narrative elements (scientist breaks fourth wall), smooth scene transitions with framer-motion
+
 ### Intelligent Rotation System
 - **Functionality**: Automatic cycling through repos with adjustable speed, respecting locked slots
 - **Purpose**: Show all repos over time without performance degradation
@@ -272,6 +307,13 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Success criteria**: Supports `/create <name>` command format, extracts category/emoji from context, requires GitHub authentication, shows clear error if not authenticated, provides repo URL after creation, handles errors gracefully
 
 ## Edge Case Handling
+- **Creepshow Story State Loss**: If KV storage fails, default to start node with fresh progress rather than breaking
+- **Invalid Script Input**: Handle scripts with extra whitespace or formatting differences gracefully in validation
+- **Rapid Choice Clicking**: Debounce choice buttons to prevent double-navigation through story nodes
+- **Story Node Not Found**: Fallback to start node if corrupted currentNodeId in saved progress
+- **Empty Script Textarea**: Allow proceeding without correction on non-required paths, only enforce on requiresCorrection choices
+- **Browser Back Button**: Story progress managed by state, back button doesn't break navigation
+- **Long Story Sessions**: Auto-save progress frequently to prevent data loss on crashes
 - **API Rate Limiting**: Display cached data with a refresh timestamp when GitHub API limits are hit
 - **Authentication Required**: Show clear messaging when repo creation attempted without GitHub authentication, guide users to authenticate
 - **Invalid Repository Names**: Validate repository names before submission (alphanumeric, hyphens, no spaces), show helpful error messages
@@ -337,16 +379,21 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
 ## Component Selection
 - **Components**: 
   - Card component for repository display with custom hover effects and emoji integration
+  - Card component for story scene display with gradient backgrounds and outcome-based borders
   - Badge component for status indicators and categories with vibrant colors
+  - Badge component for story scene labels with accent color
   - Button component for stats triggers and navigation with hover glow effects
+  - Button component for story choices with gradient backgrounds (green for correction paths, primary for regular)
   - Dialog component for detailed repository statistics modal with tabs
   - Tabs component for organizing stats, health, and alerts views
   - Tooltip component for displaying full repository information
   - Skeleton component for loading states
   - Avatar component for contributor profiles
   - Progress component for health metric visualization
+  - Progress component for story progress percentage bar
   - Recharts AreaChart for commit activity trends
-  - Alert component for health alerts and error states
+  - Alert component for health alerts, error states, and story outcome notifications
+  - Textarea component for script correction code editing with monospace font
   - Input component for search functionality with icon prefix
   - Select component for sort options dropdown
   - ScrollArea component for alert panel scrolling
@@ -358,7 +405,9 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Custom LegendPanel for emoji color code display
   - Custom TerminalChat component for AI-powered command interface
   - Custom AddRepoDialog for repository creation workflow
+  - Custom CreepshowStory component for interactive branching narrative with script correction gameplay
   - Textarea component for multi-line descriptions
+  - AnimatePresence from framer-motion for scene transitions
 - **Customizations**: 
   - Custom grid layout with CSS Grid for responsive repository cards
   - Custom list layout with compact horizontal repository items
@@ -381,8 +430,19 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Add repo dialog with real-time preview and emoji grid selector
   - Command suggestions and help text in terminal footer
   - Gradient buttons for primary actions (Add Machine, Send message)
+  - Creepshow story full-page layout with film grain pattern backgrounds
+  - Story cards with outcome-based border colors (red for bad, green for good, purple for neutral)
+  - Underwater drowning effect with blue gradient overlay and pulse animation
+  - Script correction interface with syntax-highlighted textarea (monospace JetBrains Mono font)
+  - Show/hide correct answer button with animated reveal
+  - Story stats grid showing visited scenes, corrections, failures, endings discovered
+  - Story choice buttons with distinct styling for correction paths vs regular choices
+  - Scene transition animations with slide effect using framer-motion
+  - Progress bar showing story completion percentage
+  - Large emoji display for story scene icons with glow effect
 - **States**: 
   - Cards: default (subtle glow), hover (bright glow + lift), active (pressed state)
+  - Story cards: outcome-based borders (bad=red glow, good=green glow, neutral=purple), underwater effect on drowning scenes
   - Stats button: outline style with hover glow effect
   - Badges: multiple color variants for different repository categories
   - Modal: open/closed with smooth fade and scale transition
@@ -392,6 +452,12 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Terminal input: enabled/disabled based on processing state
   - Add repo form: pristine/dirty/validating/submitting states
   - Terminal button: highlighted when terminal is open
+  - Story view: active when "Story" button selected in header
+  - Script textarea: editable/read-only, shows broken code initially
+  - Correct answer: hidden/shown toggle state
+  - Story progress: persistent across sessions via useKV
+  - Choice buttons: enabled/disabled, hover with gradient intensification
+  - Scene transitions: enter/exit animations with motion.div
 - **Icon Selection**: 
   - Brain icon (phosphor) for mongoose.os
   - Atom icon for quantum components
@@ -418,13 +484,18 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Lightning for commit frequency metric
   - TrendUp for activity trends
   - Info for informational alerts
-  - XCircle for critical alerts
+  - XCircle for critical alerts and script errors
+  - CheckCircle for successful corrections and good outcomes
   - Terminal for terminal chat interface
   - Plus for adding new repositories
   - PaperPlaneRight for sending terminal messages
   - Robot for AI assistant messages
   - User for user messages in chat
   - Sparkle for preview indicators
+  - FilmStrip for Creepshow story mode and scene indicators
+  - Skull for bad/death endings
+  - ArrowRight for story choice navigation
+  - ArrowCounterClockwise for restart story button
 - **Spacing**: 
   - Card grid: gap-6 for desktop, gap-4 for mobile
   - Card padding: p-6 for consistent internal spacing
@@ -450,3 +521,8 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Add repo dialog adapts to full-screen on mobile devices
   - Terminal and Add Machine buttons stack on very small screens
   - Message bubbles max-width adjusted for mobile readability
+  - Creepshow story full-width on mobile with single column layout
+  - Story stats grid stacks to 2x2 on mobile instead of 4 columns
+  - Script textarea full-width with comfortable height on mobile
+  - Story choice buttons full-width on mobile with clear touch targets
+  - Header view toggle buttons wrap on very small screens with Story button prioritized
