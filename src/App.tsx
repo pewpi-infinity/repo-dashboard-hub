@@ -23,6 +23,7 @@ import { CreepshowStory } from './components/CreepshowStory'
 import { FloatingJukebox } from './components/FloatingJukebox'
 import { MusicLibraryView } from './components/MusicLibraryView'
 import { SilverPriceDisplay } from './components/SilverPriceDisplay'
+import { GlobalMusicPlayer } from './components/GlobalMusicPlayer'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -695,6 +696,8 @@ function App() {
         repoName={brainRepo?.name}
         externalTrack={jukeboxTrack}
       />
+
+      <GlobalMusicPlayer />
     </div>
   )
 }
