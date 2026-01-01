@@ -23,6 +23,7 @@ import { CreepshowStory } from './components/CreepshowStory'
 import { FloatingJukebox } from './components/FloatingJukebox'
 import { MusicLibraryView } from './components/MusicLibraryView'
 import { SilverPriceDisplay } from './components/SilverPriceDisplay'
+import { CryptoPriceTracker } from './components/CryptoPriceTracker'
 import { GlobalMusicPlayer } from './components/GlobalMusicPlayer'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
@@ -33,7 +34,7 @@ import { addCategories } from './lib/repo-utils'
 import { calculateHealthMetrics, type HealthMetrics, type HealthAlert } from './lib/health-monitor'
 import { repoEmojiMap } from './lib/emoji-legend'
 import type { CategorizedRepo, ComponentCategory } from './lib/types'
-import { ArrowClockwise, Warning, ChartLine, Bell, Plus, Terminal, Atom, Graph, FilmStrip, MusicNotes } from '@phosphor-icons/react'
+import { ArrowClockwise, Warning, ChartLine, Bell, Plus, Terminal, Atom, Graph, FilmStrip, MusicNotes, CurrencyBtc } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
 
@@ -528,10 +529,14 @@ function App() {
                   <DashboardMetrics repos={repos} loading={loading} />
               
               <Tabs defaultValue="repositories" className="mb-8">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="repositories" className="gap-2">
                     <ChartLine size={16} />
                     Repositories
+                  </TabsTrigger>
+                  <TabsTrigger value="crypto" className="gap-2">
+                    <CurrencyBtc size={16} />
+                    Crypto
                   </TabsTrigger>
                   <TabsTrigger value="alerts" className="gap-2">
                     <Bell size={16} />
@@ -652,6 +657,10 @@ function App() {
                       }}
                     />
                   )}
+                </TabsContent>
+
+                <TabsContent value="crypto" className="mt-6">
+                  <CryptoPriceTracker />
                 </TabsContent>
 
                 <TabsContent value="alerts" className="mt-6">
