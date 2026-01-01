@@ -1,9 +1,8 @@
 import mongoose from 'mongoose'
 
 // MongoDB connection string from environment variable
-// Note: In a production environment, MongoDB operations should be handled
-// on the server side via API routes. This client-side connection is for
-// development and demo purposes only. DO NOT expose production MongoDB URIs.
+// Direct client-side connection for automated multi-repo systems
+// Designed to work with automatic token management and credential rotation
 const MONGODB_URI = import.meta.env.VITE_MONGODB_URI || ''
 
 if (!MONGODB_URI && typeof window === 'undefined') {

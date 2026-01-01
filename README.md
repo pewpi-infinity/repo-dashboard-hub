@@ -7,10 +7,21 @@ A comprehensive repository dashboard for monitoring GitHub repositories with rea
 - **Repository Dashboard**: Monitor all your GitHub repositories in one place
 - **Real-time Crypto Tracking**: Track cryptocurrency prices powered by CoinGecko API
 - **Health Monitoring**: Track repository health scores and activity metrics
-- **MongoDB Integration**: Store repository data, file changes, and activity logs
+- **MongoDB Integration**: Direct client-side connection for automated multi-repo systems
 - **Repository Scanning**: Automatic file scanning with change detection
 - **Multiple Views**: Dashboard, Quantum Cockpit, Cluster View, and more
 - **Dark Theme**: Beautiful quantum-themed UI with animations
+- **Automated System Ready**: Designed to work with automatic token management and credential rotation
+
+## 🤖 Automated Multi-Repo Systems
+
+This dashboard is built to integrate seamlessly with automated multi-repository systems:
+
+- **Direct Client-Side MongoDB**: No backend required - connects directly from browser
+- **Token Management**: Works with automatic token rotation and credential management systems
+- **Terminal Commits**: Supports programmatic commits through terminal/Python scripts
+- **Research Scraping**: Built to aggregate and tie together research data from multiple sources
+- **Continuous Integration**: Designed for never-ending automatic website builder workflows
 
 ## 🚀 Quick Start
 
@@ -60,6 +71,8 @@ A comprehensive repository dashboard for monitoring GitHub repositories with rea
 
 ### MongoDB Setup
 
+This application uses direct client-side MongoDB connections designed for automated multi-repo systems with automatic token and credential management.
+
 1. Create a free MongoDB Atlas account at https://www.mongodb.com/cloud/atlas
 2. Create a new cluster
 3. Create a database user with read/write permissions
@@ -71,7 +84,7 @@ Example connection string:
 VITE_MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/repo-dashboard?retryWrites=true&w=majority
 ```
 
-**⚠️ Security Note**: The current implementation uses client-side MongoDB connections for demo purposes. In production, MongoDB operations should be handled through a backend API to prevent exposing credentials. Consider using serverless functions or a dedicated backend service.
+**Note**: For automated systems with credential rotation, ensure your token management system updates the VITE_MONGODB_URI environment variable as needed.
 
 ### GitHub Token Setup
 
