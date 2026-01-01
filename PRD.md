@@ -124,6 +124,27 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Progression**: User selects view mode → Layout switches instantly → Preference persists across sessions → User sees repositories in chosen format
 - **Success criteria**: Both grid and list views display all repository information appropriately, view preference persists using useKV storage
 
+### Emoji-Based Filtering
+- **Functionality**: Interactive emoji filter allowing users to select legend icons to narrow repository display
+- **Purpose**: Enable quick visual filtering based on the emoji legend system
+- **Trigger**: User clicks emoji badges in the emoji filter panel
+- **Progression**: User selects emojis → Repositories filter to show only matching ones → Result count updates → User sees filtered set
+- **Success criteria**: Filtering works across all repo emoji mappings, multiple emojis can be selected, clear filter button resets selection
+
+### Terminal Chat Interface
+- **Functionality**: Interactive AI-powered terminal for chatting with the system and executing commands
+- **Purpose**: Provide a command-line style interface for system interaction, repo creation, and AI assistance
+- **Trigger**: User clicks "Terminal" button in header to show/hide terminal panel
+- **Progression**: User opens terminal → Types commands or messages → System processes input → AI or command handler responds → User sees results in chat history
+- **Success criteria**: Terminal supports slash commands (/help, /create, /status, /repos, /sync), integrates with Spark LLM API for natural language queries, maintains conversation history, shows typing indicators
+
+### Add New Repository
+- **Functionality**: Dialog interface for creating new repositories with metadata and legend integration
+- **Purpose**: Enable users to add new machine components to the quantum system architecture
+- **Trigger**: User clicks "Add Machine" button in header
+- **Progression**: User clicks button → Dialog opens → Fill in name, description, category, emoji → Preview updates → Submit → Repository creation initiated → Success notification shown
+- **Success criteria**: Form validates required fields, supports all component categories, emoji picker with legend options, preview shows how repo will appear, provides clear feedback on submission
+
 ## Edge Case Handling
 - **API Rate Limiting**: Display cached data with a refresh timestamp when GitHub API limits are hit
 - **Missing Repositories**: Show placeholder cards with "Repository private or unavailable" message
@@ -138,6 +159,12 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Health Metrics Failure**: Gracefully handle when individual repo health metrics fail to load, continue monitoring others
 - **No Alerts State**: Show encouraging "all systems healthy" message when no alerts are present
 - **Stale Health Data**: Health metrics refresh on page reload, indicate monitoring is real-time on page load
+- **Terminal Empty Input**: Disable send button when input is empty or only whitespace
+- **Terminal LLM Failure**: Fall back to showing available commands when AI is unavailable
+- **Terminal Command Parsing**: Handle typos in commands gracefully with suggestions
+- **Add Repo Form Validation**: Validate repository name format (kebab-case recommended), prevent duplicate names
+- **Add Repo Without GitHub Auth**: Display informative message that actual GitHub creation requires authentication
+- **Repository Name Conflicts**: Check for existing repository names before allowing creation
 
 ## Design Direction
 The design should evoke a vibrant retro gaming aesthetic with Nintendo-inspired colors, playful emoji system integration, and high-contrast elements against dark backgrounds. The interface should feel like an engaging, colorful command center with personality - combining technical precision with visual delight through bold color choices and emoji-based visual language.
@@ -199,6 +226,9 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Custom HealthOverview for aggregate system health
   - Custom AlertPanel for health alert management
   - Custom LegendPanel for emoji color code display
+  - Custom TerminalChat component for AI-powered command interface
+  - Custom AddRepoDialog for repository creation workflow
+  - Textarea component for multi-line descriptions
 - **Customizations**: 
   - Custom grid layout with CSS Grid for responsive repository cards
   - Custom list layout with compact horizontal repository items
@@ -217,6 +247,10 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Toast notifications for critical health alerts
   - Emoji legend panel displaying color code system with vibrant styling
   - Repository cards with emoji-based visual identification using custom glow effects
+  - Terminal chat with message bubbles, role-based colors, and scrollable history
+  - Add repo dialog with real-time preview and emoji grid selector
+  - Command suggestions and help text in terminal footer
+  - Gradient buttons for primary actions (Add Machine, Send message)
 - **States**: 
   - Cards: default (subtle glow), hover (bright glow + lift), active (pressed state)
   - Stats button: outline style with hover glow effect
@@ -224,6 +258,10 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Modal: open/closed with smooth fade and scale transition
   - Charts: animated entry with smooth curve transitions
   - Loading: skeleton screens for async data fetching
+  - Terminal: open/closed toggle, processing state with pulsing robot icon
+  - Terminal input: enabled/disabled based on processing state
+  - Add repo form: pristine/dirty/validating/submitting states
+  - Terminal button: highlighted when terminal is open
 - **Icon Selection**: 
   - Brain icon (phosphor) for mongoose.os
   - Atom icon for quantum components
@@ -251,6 +289,12 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - TrendUp for activity trends
   - Info for informational alerts
   - XCircle for critical alerts
+  - Terminal for terminal chat interface
+  - Plus for adding new repositories
+  - PaperPlaneRight for sending terminal messages
+  - Robot for AI assistant messages
+  - User for user messages in chat
+  - Sparkle for preview indicators
 - **Spacing**: 
   - Card grid: gap-6 for desktop, gap-4 for mobile
   - Card padding: p-6 for consistent internal spacing
@@ -258,6 +302,9 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Modal content: space-y-6 for vertical rhythm
   - Stats grid: gap-4 for metric cards
   - Container padding: px-4 sm:px-6 lg:px-8 for responsive edge spacing
+  - Terminal message spacing: space-y-4 for conversation flow
+  - Terminal padding: p-4 for comfortable chat interface
+  - Add repo form spacing: space-y-6 for clear section separation
 - **Mobile**: 
   - Single column card layout on mobile (<768px)
   - Two columns on tablet (768-1024px)
@@ -269,3 +316,7 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Touch-optimized card sizes with minimum 44px touch targets
   - Responsive chart sizing with proper aspect ratios
   - View toggle visible on all screen sizes with responsive label visibility
+  - Terminal chat full-width on mobile with fixed height and scrolling
+  - Add repo dialog adapts to full-screen on mobile devices
+  - Terminal and Add Machine buttons stack on very small screens
+  - Message bubbles max-width adjusted for mobile readability

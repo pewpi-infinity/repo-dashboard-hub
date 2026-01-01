@@ -14,6 +14,8 @@ import { RecentActivity } from './components/RecentActivity'
 import { HealthOverview } from './components/HealthOverview'
 import { AlertPanel } from './components/AlertPanel'
 import { LegendPanel } from './components/LegendPanel'
+import { TerminalChat } from './components/TerminalChat'
+import { AddRepoDialog } from './components/AddRepoDialog'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -23,7 +25,7 @@ import { addCategories } from './lib/repo-utils'
 import { calculateHealthMetrics, type HealthMetrics, type HealthAlert } from './lib/health-monitor'
 import { repoEmojiMap } from './lib/emoji-legend'
 import type { CategorizedRepo, ComponentCategory } from './lib/types'
-import { ArrowClockwise, Warning, ChartLine, Bell } from '@phosphor-icons/react'
+import { ArrowClockwise, Warning, ChartLine, Bell, Plus, Terminal } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
 
@@ -44,6 +46,8 @@ function App() {
   const [healthMetrics, setHealthMetrics] = useState<Map<string, HealthMetrics>>(new Map())
   const [monitoringEnabled, setMonitoringEnabled] = useState(true)
   const [selectedEmojis, setSelectedEmojis] = useState<string[]>([])
+  const [addRepoDialogOpen, setAddRepoDialogOpen] = useState(false)
+  const [showTerminal, setShowTerminal] = useState(false)
 
   const currentViewMode: ViewMode = viewMode || 'grid'
 
@@ -110,6 +114,21 @@ function App() {
 
   const handleClearEmojiFilter = () => {
     setSelectedEmojis([])
+  }
+
+  const handleAddRepo = async (repoData: {
+    name: string
+    description: string
+    category: ComponentCategory
+    emoji: string
+    isPrivate: boolean
+  }) => {
+    toast.success(`🎉 Repository "${repoData.name}" will be created on GitHub!`, {
+      description: 'Note: Actual GitHub API creation requires authentication. For now, this is a preview.',
+      duration: 5000
+    })
+    
+    console.log('Create repo with data:', repoData)
   }
 
   useEffect(() => {
@@ -213,16 +232,36 @@ function App() {
                   <span className="text-gold">👑</span> Pewpi Infinity Quantum Computing & Time Machine System
                 </p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={loadRepositories}
-                disabled={loading}
-                className="gap-2 hover:bg-accent/10 hover:border-accent hover:text-accent"
-              >
-                <ArrowClockwise className={loading ? 'animate-spin' : ''} size={16} />
-                Refresh
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowTerminal(!showTerminal)}
+                  className="gap-2 hover:bg-primary/10 hover:border-primary hover:text-primary"
+                >
+                  <Terminal className={showTerminal ? 'text-accent' : ''} size={16} />
+                  Terminal
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => setAddRepoDialogOpen(true)}
+                  className="gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                >
+                  <Plus size={16} weight="bold" />
+                  Add Machine
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={loadRepositories}
+                  disabled={loading}
+                  className="gap-2 hover:bg-accent/10 hover:border-accent hover:text-accent"
+                >
+                  <ArrowClockwise className={loading ? 'animate-spin' : ''} size={16} />
+                  Refresh
+                </Button>
+              </div>
             </div>
           </div>
         </header>
@@ -248,7 +287,12 @@ function App() {
               {repos.length > 0 && <RecentActivity repos={repos} />}
             </div>
 
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 space-y-6">
+              {showTerminal && (
+                <TerminalChat repos={repos} onCreateRepo={handleAddRepo} />
+              )}
+              
+              <div>
               {loading ? (
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -411,6 +455,7 @@ function App() {
               </Tabs>
             </>
           )}
+              </div>
             </div>
           </div>
         </main>
@@ -432,6 +477,12 @@ function App() {
         repo={selectedRepo}
         open={statsDialogOpen}
         onOpenChange={setStatsDialogOpen}
+      />
+
+      <AddRepoDialog
+        open={addRepoDialogOpen}
+        onOpenChange={setAddRepoDialogOpen}
+        onAdd={handleAddRepo}
       />
     </div>
   )
