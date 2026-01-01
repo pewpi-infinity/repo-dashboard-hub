@@ -94,12 +94,25 @@
   }
 }
 
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .pulse-glow {
   animation: pulse-glow 3s ease-in-out infinite;
 }
 
 .float-animation {
   animation: float 6s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
 }
 
 .circuit-bg {

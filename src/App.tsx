@@ -5,6 +5,11 @@ import { CategoryFilter } from './components/CategoryFilter'
 import { RepoStatsDialog } from './components/RepoStatsDialog'
 import { SearchSort } from './components/SearchSort'
 import { ViewToggle, type ViewMode } from './components/ViewToggle'
+import { DashboardMetrics } from './components/DashboardMetrics'
+import { EmptyState } from './components/EmptyState'
+import { SystemStatus } from './components/SystemStatus'
+import { QuickLinks } from './components/QuickLinks'
+import { RecentActivity } from './components/RecentActivity'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -150,21 +155,43 @@ function App() {
             </Alert>
           )}
 
-          {loading ? (
-            <div className="space-y-6">
-              <div className="flex flex-wrap gap-2">
-                {[...Array(6)].map((_, i) => (
-                  <Skeleton key={i} className="h-9 w-32" />
-                ))}
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <Skeleton key={i} className="h-64 rounded-xl" />
-                ))}
-              </div>
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="lg:w-64 flex-shrink-0 space-y-4">
+              <SystemStatus repoCount={repos.length} isLoading={loading} />
+              <QuickLinks />
+              {repos.length > 0 && <RecentActivity repos={repos} />}
             </div>
-          ) : (
-            <>
+
+            <div className="flex-1 min-w-0">
+              {loading ? (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                      <Skeleton key={i} className="h-32 rounded-xl" />
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {[...Array(2)].map((_, i) => (
+                      <Skeleton key={i} className="h-64 rounded-xl" />
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {[...Array(6)].map((_, i) => (
+                      <Skeleton key={i} className="h-9 w-32" />
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[...Array(6)].map((_, i) => (
+                      <Skeleton key={i} className="h-64 rounded-xl" />
+                    ))}
+                  </div>
+                </div>
+              ) : repos.length === 0 ? (
+                <EmptyState hasSearchQuery={false} />
+              ) : (
+                <>
+                  <DashboardMetrics repos={repos} loading={loading} />
+              
               <div className="mb-8 space-y-4">
                 <CategoryFilter
                   activeCategory={activeCategory}
@@ -233,17 +260,19 @@ function App() {
                   )}
                 </section>
               ) : (
-                <Alert className="bg-card/50 border-border/50">
-                  <AlertDescription>
-                    {searchQuery 
-                      ? `No repositories match "${searchQuery}". Try a different search term.`
-                      : 'No repositories found in this category.'
-                    }
-                  </AlertDescription>
-                </Alert>
+                <EmptyState 
+                  hasSearchQuery={!!searchQuery}
+                  searchQuery={searchQuery}
+                  onReset={() => {
+                    setSearchQuery('')
+                    setActiveCategory('all')
+                  }}
+                />
               )}
             </>
           )}
+            </div>
+          </div>
         </main>
 
         <footer className="border-t border-border/50 mt-16 py-6 backdrop-blur-sm bg-background/80">
