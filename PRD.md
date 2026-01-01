@@ -89,6 +89,48 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Progression**: User locks slot → That repo stays fixed → Other unlocked slots continue rotating → Scaffolding shows locked status
 - **Success criteria**: Lock persists during rotation, locked dots have gold lock icon, locked slots shown in scaffolding, up to 4 slots can be locked simultaneously
 
+### Cluster Grouping System
+- **Functionality**: Intelligent clustering of repositories into coordinated groups based on category, language, activity, or custom rules with visual connections showing relationships
+- **Purpose**: Organize repos into meaningful groups that can be viewed as coordinated units, revealing system architecture and relationships
+- **Trigger**: User switches to Cluster View via Clusters button in header
+- **Progression**: User activates Clusters → System analyzes repos → Creates cluster groups → Positions clusters in orbital pattern → Shows inter-cluster connections → User explores groups → Clicks clusters or individual repos for details
+- **Success criteria**: Multiple clusters visible simultaneously, repos positioned within their cluster using formation patterns, cluster connections shown with animated data flow, smooth transitions between formations
+
+### Cluster Formation Types
+- **Functionality**: Multiple formation algorithms (Category, Language, Activity, Custom, Auto) that organize repos differently
+- **Purpose**: Provide different perspectives on repo organization matching user mental models
+- **Trigger**: User selects formation type from sidebar buttons
+- **Progression**: User clicks formation button → System recalculates clusters → Repos reorganize → New connections computed → Display updates smoothly
+- **Success criteria**: 5 formation types available (Category groups by brain/quantum/time/os, Language groups by programming language, Activity groups by update recency, Custom groups by legend/emoji/stars, Auto adapts to repo count), smooth transitions between formations
+
+### Cluster Positioning & Layout
+- **Functionality**: Clusters positioned in orbital pattern around screen center with repos arranged internally using circle/line/grid/spiral formations
+- **Purpose**: Create clear visual hierarchy with clusters as primary units and repos as secondary elements
+- **Trigger**: Automatic after cluster creation
+- **Progression**: Calculate cluster positions → Distribute around center → For each cluster, arrange repos using formation → Apply rotation → Render with animations
+- **Success criteria**: Clusters evenly distributed in circle pattern, repos positioned within cluster boundaries, formations adapt to repo count (≤4 circle, ≤9 grid, >9 spiral), smooth rotation animations
+
+### Inter-Cluster Connections
+- **Functionality**: Visual connections between related clusters with animated data flow pulses showing relationships
+- **Purpose**: Show how clusters relate through shared topics, languages, or categories
+- **Trigger**: Automatic connection discovery based on repo metadata
+- **Progression**: System analyzes clusters → Finds shared properties → Calculates connection strength → Draws connections with blended colors → Animates data pulses
+- **Success criteria**: Connections shown between related clusters, line opacity reflects connection strength, animated pulses flow between clusters, connection color blends both cluster colors
+
+### Cluster Statistics
+- **Functionality**: Detailed cluster statistics showing repo count, total stars, languages, last update, and activity status
+- **Purpose**: Provide aggregate metrics for entire cluster groups
+- **Trigger**: User clicks on cluster area (not individual repo)
+- **Progression**: User selects cluster → Stats panel appears → Shows cluster name, emoji, repo count → Displays total/average stars → Lists languages → Shows activity status
+- **Success criteria**: Stats panel shows on cluster selection, accurate aggregate calculations, active status based on 30-day threshold, language count displayed
+
+### Cluster Visual Effects
+- **Functionality**: Multi-layer glow effects, pulsing animations, rotating energy markers, and labeled overlays
+- **Purpose**: Create rich visual representation distinguishing clusters from individual repos
+- **Trigger**: Automatic during rendering
+- **Progression**: Draw outer glow → Inner glow gradient → Cluster boundary → Rotating energy markers → Emoji center → Name label → Stats label
+- **Success criteria**: Distinct glow for each cluster color, pulse animation synchronized, 6 rotating markers around boundary, cluster name and stats clearly readable, selected cluster highlighted
+
 ### Intelligent Rotation System
 - **Functionality**: Automatic cycling through repos with adjustable speed, respecting locked slots
 - **Purpose**: Show all repos over time without performance degradation

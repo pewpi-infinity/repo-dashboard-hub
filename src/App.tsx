@@ -18,6 +18,7 @@ import { TerminalChat } from './components/TerminalChat'
 import { AddRepoDialog } from './components/AddRepoDialog'
 import { GitHubAuth } from './components/GitHubAuth'
 import { QuantumCockpit } from './components/QuantumCockpit'
+import { ClusterView } from './components/ClusterView'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -27,7 +28,7 @@ import { addCategories } from './lib/repo-utils'
 import { calculateHealthMetrics, type HealthMetrics, type HealthAlert } from './lib/health-monitor'
 import { repoEmojiMap } from './lib/emoji-legend'
 import type { CategorizedRepo, ComponentCategory } from './lib/types'
-import { ArrowClockwise, Warning, ChartLine, Bell, Plus, Terminal, Atom } from '@phosphor-icons/react'
+import { ArrowClockwise, Warning, ChartLine, Bell, Plus, Terminal, Atom, Graph } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
 
@@ -51,7 +52,7 @@ function App() {
   const [addRepoDialogOpen, setAddRepoDialogOpen] = useState(false)
   const [showTerminal, setShowTerminal] = useState(false)
   const [githubAuthenticated, setGithubAuthenticated] = useState(false)
-  const [currentView, setCurrentView] = useKV<'dashboard' | 'quantum'>('current-view', 'dashboard')
+  const [currentView, setCurrentView] = useKV<'dashboard' | 'quantum' | 'clusters'>('current-view', 'dashboard')
 
   const currentViewMode: ViewMode = viewMode || 'grid'
 
@@ -261,11 +262,13 @@ function App() {
                   className="text-3xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-yellow via-accent to-pink bg-clip-text text-transparent"
                   style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: '0.02em' }}
                 >
-                  {currentView === 'quantum' ? '🪐 /K QUANTUM COCKPIT' : '🎮 AC DASHBOARD'}
+                  {currentView === 'quantum' ? '🪐 /K QUANTUM COCKPIT' : currentView === 'clusters' ? '🎯 CLUSTER GROUPING' : '🎮 AC DASHBOARD'}
                 </h1>
                 <p className="text-sm text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                   {currentView === 'quantum' ? (
                     <><span className="text-purple">🪐</span> Real-time System Coordination & Neural Learning Visualization</>
+                  ) : currentView === 'clusters' ? (
+                    <><span className="text-purple">🎯</span> Intelligent Cluster Formation & Group Coordination</>
                   ) : (
                     <><span className="text-gold">👑</span> Pewpi Infinity Quantum Computing & Time Machine System</>
                   )}
@@ -275,7 +278,7 @@ function App() {
                 <Button
                   variant={currentView === 'quantum' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setCurrentView(currentView === 'quantum' ? 'dashboard' : 'quantum')}
+                  onClick={() => setCurrentView('quantum')}
                   className={`gap-2 transition-all ${
                     currentView === 'quantum' 
                       ? 'bg-gradient-to-r from-purple to-pink hover:from-purple/90 hover:to-pink/90 shadow-lg shadow-purple/30' 
@@ -284,6 +287,32 @@ function App() {
                 >
                   <Atom className={currentView === 'quantum' ? '' : ''} size={16} weight="fill" />
                   <span className="font-mono font-bold">/K</span>
+                </Button>
+                <Button
+                  variant={currentView === 'clusters' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setCurrentView('clusters')}
+                  className={`gap-2 transition-all ${
+                    currentView === 'clusters' 
+                      ? 'bg-gradient-to-r from-accent to-blue hover:from-accent/90 hover:to-blue/90 shadow-lg shadow-accent/30' 
+                      : 'hover:bg-accent/10 hover:border-accent hover:text-accent'
+                  }`}
+                >
+                  <Graph className={currentView === 'clusters' ? '' : ''} size={16} weight="fill" />
+                  <span className="font-mono font-bold">Clusters</span>
+                </Button>
+                <Button
+                  variant={currentView === 'dashboard' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setCurrentView('dashboard')}
+                  className={`gap-2 transition-all ${
+                    currentView === 'dashboard' 
+                      ? 'bg-gradient-to-r from-gold to-yellow hover:from-gold/90 hover:to-yellow/90 shadow-lg shadow-gold/30' 
+                      : 'hover:bg-gold/10 hover:border-gold hover:text-gold'
+                  }`}
+                >
+                  <ChartLine className={currentView === 'dashboard' ? '' : ''} size={16} weight="fill" />
+                  <span className="font-mono font-bold">Dashboard</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -346,6 +375,31 @@ function App() {
                   <EmptyState hasSearchQuery={false} />
                 ) : (
                   <QuantumCockpit 
+                    repos={repos} 
+                    healthMetrics={healthMetrics}
+                    onRepoClick={handleShowStats}
+                  />
+                )}
+              </div>
+            </div>
+          ) : currentView === 'clusters' ? (
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="lg:w-64 flex-shrink-0 space-y-4">
+                <GitHubAuth onAuthChange={setGithubAuthenticated} />
+                <SystemStatus repoCount={repos.length} isLoading={loading} />
+                {healthMetrics.size > 0 && (
+                  <HealthOverview allMetrics={healthMetrics} />
+                )}
+                <LegendPanel />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                {loading ? (
+                  <Skeleton className="h-[600px] rounded-xl" />
+                ) : repos.length === 0 ? (
+                  <EmptyState hasSearchQuery={false} />
+                ) : (
+                  <ClusterView 
                     repos={repos} 
                     healthMetrics={healthMetrics}
                     onRepoClick={handleShowStats}
