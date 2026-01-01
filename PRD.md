@@ -47,12 +47,43 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Progression**: Fetch repo stats → Calculate activity → Display indicators → User sees health
 - **Success criteria**: Each repository shows last update time and activity status
 
+### Real-Time Repository Statistics
+- **Functionality**: Interactive statistics modal showing detailed repository metrics
+- **Purpose**: Provide deep insights into repository health, activity, and contributor engagement
+- **Trigger**: User clicks "Stats" button on any repository card
+- **Progression**: User clicks Stats → Modal opens → Fetch detailed stats from GitHub API → Display visualizations → User explores metrics
+- **Success criteria**: Modal displays commit activity chart, top contributors, language breakdown, and key statistics (stars, forks, issues)
+
+### Commit Activity Visualization
+- **Functionality**: Interactive area chart showing 12-week commit history
+- **Purpose**: Visualize repository activity trends over time
+- **Trigger**: Displayed in statistics modal
+- **Progression**: Fetch commit data → Process weekly totals → Render area chart → User sees trends
+- **Success criteria**: Chart displays accurate weekly commit counts with smooth animations and interactive tooltips
+
+### Contributors Display
+- **Functionality**: Ranked list of top contributors with avatars and commit counts
+- **Purpose**: Highlight team members driving repository development
+- **Trigger**: Displayed in statistics modal
+- **Progression**: Fetch contributors → Sort by contributions → Display with avatars → User can click to view profiles
+- **Success criteria**: Shows top contributors with clickable GitHub profile links
+
+### Language Statistics
+- **Functionality**: Visual breakdown of programming languages used in repository
+- **Purpose**: Show technical composition of each component
+- **Trigger**: Displayed in statistics modal
+- **Progression**: Fetch language data → Calculate percentages → Display with progress bars → User understands codebase
+- **Success criteria**: Displays language distribution with color-coded bars and accurate percentages
+
 ## Edge Case Handling
 - **API Rate Limiting**: Display cached data with a refresh timestamp when GitHub API limits are hit
 - **Missing Repositories**: Show placeholder cards with "Repository private or unavailable" message
 - **Network Failure**: Display graceful offline message with last cached data if available
 - **Empty Organization**: Show onboarding message if no repositories are found
 - **Long Repository Names**: Truncate with ellipsis and show full name in tooltip
+- **Stats Loading Delay**: GitHub stats API returns 202 status while computing - show loading skeleton until ready
+- **No Commit Activity**: Display friendly message when repository has no commit history
+- **Private Contributors**: Handle cases where contributor data is restricted
 
 ## Design Direction
 The design should evoke a high-tech quantum computing interface with neural network aesthetics - think glowing connections, circuit board patterns, and time-space distortion effects. The interface should feel like controlling an advanced scientific instrument.
@@ -85,19 +116,29 @@ Animations should reinforce the quantum computing theme with subtle particle eff
 - **Components**: 
   - Card component for repository display with custom hover effects
   - Badge component for status indicators and categories
-  - Tabs component for filtering between component types
+  - Button component for stats triggers and navigation
+  - Dialog component for detailed repository statistics modal
   - Tooltip component for displaying full repository information
   - Skeleton component for loading states
-  - Dialog component for detailed repository information
+  - Avatar component for contributor profiles
+  - Progress component for language statistics visualization
+  - Recharts AreaChart for commit activity trends
+  - Alert component for error states
 - **Customizations**: 
   - Custom grid layout with CSS Grid for responsive repository cards
   - Animated background with SVG patterns simulating circuit boards and neural connections
   - Custom repository card with glowing border effects using box-shadow
   - mongoose.os special card with pulsing animation and distinctive styling
+  - Full-screen statistics modal with glassmorphic backdrop
+  - Interactive area chart with custom color gradients matching theme
+  - Contributor cards with hover effects and click-to-profile functionality
 - **States**: 
   - Cards: default (subtle glow), hover (bright glow + lift), active (pressed state)
+  - Stats button: outline style with hover glow effect
   - Badges: multiple color variants for different repository categories
-  - Buttons: ghost style for filters with active state highlighting
+  - Modal: open/closed with smooth fade and scale transition
+  - Charts: animated entry with smooth curve transitions
+  - Loading: skeleton screens for async data fetching
 - **Icon Selection**: 
   - Brain icon (phosphor) for mongoose.os
   - Atom icon for quantum components
@@ -105,14 +146,27 @@ Animations should reinforce the quantum computing theme with subtle particle eff
   - Gear for operating system
   - ArrowSquareOut for external links
   - GitBranch for repository indicators
+  - GitCommit for commit activity
+  - ChartLine for statistics trigger
+  - Users for contributors
+  - Code for programming languages
+  - Star for stargazers
+  - Eye for watchers
+  - Warning for issues
+  - FileCode for repository size
 - **Spacing**: 
   - Card grid: gap-6 for desktop, gap-4 for mobile
   - Card padding: p-6 for consistent internal spacing
   - Section margins: mb-8 between major sections
+  - Modal content: space-y-6 for vertical rhythm
+  - Stats grid: gap-4 for metric cards
   - Container padding: px-4 sm:px-6 lg:px-8 for responsive edge spacing
 - **Mobile**: 
   - Single column card layout on mobile (<768px)
   - Two columns on tablet (768-1024px)
   - Three to four columns on desktop (>1024px)
+  - Full-width modal on mobile with scrollable content
+  - Stats grid adapts to 2 columns on mobile, 5 on desktop
   - Collapsible filter tabs on mobile with hamburger-style menu
   - Touch-optimized card sizes with minimum 44px touch targets
+  - Responsive chart sizing with proper aspect ratios

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { RepositoryCard } from './components/RepositoryCard'
 import { CategoryFilter } from './components/CategoryFilter'
+import { RepoStatsDialog } from './components/RepoStatsDialog'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -15,6 +16,8 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<ComponentCategory | 'all'>('all')
+  const [selectedRepo, setSelectedRepo] = useState<CategorizedRepo | null>(null)
+  const [statsDialogOpen, setStatsDialogOpen] = useState(false)
 
   const loadRepositories = async () => {
     setLoading(true)
@@ -32,6 +35,11 @@ function App() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleShowStats = (repo: CategorizedRepo) => {
+    setSelectedRepo(repo)
+    setStatsDialogOpen(true)
   }
 
   useEffect(() => {
@@ -126,7 +134,7 @@ function App() {
                     Neural Core System
                   </h2>
                   <div className="max-w-2xl">
-                    <RepositoryCard repo={brainRepo} isBrain />
+                    <RepositoryCard repo={brainRepo} isBrain onShowStats={handleShowStats} />
                   </div>
                 </section>
               )}
@@ -141,7 +149,7 @@ function App() {
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {otherRepos.map(repo => (
-                      <RepositoryCard key={repo.id} repo={repo} />
+                      <RepositoryCard key={repo.id} repo={repo} onShowStats={handleShowStats} />
                     ))}
                   </div>
                 </section>
@@ -164,6 +172,12 @@ function App() {
           </div>
         </footer>
       </div>
+
+      <RepoStatsDialog
+        repo={selectedRepo}
+        open={statsDialogOpen}
+        onOpenChange={setStatsDialogOpen}
+      />
     </div>
   )
 }

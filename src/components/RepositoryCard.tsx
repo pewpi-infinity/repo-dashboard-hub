@@ -1,6 +1,7 @@
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ArrowSquareOut, GitBranch, Star } from '@phosphor-icons/react'
+import { Button } from '@/components/ui/button'
+import { ArrowSquareOut, GitBranch, Star, ChartLine } from '@phosphor-icons/react'
 import type { CategorizedRepo } from '@/lib/types'
 import { getCategoryLabel, getCategoryColor, getRelativeTime } from '@/lib/repo-utils'
 import { cn } from '@/lib/utils'
@@ -9,9 +10,10 @@ import * as Icons from '@phosphor-icons/react'
 interface RepositoryCardProps {
   repo: CategorizedRepo
   isBrain?: boolean
+  onShowStats?: (repo: CategorizedRepo) => void
 }
 
-export function RepositoryCard({ repo, isBrain = false }: RepositoryCardProps) {
+export function RepositoryCard({ repo, isBrain = false, onShowStats }: RepositoryCardProps) {
   const categoryLabel = getCategoryLabel(repo.category)
   const categoryColor = getCategoryColor(repo.category)
   const lastUpdate = getRelativeTime(repo.updated_at)
@@ -30,12 +32,15 @@ export function RepositoryCard({ repo, isBrain = false }: RepositoryCardProps) {
     window.open(repo.html_url, '_blank', 'noopener,noreferrer')
   }
 
+  const handleStatsClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onShowStats?.(repo)
+  }
+
   return (
     <Card
-      onClick={handleClick}
       className={cn(
-        'group relative overflow-hidden cursor-pointer transition-all duration-300',
-        'hover:scale-105 hover:-translate-y-2',
+        'group relative overflow-hidden transition-all duration-300',
         isBrain 
           ? 'glow-border-accent pulse-glow float-animation bg-gradient-to-br from-accent/10 to-card' 
           : 'glow-border hover:glow-border-accent bg-card/80 backdrop-blur-sm'
@@ -43,7 +48,10 @@ export function RepositoryCard({ repo, isBrain = false }: RepositoryCardProps) {
     >
       <div className="p-6 space-y-4">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div 
+            onClick={handleClick}
+            className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
+          >
             <div className={cn(
               'flex-shrink-0 p-2 rounded-lg',
               isBrain ? 'bg-accent/20' : 'bg-primary/20'
@@ -65,10 +73,25 @@ export function RepositoryCard({ repo, isBrain = false }: RepositoryCardProps) {
               )}
             </div>
           </div>
-          <ArrowSquareOut 
-            className="flex-shrink-0 text-muted-foreground group-hover:text-accent transition-colors" 
-            size={20}
-          />
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleStatsClick}
+              className="gap-1.5 h-8 px-3 hover:bg-accent/10 hover:border-accent hover:text-accent"
+            >
+              <ChartLine size={16} weight="duotone" />
+              <span className="hidden sm:inline">Stats</span>
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={handleClick}
+              className="h-8 w-8 hover:text-accent"
+            >
+              <ArrowSquareOut size={20} />
+            </Button>
+          </div>
         </div>
 
         <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
