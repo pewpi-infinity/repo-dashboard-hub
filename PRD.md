@@ -75,6 +75,20 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Progression**: Fetch language data → Calculate percentages → Display with progress bars → User understands codebase
 - **Success criteria**: Displays language distribution with color-coded bars and accurate percentages
 
+### Search and Filter Repositories
+- **Functionality**: Real-time text search across repository names, descriptions, and topics with instant results
+- **Purpose**: Help users quickly locate specific components in the quantum system
+- **Trigger**: User types in search input field
+- **Progression**: User enters text → Filter repositories in real-time → Display matching results → Show result count
+- **Success criteria**: Search filters across name, description, and topics fields with accurate result count display
+
+### Sort Repositories
+- **Functionality**: Sort repositories by name, last updated date, star count, or programming language
+- **Purpose**: Allow users to organize components by different criteria for better discovery
+- **Trigger**: User selects sort option from dropdown or toggles sort direction
+- **Progression**: User selects sort criteria → Choose ascending/descending → Repositories reorder → User sees sorted list
+- **Success criteria**: Repositories sort correctly by selected field with visual indication of sort direction (arrow icon)
+
 ## Edge Case Handling
 - **API Rate Limiting**: Display cached data with a refresh timestamp when GitHub API limits are hit
 - **Missing Repositories**: Show placeholder cards with "Repository private or unavailable" message
@@ -84,6 +98,8 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Stats Loading Delay**: GitHub stats API returns 202 status while computing - show loading skeleton until ready
 - **No Commit Activity**: Display friendly message when repository has no commit history
 - **Private Contributors**: Handle cases where contributor data is restricted
+- **No Search Results**: Display friendly message when search query returns no matching repositories
+- **Sort with Empty Fields**: Handle repositories with missing data (null language, no stars) by placing them at the end of sorted lists
 
 ## Design Direction
 The design should evoke a high-tech quantum computing interface with neural network aesthetics - think glowing connections, circuit board patterns, and time-space distortion effects. The interface should feel like controlling an advanced scientific instrument.
@@ -124,6 +140,8 @@ Animations should reinforce the quantum computing theme with subtle particle eff
   - Progress component for language statistics visualization
   - Recharts AreaChart for commit activity trends
   - Alert component for error states
+  - Input component for search functionality with icon prefix
+  - Select component for sort options dropdown
 - **Customizations**: 
   - Custom grid layout with CSS Grid for responsive repository cards
   - Animated background with SVG patterns simulating circuit boards and neural connections
@@ -154,6 +172,8 @@ Animations should reinforce the quantum computing theme with subtle particle eff
   - Eye for watchers
   - Warning for issues
   - FileCode for repository size
+  - MagnifyingGlass for search input
+  - ArrowUp/ArrowDown for sort direction toggle
 - **Spacing**: 
   - Card grid: gap-6 for desktop, gap-4 for mobile
   - Card padding: p-6 for consistent internal spacing

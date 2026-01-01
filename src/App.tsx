@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { RepositoryCard } from './components/RepositoryCard'
 import { CategoryFilter } from './components/CategoryFilter'
 import { RepoStatsDialog } from './components/RepoStatsDialog'
+import { SearchSort } from './components/SearchSort'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -11,6 +12,9 @@ import type { CategorizedRepo, ComponentCategory } from './lib/types'
 import { ArrowClockwise, Warning } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
+export type SortOption = 'name' | 'updated' | 'stars' | 'language'
+export type SortDirection = 'asc' | 'desc'
+
 function App() {
   const [repos, setRepos] = useState<CategorizedRepo[]>([])
   const [loading, setLoading] = useState(true)
@@ -18,6 +22,9 @@ function App() {
   const [activeCategory, setActiveCategory] = useState<ComponentCategory | 'all'>('all')
   const [selectedRepo, setSelectedRepo] = useState<CategorizedRepo | null>(null)
   const [statsDialogOpen, setStatsDialogOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<SortOption>('updated')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
 
   const loadRepositories = async () => {
     setLoading(true)
@@ -46,12 +53,48 @@ function App() {
     loadRepositories()
   }, [])
 
-  const filteredRepos = activeCategory === 'all' 
-    ? repos 
-    : repos.filter(repo => repo.category === activeCategory)
+  const filteredAndSortedRepos = useMemo(() => {
+    let filtered = activeCategory === 'all' 
+      ? repos 
+      : repos.filter(repo => repo.category === activeCategory)
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(repo => 
+        repo.name.toLowerCase().includes(query) ||
+        repo.description?.toLowerCase().includes(query) ||
+        repo.topics.some(topic => topic.toLowerCase().includes(query))
+      )
+    }
+
+    const sorted = [...filtered].sort((a, b) => {
+      let comparison = 0
+      
+      switch (sortBy) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name)
+          break
+        case 'updated':
+          comparison = new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
+          break
+        case 'stars':
+          comparison = a.stargazers_count - b.stargazers_count
+          break
+        case 'language':
+          const langA = a.language || ''
+          const langB = b.language || ''
+          comparison = langA.localeCompare(langB)
+          break
+      }
+      
+      return sortDirection === 'asc' ? comparison : -comparison
+    })
+
+    return sorted
+  }, [repos, activeCategory, searchQuery, sortBy, sortDirection])
 
   const brainRepo = repos.find(repo => repo.name.toLowerCase().includes('mongoose'))
-  const otherRepos = filteredRepos.filter(repo => repo.id !== brainRepo?.id)
+  const otherRepos = filteredAndSortedRepos.filter(repo => repo.id !== brainRepo?.id)
 
   const categoryCounts = repos.reduce((acc, repo) => {
     acc[repo.category] = (acc[repo.category] || 0) + 1
@@ -116,15 +159,26 @@ function App() {
             </div>
           ) : (
             <>
-              <div className="mb-8">
+              <div className="mb-8 space-y-4">
                 <CategoryFilter
                   activeCategory={activeCategory}
                   onCategoryChange={setActiveCategory}
                   counts={categoryCounts}
                 />
+                
+                <SearchSort
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
+                  sortBy={sortBy}
+                  onSortByChange={setSortBy}
+                  sortDirection={sortDirection}
+                  onSortDirectionChange={setSortDirection}
+                  resultCount={filteredAndSortedRepos.length}
+                  totalCount={repos.length}
+                />
               </div>
 
-              {brainRepo && (activeCategory === 'all' || activeCategory === 'brain') && (
+              {brainRepo && (activeCategory === 'all' || activeCategory === 'brain') && !searchQuery && (
                 <section className="mb-12">
                   <h2 
                     className="text-2xl font-semibold mb-6 flex items-center gap-2"
@@ -154,9 +208,12 @@ function App() {
                   </div>
                 </section>
               ) : (
-                <Alert>
+                <Alert className="bg-card/50 border-border/50">
                   <AlertDescription>
-                    No repositories found in this category.
+                    {searchQuery 
+                      ? `No repositories match "${searchQuery}". Try a different search term.`
+                      : 'No repositories found in this category.'
+                    }
                   </AlertDescription>
                 </Alert>
               )}
