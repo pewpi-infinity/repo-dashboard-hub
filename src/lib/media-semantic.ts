@@ -476,6 +476,330 @@ export const musicLibrary: MusicTrack[] = [
     themes: ['journey', 'cosmic', 'underwater', 'communication', 'connection', 'exploration'],
     mood: ['expansive', 'atmospheric', 'mysterious', 'epic', 'transcendent'],
     suggestedRepos: ['legend-🪐-memory', 'legend-🔗-semantic', 'legend-⛓️-chain', 'mongoose.os']
+  },
+  {
+    id: 'the-who-wont-get-fooled',
+    title: "Won't Get Fooled Again",
+    artist: 'The Who',
+    album: "Who's Next",
+    duration: '8:33',
+    url: 'https://archive.org/download/78rpm-won-t-get-fooled-again/Won%27t%20Get%20Fooled%20Again%20-%20The%20Who.mp3',
+    themes: ['revolution', 'authority', 'power', 'deception', 'awakening', 'resistance', 'no-fooling'],
+    mood: ['powerful', 'defiant', 'energetic', 'anthemic', 'epic'],
+    suggestedRepos: ['legend-🍄-auditor', 'legend-👁️-token-viewer', 'legend-core'],
+    lyrics: '🍄 Meet the new boss, same as the old boss - Auditing and verification to prevent deception'
+  },
+  {
+    id: 'boston-more-than-feeling',
+    title: 'More Than a Feeling',
+    artist: 'Boston',
+    album: 'Boston',
+    duration: '4:45',
+    url: 'https://archive.org/download/78_more-than-a-feeling_boston-tom-scholz_gbia0026424a/More%20Than%20A%20Feeling%20-%20Boston-restored.mp3',
+    themes: ['nostalgia', 'memory', 'emotion', 'recall', 'awakening', 'clarity'],
+    mood: ['uplifting', 'nostalgic', 'energetic', 'anthemic', 'powerful'],
+    suggestedRepos: ['legend-🪐-memory', 'mongoose.os', 'legend-⭐-runtime'],
+    lyrics: '🪐 It\'s more than a feeling - Memory systems and emotional recall'
+  },
+  {
+    id: 'the-police-every-breath',
+    title: 'Every Breath You Take',
+    artist: 'The Police',
+    album: 'Synchronicity',
+    duration: '4:13',
+    url: 'https://archive.org/download/78_every-breath-you-take_the-police-sting_gbia0027795a/Every%20Breath%20You%20Take%20-%20The%20Police-restored.mp3',
+    themes: ['watching', 'monitoring', 'observation', 'tracking', 'surveillance', 'attention'],
+    mood: ['haunting', 'persistent', 'watchful', 'intense', 'obsessive'],
+    suggestedRepos: ['legend-👁️-token-viewer', 'legend-🍄-auditor', 'legend-🔗-semantic'],
+    lyrics: '👁️ Every move you make, every step you take - Token viewing and system monitoring'
+  },
+  {
+    id: 'foreigner-urgent',
+    title: 'Urgent',
+    artist: 'Foreigner',
+    album: '4',
+    duration: '4:29',
+    url: 'https://archive.org/download/78_urgent_foreigner-mick-jones_gbia0027673a/Urgent%20-%20Foreigner-restored.mp3',
+    themes: ['urgency', 'priority', 'immediate', 'critical', 'emergency', 'fast'],
+    mood: ['urgent', 'intense', 'driving', 'energetic', 'compelling'],
+    suggestedRepos: ['legend-⚡-fast', 'legend-🔀-flow', 'legend-🦾-robot-core'],
+    lyrics: '⚡ You\'re not shy, you get around - Fast urgent processing and immediate action'
+  },
+  {
+    id: 'journey-dont-stop-believing',
+    title: "Don't Stop Believin'",
+    artist: 'Journey',
+    album: 'Escape',
+    duration: '4:11',
+    url: 'https://archive.org/download/78_dont-stop-believin_journey-jonathan-cain-neal-schon-steve-perry_gbia0026688a/Don%27t%20Stop%20Believin%27%20-%20Journey-restored.mp3',
+    themes: ['hope', 'persistence', 'journey', 'belief', 'determination', 'motivation'],
+    mood: ['uplifting', 'hopeful', 'anthemic', 'inspiring', 'triumphant'],
+    suggestedRepos: ['legend-🔀-flow', 'legend-✨-multistar', 'truvio-studios'],
+    lyrics: '✨ Don\'t stop believin\' - Keep pushing through the journey to create multiple stars'
+  },
+  {
+    id: 'toto-africa',
+    title: 'Africa',
+    artist: 'Toto',
+    album: 'Toto IV',
+    duration: '4:55',
+    url: 'https://archive.org/download/78_africa_toto-david-paich-jeff-porcaro_gbia0026003a/Africa%20-%20Toto-restored.mp3',
+    themes: ['journey', 'distance', 'blessing', 'rain', 'travel', 'longing'],
+    mood: ['nostalgic', 'atmospheric', 'yearning', 'epic', 'majestic'],
+    suggestedRepos: ['legend-🔀-flow', 'legend-🌐-network', 'legend-🪐-memory'],
+    lyrics: '🌐 I bless the rains down in Africa - Global network connections and distant coordination'
+  },
+  {
+    id: 'queen-we-will-rock-you',
+    title: 'We Will Rock You',
+    artist: 'Queen',
+    album: 'News of the World',
+    duration: '2:02',
+    url: 'https://archive.org/download/78_we-will-rock-you_queen-brian-may_gbia0027892a/We%20Will%20Rock%20You%20-%20Queen-restored.mp3',
+    themes: ['power', 'dominance', 'rhythm', 'unity', 'strength', 'anthem'],
+    mood: ['powerful', 'commanding', 'rhythmic', 'defiant', 'anthemic'],
+    suggestedRepos: ['legend-🦾-robot-core', 'legend-core', 'mongoose.os'],
+    lyrics: '🦾 We will, we will rock you - Powerful robot core systems with commanding presence'
+  },
+  {
+    id: 'queen-another-one-bites',
+    title: 'Another One Bites the Dust',
+    artist: 'Queen',
+    album: 'The Game',
+    duration: '3:35',
+    url: 'https://archive.org/download/78_another-one-bites-the-dust_queen-john-deacon_gbia0026129a/Another%20One%20Bites%20The%20Dust%20-%20Queen-restored.mp3',
+    themes: ['rhythm', 'defeat', 'bass', 'funky', 'relentless', 'elimination'],
+    mood: ['groovy', 'funky', 'confident', 'relentless', 'commanding'],
+    suggestedRepos: ['legend-🔀-flow', 'legend-🎛️-modulator', 'legend-🦾-robot-core'],
+    lyrics: '🎛️ Another one bites the dust - Modulating and filtering out problems systematically'
+  },
+  {
+    id: 'styx-mr-roboto',
+    title: 'Mr. Roboto',
+    artist: 'Styx',
+    album: 'Kilroy Was Here',
+    duration: '5:28',
+    url: 'https://archive.org/download/78_mr-roboto_styx-dennis-de-young_gbia0027452a/Mr.%20Roboto%20-%20Styx-restored.mp3',
+    themes: ['robot', 'automation', 'identity', 'machine', 'humanity', 'technology'],
+    mood: ['mechanical', 'theatrical', 'robotic', 'dramatic', 'quirky'],
+    suggestedRepos: ['legend-🦾-robot-core', 'legend-🦿-robot-legs', 'mongoose.os'],
+    lyrics: '🦾 Domo arigato, Mr. Roboto - The quintessential robot machine song'
+  },
+  {
+    id: 'electric-light-orchestra-mr-blue-sky',
+    title: 'Mr. Blue Sky',
+    artist: 'Electric Light Orchestra',
+    album: 'Out of the Blue',
+    duration: '5:03',
+    url: 'https://archive.org/download/78_mr-blue-sky_electric-light-orchestra-jeff-lynne_gbia0027364a/Mr.%20Blue%20Sky%20-%20Electric%20Light%20Orchestra-restored.mp3',
+    themes: ['optimism', 'sunshine', 'happiness', 'sky', 'weather', 'joy'],
+    mood: ['uplifting', 'joyful', 'optimistic', 'energetic', 'bright'],
+    suggestedRepos: ['legend-✨-multistar', 'legend-💫-star', 'truvio-studios'],
+    lyrics: '☀️ Mr. Blue Sky please tell us why - Bright optimistic star generation'
+  },
+  {
+    id: 'the-cars-drive',
+    title: 'Drive',
+    artist: 'The Cars',
+    album: 'Heartbeat City',
+    duration: '3:55',
+    url: 'https://archive.org/download/78_drive_the-cars-ric-ocasek_gbia0026720a/Drive%20-%20The%20Cars-restored.mp3',
+    themes: ['control', 'direction', 'guidance', 'driving', 'navigation', 'steering'],
+    mood: ['melancholic', 'introspective', 'smooth', 'reflective', 'questioning'],
+    suggestedRepos: ['legend-🔀-flow', 'legend-🎛️-modulator', 'legend-🕹️-mario-exit'],
+    lyrics: '🕹️ Who\'s gonna drive you home tonight? - Navigation and directional control'
+  },
+  {
+    id: 'billy-joel-piano-man',
+    title: 'Piano Man',
+    artist: 'Billy Joel',
+    album: 'Piano Man',
+    duration: '5:38',
+    url: 'https://archive.org/download/78_piano-man_billy-joel_gbia0027550a/Piano%20Man%20-%20Billy%20Joel-restored.mp3',
+    themes: ['storytelling', 'memories', 'community', 'gathering', 'music', 'nostalgia'],
+    mood: ['nostalgic', 'storytelling', 'warm', 'melancholic', 'communal'],
+    suggestedRepos: ['legend-🎵-sync', 'truvio-studios', 'mongoose.os'],
+    lyrics: '🎵 Sing us a song, you\'re the piano man - Music synchronization and storytelling'
+  },
+  {
+    id: 'fleetwood-mac-go-your-own-way',
+    title: 'Go Your Own Way',
+    artist: 'Fleetwood Mac',
+    album: 'Rumours',
+    duration: '3:43',
+    url: 'https://archive.org/download/78_go-your-own-way_fleetwood-mac-lindsey-buckingham_gbia0026910a/Go%20Your%20Own%20Way%20-%20Fleetwood%20Mac-restored.mp3',
+    themes: ['independence', 'separation', 'freedom', 'divergence', 'path', 'autonomy'],
+    mood: ['defiant', 'emotional', 'energetic', 'liberating', 'powerful'],
+    suggestedRepos: ['legend-🔀-flow', 'legend-🕹️-mario-exit', 'legend-💲-inject-one'],
+    lyrics: '🕹️ You can go your own way - Branching paths and independent routing'
+  },
+  {
+    id: 'the-beatles-come-together',
+    title: 'Come Together',
+    artist: 'The Beatles',
+    album: 'Abbey Road',
+    duration: '4:20',
+    url: 'https://archive.org/download/78_come-together_the-beatles-john-lennon-paul-mccartney_gbia0026501a/Come%20Together%20-%20The%20Beatles-restored.mp3',
+    themes: ['unity', 'gathering', 'collaboration', 'convergence', 'assembly', 'joining'],
+    mood: ['groovy', 'mysterious', 'hypnotic', 'funky', 'unifying'],
+    suggestedRepos: ['legend-⛓️-chain', 'legend-🔗-semantic', 'legend-spine-index'],
+    lyrics: '⛓️ Come together, right now - Chain linking and semantic connection of components'
+  },
+  {
+    id: 'the-beatles-here-comes-the-sun',
+    title: 'Here Comes the Sun',
+    artist: 'The Beatles',
+    album: 'Abbey Road',
+    duration: '3:05',
+    url: 'https://archive.org/download/78_here-comes-the-sun_the-beatles-george-harrison_gbia0026963a/Here%20Comes%20The%20Sun%20-%20The%20Beatles-restored.mp3',
+    themes: ['hope', 'renewal', 'brightness', 'optimism', 'sunshine', 'emergence'],
+    mood: ['uplifting', 'joyful', 'optimistic', 'bright', 'hopeful'],
+    suggestedRepos: ['legend-💫-star', 'legend-✨-multistar', 'legend-⭐-runtime'],
+    lyrics: '☀️ Here comes the sun - New stars emerging and runtime initialization'
+  },
+  {
+    id: 'david-bowie-starman',
+    title: 'Starman',
+    artist: 'David Bowie',
+    album: 'The Rise and Fall of Ziggy Stardust',
+    duration: '4:10',
+    url: 'https://archive.org/download/78_starman_david-bowie_gbia0029237a/Starman%20-%20David%20Bowie-restored.mp3',
+    themes: ['star', 'cosmic', 'alien', 'communication', 'space', 'hope'],
+    mood: ['cosmic', 'uplifting', 'otherworldly', 'hopeful', 'theatrical'],
+    suggestedRepos: ['legend-💫-star', 'legend-✨-multistar', 'legend-🪐-memory'],
+    lyrics: '⭐ There\'s a starman waiting in the sky - Star systems and cosmic coordination'
+  },
+  {
+    id: 'steve-miller-band-fly-like-eagle',
+    title: 'Fly Like an Eagle',
+    artist: 'Steve Miller Band',
+    album: 'Fly Like an Eagle',
+    duration: '4:42',
+    url: 'https://archive.org/download/78_fly-like-an-eagle_steve-miller-band-steve-miller_gbia0026810a/Fly%20Like%20An%20Eagle%20-%20Steve%20Miller%20Band-restored.mp3',
+    themes: ['freedom', 'flight', 'time', 'transcendence', 'soaring', 'liberation'],
+    mood: ['soaring', 'psychedelic', 'uplifting', 'smooth', 'transcendent'],
+    suggestedRepos: ['legend-🔀-flow', 'legend-⭐-runtime', 'legend-✨-multistar'],
+    lyrics: '🦅 Time keeps on slippin\' into the future - Flow and runtime coordination through time'
+  },
+  {
+    id: 'eagles-hotel-california',
+    title: 'Hotel California',
+    artist: 'Eagles',
+    album: 'Hotel California',
+    duration: '6:30',
+    url: 'https://archive.org/download/78_hotel-california_eagles-don-felder-don-henley-glenn-frey_gbia0026986a/Hotel%20California%20-%20Eagles-restored.mp3',
+    themes: ['mystery', 'entrapment', 'paradise', 'illusion', 'checking-in', 'permanence'],
+    mood: ['mysterious', 'haunting', 'epic', 'atmospheric', 'ominous'],
+    suggestedRepos: ['legend-🪐-memory', 'legend-🎛️-modulator', 'mongoose.os'],
+    lyrics: '🏨 You can check out any time you like, but you can never leave - Memory persistence and data permanence'
+  },
+  {
+    id: 'supertramp-logical-song',
+    title: 'The Logical Song',
+    artist: 'Supertramp',
+    album: 'Breakfast in America',
+    duration: '4:11',
+    url: 'https://archive.org/download/78_the-logical-song_supertramp-rick-davies-roger-hodgson_gbia0027318a/The%20Logical%20Song%20-%20Supertramp-restored.mp3',
+    themes: ['logic', 'reasoning', 'education', 'questioning', 'analysis', 'rational'],
+    mood: ['thoughtful', 'questioning', 'melodic', 'reflective', 'analytical'],
+    suggestedRepos: ['legend-🔗-semantic', 'mongoose.os', 'legend-🍄-auditor'],
+    lyrics: '🧠 Watch what you say or they\'ll be calling you a radical - Logical reasoning and semantic analysis'
+  },
+  {
+    id: 'talking-heads-once-in-lifetime',
+    title: 'Once in a Lifetime',
+    artist: 'Talking Heads',
+    album: 'Remain in Light',
+    duration: '4:20',
+    url: 'https://archive.org/download/78_once-in-a-lifetime_talking-heads-brian-eno-chris-frantz-david-byrne-jerry-harrison_gbia0027511a/Once%20In%20A%20Lifetime%20-%20Talking%20Heads-restored.mp3',
+    themes: ['moment', 'realization', 'questioning', 'existence', 'unique', 'revelation'],
+    mood: ['hypnotic', 'existential', 'rhythmic', 'trance-like', 'contemplative'],
+    suggestedRepos: ['legend-⭐-runtime', 'legend-🪐-memory', 'mongoose.os'],
+    lyrics: '⏰ Same as it ever was - Time loops, runtime cycles, and existential moments'
+  },
+  {
+    id: 'blondie-heart-of-glass',
+    title: 'Heart of Glass',
+    artist: 'Blondie',
+    album: 'Parallel Lines',
+    duration: '5:50',
+    url: 'https://archive.org/download/78_heart-of-glass_blondie-deborah-harry-chris-stein_gbia0026966a/Heart%20Of%20Glass%20-%20Blondie-restored.mp3',
+    themes: ['fragility', 'transparency', 'vulnerability', 'glass', 'breakable', 'clarity'],
+    mood: ['disco', 'melancholic', 'smooth', 'reflective', 'groovy'],
+    suggestedRepos: ['legend-👁️-token-viewer', 'legend-🔗-semantic', 'legend-🍄-auditor'],
+    lyrics: '💎 Heart of glass - Transparent token viewing and clear semantic understanding'
+  },
+  {
+    id: 'devo-whip-it',
+    title: 'Whip It',
+    artist: 'DEVO',
+    album: 'Freedom of Choice',
+    duration: '2:39',
+    url: 'https://archive.org/download/78_whip-it_devo-mark-mothersbaugh-gerald-casale_gbia0027903a/Whip%20It%20-%20DEVO-restored.mp3',
+    themes: ['action', 'discipline', 'correction', 'control', 'motivation', 'drive'],
+    mood: ['energetic', 'quirky', 'driving', 'robotic', 'motivational'],
+    suggestedRepos: ['legend-🎛️-modulator', 'legend-🔀-flow', 'legend-🦾-robot-core'],
+    lyrics: '🎛️ When a problem comes along, you must whip it - Quick modulation and problem resolution'
+  },
+  {
+    id: 'the-doobie-brothers-long-train',
+    title: 'Long Train Runnin\'',
+    artist: 'The Doobie Brothers',
+    album: 'The Captain and Me',
+    duration: '3:28',
+    url: 'https://archive.org/download/78_long-train-runnin_the-doobie-brothers-tom-johnston_gbia0027336a/Long%20Train%20Runnin%27%20-%20The%20Doobie%20Brothers-restored.mp3',
+    themes: ['journey', 'movement', 'continuous', 'train', 'running', 'persistence'],
+    mood: ['groovy', 'driving', 'energetic', 'rhythmic', 'persistent'],
+    suggestedRepos: ['legend-⛓️-chain', 'legend-🔀-flow', 'legend-⭐-runtime'],
+    lyrics: '⛓️ Long train runnin\' - Chain operations and continuous flow processing'
+  },
+  {
+    id: 'led-zeppelin-immigrant-song',
+    title: 'Immigrant Song',
+    artist: 'Led Zeppelin',
+    album: 'Led Zeppelin III',
+    duration: '2:26',
+    url: 'https://archive.org/download/78_immigrant-song_led-zeppelin-jimmy-page-robert-plant_gbia0027067a/Immigrant%20Song%20-%20Led%20Zeppelin-restored.mp3',
+    themes: ['journey', 'migration', 'power', 'vikings', 'conquest', 'arrival'],
+    mood: ['powerful', 'primal', 'urgent', 'epic', 'fierce'],
+    suggestedRepos: ['legend-🔀-flow', 'legend-🦾-robot-core', 'legend-core'],
+    lyrics: '⚔️ We come from the land of the ice and snow - Powerful migration and system deployment'
+  },
+  {
+    id: 'ac-dc-thunderstruck',
+    title: 'Thunderstruck',
+    artist: 'AC/DC',
+    album: 'The Razors Edge',
+    duration: '4:52',
+    url: 'https://archive.org/download/78_thunderstruck_acdc-angus-young-malcolm-young_gbia0027823a/Thunderstruck%20-%20AC-DC-restored.mp3',
+    themes: ['power', 'electricity', 'thunder', 'energy', 'explosive', 'voltage'],
+    mood: ['explosive', 'energetic', 'powerful', 'electrifying', 'intense'],
+    suggestedRepos: ['legend-⚡-fast', 'legend-🦾-robot-core', 'legend-core'],
+    lyrics: '⚡ Thunder! - Raw electrical power and explosive energy systems'
+  },
+  {
+    id: 'grateful-dead-truckin',
+    title: "Truckin'",
+    artist: 'Grateful Dead',
+    album: 'American Beauty',
+    duration: '5:08',
+    url: 'https://archive.org/download/78_truckin_grateful-dead-bob-weir-jerry-garcia-phil-lesh-robert-hunter_gbia0027871a/Truckin%27%20-%20Grateful%20Dead-restored.mp3',
+    themes: ['journey', 'travel', 'persistence', 'trucking', 'long-haul', 'endurance'],
+    mood: ['groovy', 'laid-back', 'persistent', 'storytelling', 'enduring'],
+    suggestedRepos: ['legend-🔀-flow', 'legend-⛓️-chain', 'legend-🪐-memory'],
+    lyrics: '🚚 Truckin\' got my chips cashed in - Long-haul data transport and persistence'
+  },
+  {
+    id: 'jefferson-airplane-white-rabbit',
+    title: 'White Rabbit',
+    artist: 'Jefferson Airplane',
+    album: 'Surrealistic Pillow',
+    duration: '2:31',
+    url: 'https://archive.org/download/78_white-rabbit_jefferson-airplane-grace-slick_gbia0027905a/White%20Rabbit%20-%20Jefferson%20Airplane-restored.mp3',
+    themes: ['rabbit-hole', 'curiosity', 'alice', 'transformation', 'journey', 'wonderland'],
+    mood: ['psychedelic', 'mysterious', 'trippy', 'surreal', 'building'],
+    suggestedRepos: ['legend-🕹️-mario-exit', 'legend-🔀-flow', 'legend-🪐-memory'],
+    lyrics: '🐰 Go ask Alice - Following the rabbit hole through branching paths'
   }
 ]
 
@@ -500,31 +824,63 @@ export function getMusicForRepo(repoName: string): MusicTrack[] {
     }
     
     if (lowerName.includes('multistar') || lowerName.includes('✨')) {
-      return track.id.includes('shine-on')
+      return track.id.includes('shine-on') || track.id === 'electric-light-orchestra-mr-blue-sky' || track.id === 'journey-dont-stop-believing'
+    }
+    
+    if (lowerName.includes('star') || lowerName.includes('💫')) {
+      return track.id.includes('star') || track.id === 'david-bowie-starman' || track.id === 'the-beatles-here-comes-the-sun'
     }
     
     if (lowerName.includes('modulator') || lowerName.includes('🎛️')) {
-      return track.id === 'cheap-trick-one-i-want' || track.id === 'pink-floyd-welcome-machine'
+      return track.id === 'cheap-trick-one-i-want' || track.id === 'pink-floyd-welcome-machine' || track.id === 'devo-whip-it' || track.id === 'queen-another-one-bites'
     }
     
-    if (lowerName.includes('robot') || lowerName.includes('🦾')) {
-      return track.id === 'pink-floyd-welcome-machine' || track.id === 'pink-floyd-on-the-run'
+    if (lowerName.includes('robot') || lowerName.includes('🦾') || lowerName.includes('🦿')) {
+      return track.id === 'styx-mr-roboto' || track.id === 'pink-floyd-welcome-machine' || track.id === 'pink-floyd-on-the-run' || track.id === 'queen-we-will-rock-you'
     }
     
     if (lowerName.includes('time') || lowerName.includes('runtime') || lowerName.includes('⭐')) {
-      return track.id === 'pink-floyd-time'
+      return track.id === 'pink-floyd-time' || track.id === 'steve-miller-band-fly-like-eagle' || track.id === 'talking-heads-once-in-lifetime'
     }
     
     if (lowerName.includes('money') || lowerName.includes('💰') || lowerName.includes('💲') || lowerName.includes('treasury') || lowerName.includes('value')) {
-      return track.id === 'pink-floyd-money'
+      return track.id === 'pink-floyd-money' || track.id === 'eddie-money-take-me-home'
     }
     
     if (lowerName.includes('brain') || lowerName.includes('🧠') || lowerName.includes('mongoose')) {
-      return track.id === 'pink-floyd-brain-damage' || track.id === 'pink-floyd-breathe'
+      return track.id === 'pink-floyd-brain-damage' || track.id === 'pink-floyd-breathe' || track.id === 'supertramp-logical-song' || track.id === 'boston-more-than-feeling'
     }
     
     if (lowerName.includes('core') || lowerName.includes('spine') || lowerName.includes('index')) {
-      return track.id === 'pink-floyd-eclipse' || track.id === 'pink-floyd-speak-to-me'
+      return track.id === 'pink-floyd-eclipse' || track.id === 'pink-floyd-speak-to-me' || track.id === 'queen-we-will-rock-you' || track.id === 'the-beatles-come-together'
+    }
+    
+    if (lowerName.includes('flow') || lowerName.includes('🔀')) {
+      return track.id === 'the-doobie-brothers-long-train' || track.id === 'grateful-dead-truckin' || track.id === 'toto-africa' || track.id === 'steve-miller-band-fly-like-eagle'
+    }
+    
+    if (lowerName.includes('memory') || lowerName.includes('🪐')) {
+      return track.id === 'boston-more-than-feeling' || track.id === 'eagles-hotel-california' || track.id === 'pink-floyd-echoes'
+    }
+    
+    if (lowerName.includes('auditor') || lowerName.includes('🍄') || lowerName.includes('viewer') || lowerName.includes('👁️')) {
+      return track.id === 'the-who-wont-get-fooled' || track.id === 'the-police-every-breath' || track.id === 'blondie-heart-of-glass'
+    }
+    
+    if (lowerName.includes('chain') || lowerName.includes('⛓️') || lowerName.includes('semantic') || lowerName.includes('🔗')) {
+      return track.id === 'the-beatles-come-together' || track.id === 'the-doobie-brothers-long-train' || track.id === 'pink-floyd-echoes'
+    }
+    
+    if (lowerName.includes('mario') || lowerName.includes('exit') || lowerName.includes('🕹️')) {
+      return track.id === 'jefferson-airplane-white-rabbit' || track.id === 'the-cars-drive' || track.id === 'fleetwood-mac-go-your-own-way'
+    }
+    
+    if (lowerName.includes('music') || lowerName.includes('sync') || lowerName.includes('🎵')) {
+      return track.id === 'billy-joel-piano-man' || track.id === 'rush-2112-suite' || track.id.includes('pink-floyd')
+    }
+    
+    if (lowerName.includes('fast') || lowerName.includes('urgent') || lowerName.includes('⚡')) {
+      return track.id === 'foreigner-urgent' || track.id === 'ac-dc-thunderstruck' || track.id === 'led-zeppelin-immigrant-song'
     }
     
     return false
@@ -534,7 +890,8 @@ export function getMusicForRepo(repoName: string): MusicTrack[] {
     return musicLibrary.filter(track => 
       track.id === 'pink-floyd-welcome-machine' || 
       track.id === 'pink-floyd-breathe' ||
-      track.id === 'rush-2112-suite'
+      track.id === 'rush-2112-suite' ||
+      track.id === 'the-beatles-come-together'
     )
   }
   
@@ -575,24 +932,74 @@ SEMANTIC MUSIC SELECTION RULES:
    - Use when: Repo facets/creates OTHER repos or stars from itself
    - Use when: A star that generates multiple other components
    - Keywords: multistar, facet, diamond, shine, generate, create, multiple, spawn
+   - Also: "Don't Stop Believin'" for journey to multistar, "Mr. Blue Sky" for bright star generation
 
-3. 🎛️ MODULATOR (I Want You to Want Me - Cheap Trick):
+3. 🎛️ MODULATOR / FILTER (I Want You to Want Me - Cheap Trick):
    - Use when: Repo filters/modulates/adjusts to solve problems
    - Use when: Moving between machines, problem-solving, coordination
    - Keywords: modulate, filter, adjust, coordinate, move, solve, redirect
+   - Also: "Whip It" for quick fixes, "Another One Bites the Dust" for systematic elimination
 
 4. 🎛️ WELCOME TO MACHINE (Welcome to the Machine - Pink Floyd):
    - Use when: First-time setup, onboarding, system introduction
    - Use when: Core system repos, foundational machines
    - Keywords: welcome, core, system, foundation, entry, introduction
 
-5. DARK SIDE OF THE MOON - Track by semantic need:
-   - "Speak to Me" → initialization, beginning
-   - "Breathe" → life, existence, calm start
-   - "Time" ⭐ → runtime, timing, clocks, scheduling
-   - "Money" 💰 → treasury, value, tokens, payments
-   - "Brain Damage" 🧠 → neural core, learning, cognition
-   - "Eclipse" → completion, unity, finale
+5. 🦾 ROBOT / AUTOMATION (Mr. Roboto - Styx):
+   - Use when: Robot systems, automation, mechanical processes
+   - Keywords: robot, automation, mechanical, machine
+   - Also: "We Will Rock You" for powerful robot cores
+
+6. 👁️ MONITORING / AUDITING (Every Breath You Take - The Police):
+   - Use when: Token viewers, auditors, monitoring systems
+   - Keywords: watch, monitor, audit, observe, track, view
+   - Also: "Won't Get Fooled Again" for audit verification
+
+7. ⭐ RUNTIME / TIME (Time - Pink Floyd):
+   - Use when: Runtime operations, timing, scheduling
+   - Keywords: time, runtime, clock, schedule, timing
+   - Also: "Fly Like an Eagle" for time flow, "Once in a Lifetime" for unique moments
+
+8. 💰 MONEY / TREASURY (Money - Pink Floyd):
+   - Use when: Treasury, value, tokens, financial systems
+   - Keywords: money, treasury, value, token, payment, currency
+
+9. 🧠 BRAIN / LEARNING (Brain Damage - Pink Floyd):
+   - Use when: Neural systems, learning, cognition, intelligence
+   - Keywords: brain, neural, learning, cognitive, intelligence
+   - Also: "The Logical Song" for reasoning, "More Than a Feeling" for memory
+
+10. 🔀 FLOW / MOVEMENT (Long Train Runnin' - Doobie Brothers):
+    - Use when: Flow control, routing, movement, transport
+    - Keywords: flow, movement, route, transport, journey
+    - Also: "Truckin'" for long-haul, "Africa" for distant connections
+
+11. 🪐 MEMORY / STORAGE (More Than a Feeling - Boston):
+    - Use when: Memory systems, storage, recall, persistence
+    - Keywords: memory, storage, recall, remember, persist
+    - Also: "Hotel California" for permanent storage
+
+12. ⛓️ CHAIN / CONNECTION (Come Together - The Beatles):
+    - Use when: Chaining, linking, semantic connections
+    - Keywords: chain, link, connect, semantic, bind, join
+
+13. 🕹️ NAVIGATION / BRANCHING (White Rabbit - Jefferson Airplane):
+    - Use when: Navigation, paths, choices, branching, mario-style exits
+    - Keywords: navigate, path, route, choice, branch, exit
+    - Also: "Drive" for control, "Go Your Own Way" for independent paths
+
+14. ⚡ FAST / URGENT (Thunderstruck - AC/DC):
+    - Use when: Speed, urgency, fast processing, immediate action
+    - Keywords: fast, urgent, quick, immediate, speed, rapid
+    - Also: "Urgent" for priority processing
+
+15. DARK SIDE OF THE MOON - Track by semantic need:
+    - "Speak to Me" → initialization, beginning
+    - "Breathe" → life, existence, calm start  
+    - "Time" ⭐ → runtime, timing, clocks, scheduling
+    - "Money" 💰 → treasury, value, tokens, payments
+    - "Brain Damage" 🧠 → neural core, learning, cognition
+    - "Eclipse" → completion, unity, finale
 
 Repository: ${repoName}
 Description: ${repoDescription || 'No description'}
@@ -601,10 +1008,16 @@ Available tracks:
 ${tracksInfo}
 
 ANALYZE:
-- Is this repo being "taken home" (local single port)? → Eddie Money
-- Does this repo create/facet other repos? → Shine On You Crazy Diamond
-- Does this repo modulate/filter/coordinate? → Cheap Trick OR Welcome to the Machine
-- What's the PRIMARY semantic function based on name/emoji?
+- What is the PRIMARY function based on repo name and emojis?
+- Does it match robot/automation? → Mr. Roboto or We Will Rock You
+- Does it monitor/audit? → Every Breath You Take or Won't Get Fooled Again
+- Does it modulate/filter? → Cheap Trick, Whip It, or Welcome to the Machine
+- Does it create multiple stars? → Shine On You Crazy Diamond or Don't Stop Believin'
+- Does it handle time/runtime? → Time or Fly Like an Eagle
+- Does it handle flow/routing? → Long Train Runnin' or Truckin'
+- Does it handle memory/storage? → More Than a Feeling or Hotel California
+- Does it chain/connect? → Come Together
+- Does it navigate/branch? → White Rabbit or Drive
 
 Return ONLY the number (1-${availableTracks.length}) of the BEST matching track based on these semantic rules.`
 

@@ -42,7 +42,14 @@ export function MusicLibraryView({ onSelectTrack, currentTrackId }: MusicLibrary
       label: '✨ Multistar',
       icon: <Sparkle size={20} weight="fill" />,
       color: 'text-purple',
-      tracks: musicLibrary.filter(t => t.themes.includes('faceting') || t.themes.includes('multistar') || t.id.includes('shine-on'))
+      tracks: musicLibrary.filter(t => 
+        t.themes.includes('faceting') || 
+        t.themes.includes('multistar') || 
+        t.themes.includes('star') ||
+        t.id.includes('shine-on') ||
+        t.id.includes('starman') ||
+        t.id === 'electric-light-orchestra-mr-blue-sky'
+      )
     },
     'modulator': {
       label: '🎛️ Modulator',
@@ -50,9 +57,38 @@ export function MusicLibraryView({ onSelectTrack, currentTrackId }: MusicLibrary
       color: 'text-accent',
       tracks: musicLibrary.filter(t => 
         t.themes.includes('modulation') || 
-        t.themes.includes('filtering') || 
+        t.themes.includes('filtering') ||
+        t.themes.includes('control') ||
         t.id === 'cheap-trick-one-i-want' ||
+        t.id === 'pink-floyd-welcome-machine' ||
+        t.id === 'devo-whip-it' ||
+        t.id === 'queen-another-one-bites'
+      )
+    },
+    'robot': {
+      label: '🦾 Robot',
+      icon: <GridFour size={20} weight="fill" />,
+      color: 'text-red',
+      tracks: musicLibrary.filter(t => 
+        t.themes.includes('robot') || 
+        t.themes.includes('automation') ||
+        t.themes.includes('machine') ||
+        t.id === 'styx-mr-roboto' ||
+        t.id === 'queen-we-will-rock-you' ||
         t.id === 'pink-floyd-welcome-machine'
+      )
+    },
+    'flow': {
+      label: '🔀 Flow',
+      icon: <Play size={20} weight="fill" />,
+      color: 'text-yellow',
+      tracks: musicLibrary.filter(t => 
+        t.themes.includes('journey') || 
+        t.themes.includes('movement') ||
+        t.themes.includes('flow') ||
+        t.id === 'the-doobie-brothers-long-train' ||
+        t.id === 'grateful-dead-truckin' ||
+        t.id === 'steve-miller-band-fly-like-eagle'
       )
     },
     'dark-side': {
@@ -61,17 +97,25 @@ export function MusicLibraryView({ onSelectTrack, currentTrackId }: MusicLibrary
       color: 'text-blue',
       tracks: musicLibrary.filter(t => t.album === 'The Dark Side of the Moon')
     },
-    'rush': {
-      label: '🎸 Rush',
-      icon: <Disc size={20} weight="fill" />,
-      color: 'text-red',
-      tracks: musicLibrary.filter(t => t.artist === 'Rush')
-    },
     'pink-floyd': {
       label: '🌀 Pink Floyd',
       icon: <Disc size={20} weight="fill" />,
       color: 'text-purple',
       tracks: musicLibrary.filter(t => t.artist === 'Pink Floyd')
+    },
+    'classic-rock': {
+      label: '🎸 Classic Rock',
+      icon: <Disc size={20} weight="fill" />,
+      color: 'text-orange',
+      tracks: musicLibrary.filter(t => 
+        t.artist !== 'Pink Floyd' && 
+        (t.artist === 'Rush' || 
+         t.artist === 'The Beatles' || 
+         t.artist === 'Queen' ||
+         t.artist === 'Led Zeppelin' ||
+         t.artist === 'AC/DC' ||
+         t.artist === 'The Who')
+      )
     }
   }
 
@@ -90,7 +134,7 @@ export function MusicLibraryView({ onSelectTrack, currentTrackId }: MusicLibrary
       </div>
 
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid grid-cols-3 lg:grid-cols-7 gap-2 h-auto p-2 bg-card/50">
+        <TabsList className="grid grid-cols-3 lg:grid-cols-9 gap-2 h-auto p-2 bg-card/50">
           {Object.entries(categories).map(([key, cat]) => (
             <TabsTrigger
               key={key}
@@ -222,7 +266,19 @@ export function MusicLibraryView({ onSelectTrack, currentTrackId }: MusicLibrary
           <p><strong className="text-green">💲 Take Me Home Tonight (Eddie Money):</strong> Single local porting of one repo - taking a machine home for personal use</p>
           <p><strong className="text-purple">✨💎 Shine On You Crazy Diamond (Pink Floyd):</strong> A star who facets other stars out of its own material - special for multistar systems</p>
           <p><strong className="text-accent">🎛️ I Want You to Want Me (Cheap Trick):</strong> A modulator that filters problem areas and moves you to the proper machine</p>
-          <p><strong className="text-blue">🌙 Dark Side of the Moon:</strong> Individual tracks semantically timed to proper needs - Time for runtime, Money for treasury, Brain Damage for neural systems</p>
+          <p><strong className="text-accent">🎛️ Welcome to the Machine (Pink Floyd):</strong> First-time setup and system onboarding - entering the machine</p>
+          <p><strong className="text-red">🦾 Mr. Roboto (Styx):</strong> Robot automation and mechanical systems - "Domo arigato"</p>
+          <p><strong className="text-blue">👁️ Every Breath You Take (The Police):</strong> Token viewing and system monitoring - watching every move</p>
+          <p><strong className="text-orange">🍄 Won't Get Fooled Again (The Who):</strong> Auditing and verification - preventing deception</p>
+          <p><strong className="text-yellow">⭐ Time (Pink Floyd):</strong> Runtime operations and timing systems</p>
+          <p><strong className="text-green">💰 Money (Pink Floyd):</strong> Treasury tokens and value systems</p>
+          <p><strong className="text-purple">🧠 Brain Damage (Pink Floyd):</strong> Neural core and learning systems</p>
+          <p><strong className="text-yellow">🔀 Long Train Runnin' (Doobie Brothers):</strong> Flow control and continuous processing</p>
+          <p><strong className="text-blue">🪐 More Than a Feeling (Boston):</strong> Memory systems and emotional recall</p>
+          <p><strong className="text-gold">⛓️ Come Together (The Beatles):</strong> Chain linking and semantic connections</p>
+          <p><strong className="text-pink">🕹️ White Rabbit (Jefferson Airplane):</strong> Navigation and branching paths - follow the rabbit hole</p>
+          <p><strong className="text-red">⚡ Thunderstruck (AC/DC):</strong> Fast urgent processing and explosive energy</p>
+          <p className="pt-2 border-t border-border/30 mt-2"><strong className="text-blue">🌙 Dark Side of the Moon:</strong> Individual tracks semantically timed to proper needs - Time for runtime, Money for treasury, Brain Damage for neural systems, Eclipse for completion</p>
         </div>
       </Card>
     </div>
