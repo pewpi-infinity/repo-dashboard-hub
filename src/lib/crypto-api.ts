@@ -38,7 +38,7 @@ export const DEFAULT_CRYPTOS = [
   'dogecoin',
 ]
 
-// Cache for API responses
+// Cache for API responses with size limit
 interface CacheEntry {
   data: any
   timestamp: number
@@ -46,6 +46,31 @@ interface CacheEntry {
 
 const cache = new Map<string, CacheEntry>()
 const CACHE_DURATION = 60 * 1000 // 1 minute
+const MAX_CACHE_SIZE = 50 // Maximum number of cache entries
+
+/**
+ * Clean old cache entries to prevent memory leaks
+ */
+function cleanCache(): void {
+  const now = Date.now()
+  const entriesToDelete: string[] = []
+  
+  cache.forEach((entry, key) => {
+    if (now - entry.timestamp > CACHE_DURATION) {
+      entriesToDelete.push(key)
+    }
+  })
+  
+  entriesToDelete.forEach(key => cache.delete(key))
+  
+  // If still too large, remove oldest entries
+  if (cache.size > MAX_CACHE_SIZE) {
+    const entries = Array.from(cache.entries())
+    entries.sort((a, b) => a[1].timestamp - b[1].timestamp)
+    const toRemove = entries.slice(0, cache.size - MAX_CACHE_SIZE)
+    toRemove.forEach(([key]) => cache.delete(key))
+  }
+}
 
 /**
  * Get cached data or null if expired/not found
@@ -64,9 +89,10 @@ function getCached<T>(key: string): T | null {
 }
 
 /**
- * Set cached data
+ * Set cached data and clean cache if needed
  */
 function setCache(key: string, data: any): void {
+  cleanCache()
   cache.set(key, {
     data,
     timestamp: Date.now(),

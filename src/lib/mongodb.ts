@@ -1,11 +1,14 @@
 import mongoose from 'mongoose'
 
 // MongoDB connection string from environment variable
+// Note: In a production environment, MongoDB operations should be handled
+// on the server side via API routes. This client-side connection is for
+// development and demo purposes only. DO NOT expose production MongoDB URIs.
 const MONGODB_URI = import.meta.env.VITE_MONGODB_URI || ''
 
 if (!MONGODB_URI && typeof window === 'undefined') {
   console.warn(
-    'Please define the VITE_MONGODB_URI environment variable inside .env'
+    'MongoDB connection is disabled. To enable, define VITE_MONGODB_URI in .env'
   )
 }
 

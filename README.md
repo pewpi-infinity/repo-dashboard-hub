@@ -71,6 +71,8 @@ Example connection string:
 VITE_MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/repo-dashboard?retryWrites=true&w=majority
 ```
 
+**⚠️ Security Note**: The current implementation uses client-side MongoDB connections for demo purposes. In production, MongoDB operations should be handled through a backend API to prevent exposing credentials. Consider using serverless functions or a dedicated backend service.
+
 ### GitHub Token Setup
 
 1. Go to GitHub Settings → Developer settings → Personal access tokens

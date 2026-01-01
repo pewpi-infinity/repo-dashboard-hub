@@ -66,6 +66,28 @@ export function detectLanguage(filename: string): string | undefined {
   return ext ? languageMap[ext] : undefined
 }
 
+export interface ScanOptions {
+  maxFiles?: number
+  includeBinaryFiles?: boolean
+}
+
+/**
+ * Check if file is likely binary based on extension
+ */
+function isBinaryFile(filename: string): boolean {
+  const binaryExtensions = [
+    'jpg', 'jpeg', 'png', 'gif', 'bmp', 'ico', 'webp',
+    'mp3', 'mp4', 'avi', 'mov', 'wav', 'flac',
+    'zip', 'tar', 'gz', 'rar', '7z',
+    'pdf', 'doc', 'docx', 'xls', 'xlsx',
+    'exe', 'dll', 'so', 'dylib',
+    'woff', 'woff2', 'ttf', 'eot'
+  ]
+  
+  const ext = filename.split('.').pop()?.toLowerCase()
+  return ext ? binaryExtensions.includes(ext) : false
+}
+
 /**
  * Scan all files in a repository
  */
@@ -73,8 +95,10 @@ export async function scanRepositoryFiles(
   octokit: Octokit,
   owner: string,
   repo: string,
-  branch: string = 'main'
+  branch: string = 'main',
+  options: ScanOptions = {}
 ): Promise<FileInfo[]> {
+  const { maxFiles = 100, includeBinaryFiles = false } = options
   const files: FileInfo[] = []
   
   try {
@@ -99,19 +123,35 @@ export async function scanRepositoryFiles(
       (node) => node.type === 'blob' && node.path
     )
     
-    // Fetch content for each file (limited to first 100 to avoid rate limits)
-    const filesToFetch = fileNodes.slice(0, 100)
+    // Filter out binary files unless explicitly included
+    const filesToProcess = includeBinaryFiles 
+      ? fileNodes 
+      : fileNodes.filter(node => !isBinaryFile(node.path!))
+    
+    // Fetch content for files (limited by maxFiles parameter)
+    const filesToFetch = filesToProcess.slice(0, maxFiles)
     
     for (const node of filesToFetch) {
       try {
+        // Skip binary files even if in the list
+        if (!includeBinaryFiles && isBinaryFile(node.path!)) {
+          continue
+        }
+        
         const { data: fileData } = await octokit.rest.git.getBlob({
           owner,
           repo,
           file_sha: node.sha!,
         })
         
-        // Decode base64 content
-        const content = Buffer.from(fileData.content, 'base64').toString('utf-8')
+        // Decode base64 content - skip on error (likely binary file)
+        let content: string
+        try {
+          content = Buffer.from(fileData.content, 'base64').toString('utf-8')
+        } catch (decodeError) {
+          console.warn(`Skipping binary file ${node.path}`)
+          continue
+        }
         
         files.push({
           path: node.path!,
