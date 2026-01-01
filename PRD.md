@@ -139,14 +139,32 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Success criteria**: Terminal supports slash commands (/help, /create, /status, /repos, /sync), integrates with Spark LLM API for natural language queries, maintains conversation history, shows typing indicators
 
 ### Add New Repository
-- **Functionality**: Dialog interface for creating new repositories with metadata and legend integration
-- **Purpose**: Enable users to add new machine components to the quantum system architecture
-- **Trigger**: User clicks "Add Machine" button in header
-- **Progression**: User clicks button → Dialog opens → Fill in name, description, category, emoji → Preview updates → Submit → Repository creation initiated → Success notification shown
-- **Success criteria**: Form validates required fields, supports all component categories, emoji picker with legend options, preview shows how repo will appear, provides clear feedback on submission
+- **Functionality**: Dialog interface for creating new repositories with metadata and legend integration, backed by GitHub API authentication
+- **Purpose**: Enable users to add new machine components to the quantum system architecture directly from the dashboard
+- **Trigger**: User clicks "Add Machine" button in header or uses terminal `/create` command
+- **Progression**: User authenticates with GitHub → Opens dialog/terminal → Enters name, description, category, emoji → Submit → GitHub API creates repository → Success notification → Repo list refreshes → New component appears
+- **Success criteria**: Form validates required fields, supports all component categories, emoji picker with legend options, GitHub authentication required before creation, actual repository created on GitHub with proper topics/metadata
+
+### GitHub Authentication
+- **Functionality**: Secure authentication with GitHub using personal access token for repository creation
+- **Purpose**: Enable users to create real repositories on GitHub directly from the dashboard
+- **Trigger**: User clicks "Authenticate with GitHub" button in sidebar
+- **Progression**: User opens auth panel → Clicks authenticate → Enters GitHub personal access token → Token stored securely → System verifies token → Shows connected status with username → User can now create repos
+- **Success criteria**: Token stored in KV storage with encryption, authentication status persists across sessions, shows connected username, allows disconnection, validates token on entry, requires 'repo' scope permissions
+
+### Terminal Repository Creation
+- **Functionality**: Create repositories through terminal commands with natural language or slash commands
+- **Purpose**: Provide command-line style interface for power users to quickly spin up new components
+- **Trigger**: User types `/create <name>` or natural language like "create legend-🎵-sync quantum processor"
+- **Progression**: User types command → Terminal parses name and metadata → Checks authentication status → Calls GitHub API → Repository created → Terminal shows success with link → Repo list auto-refreshes
+- **Success criteria**: Supports `/create <name>` command format, extracts category/emoji from context, requires GitHub authentication, shows clear error if not authenticated, provides repo URL after creation, handles errors gracefully
 
 ## Edge Case Handling
 - **API Rate Limiting**: Display cached data with a refresh timestamp when GitHub API limits are hit
+- **Authentication Required**: Show clear messaging when repo creation attempted without GitHub authentication, guide users to authenticate
+- **Invalid Repository Names**: Validate repository names before submission (alphanumeric, hyphens, no spaces), show helpful error messages
+- **Duplicate Repository Names**: Handle 422 error from GitHub API, inform user that name already exists
+- **Token Expiration**: Detect 401 errors, prompt user to re-authenticate with fresh token
 - **Missing Repositories**: Show placeholder cards with "Repository private or unavailable" message
 - **Network Failure**: Display graceful offline message with last cached data if available
 - **Empty Organization**: Show onboarding message if no repositories are found

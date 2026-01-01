@@ -16,11 +16,12 @@ import { AlertPanel } from './components/AlertPanel'
 import { LegendPanel } from './components/LegendPanel'
 import { TerminalChat } from './components/TerminalChat'
 import { AddRepoDialog } from './components/AddRepoDialog'
+import { GitHubAuth } from './components/GitHubAuth'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
-import { fetchOrgRepositories, fetchCommitActivity } from './lib/github-api'
+import { fetchOrgRepositories, fetchCommitActivity, isAuthenticated } from './lib/github-api'
 import { addCategories } from './lib/repo-utils'
 import { calculateHealthMetrics, type HealthMetrics, type HealthAlert } from './lib/health-monitor'
 import { repoEmojiMap } from './lib/emoji-legend'
@@ -48,8 +49,13 @@ function App() {
   const [selectedEmojis, setSelectedEmojis] = useState<string[]>([])
   const [addRepoDialogOpen, setAddRepoDialogOpen] = useState(false)
   const [showTerminal, setShowTerminal] = useState(false)
+  const [githubAuthenticated, setGithubAuthenticated] = useState(false)
 
   const currentViewMode: ViewMode = viewMode || 'grid'
+
+  useEffect(() => {
+    setGithubAuthenticated(isAuthenticated())
+  }, [])
 
   const loadRepositories = async () => {
     setLoading(true)
@@ -123,12 +129,39 @@ function App() {
     emoji: string
     isPrivate: boolean
   }) => {
-    toast.success(`🎉 Repository "${repoData.name}" will be created on GitHub!`, {
-      description: 'Note: Actual GitHub API creation requires authentication. For now, this is a preview.',
-      duration: 5000
-    })
-    
-    console.log('Create repo with data:', repoData)
+    if (!githubAuthenticated) {
+      toast.error('GitHub authentication required', {
+        description: 'Please authenticate with GitHub in the sidebar first.'
+      })
+      return
+    }
+
+    try {
+      toast.info(`🧱 Creating repository: ${repoData.name}...`)
+      
+      const { createRepository } = await import('./lib/github-api')
+      const newRepo = await createRepository({
+        name: repoData.name,
+        description: repoData.description,
+        isPrivate: repoData.isPrivate,
+        topics: ['legend-system', `category-${repoData.category}`],
+        category: repoData.category,
+        emoji: repoData.emoji
+      })
+
+      toast.success(`✅ Repository created successfully!`, {
+        description: `${repoData.emoji} ${newRepo.name} is now part of the quantum system!`,
+        duration: 5000
+      })
+
+      setAddRepoDialogOpen(false)
+      await loadRepositories()
+    } catch (error: any) {
+      toast.error('Failed to create repository', {
+        description: error.message || 'Unknown error occurred',
+        duration: 5000
+      })
+    }
   }
 
   useEffect(() => {
@@ -278,6 +311,7 @@ function App() {
 
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="lg:w-64 flex-shrink-0 space-y-4">
+              <GitHubAuth onAuthChange={setGithubAuthenticated} />
               <SystemStatus repoCount={repos.length} isLoading={loading} />
               {healthMetrics.size > 0 && (
                 <HealthOverview allMetrics={healthMetrics} />
@@ -289,7 +323,12 @@ function App() {
 
             <div className="flex-1 min-w-0 space-y-6">
               {showTerminal && (
-                <TerminalChat repos={repos} onCreateRepo={handleAddRepo} />
+                <TerminalChat 
+                  repos={repos} 
+                  isAuthenticated={githubAuthenticated}
+                  onCreateRepo={handleAddRepo}
+                  onRepoCreated={loadRepositories}
+                />
               )}
               
               <div>

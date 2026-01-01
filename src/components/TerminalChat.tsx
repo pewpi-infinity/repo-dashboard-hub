@@ -4,9 +4,11 @@ import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { ScrollArea } from './ui/scroll-area'
 import { Badge } from './ui/badge'
-import { Terminal, PaperPlaneRight, Robot, User, Lightning } from '@phosphor-icons/react'
+import { Terminal, PaperPlaneRight, Robot, User, Lightning, CheckCircle, XCircle } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import type { CategorizedRepo, ComponentCategory } from '@/lib/types'
+import { createRepository, isAuthenticated } from '@/lib/github-api'
+import { toast } from 'sonner'
 
 declare const spark: {
   llmPrompt: (strings: TemplateStringsArray, ...values: any[]) => string
@@ -23,6 +25,7 @@ interface Message {
 
 interface TerminalChatProps {
   repos: CategorizedRepo[]
+  isAuthenticated: boolean
   onCreateRepo?: (repoData: {
     name: string
     description: string
@@ -30,9 +33,10 @@ interface TerminalChatProps {
     emoji: string
     isPrivate: boolean
   }) => void
+  onRepoCreated?: () => void
 }
 
-export function TerminalChat({ repos, onCreateRepo }: TerminalChatProps) {
+export function TerminalChat({ repos, isAuthenticated: authStatus, onCreateRepo, onRepoCreated }: TerminalChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -52,26 +56,106 @@ export function TerminalChat({ repos, onCreateRepo }: TerminalChatProps) {
     }
   }, [messages])
 
+  const extractRepoDetails = (input: string) => {
+    const lowerInput = input.toLowerCase()
+    
+    const categoryMap: Record<string, ComponentCategory> = {
+      'brain': 'brain',
+      'quantum': 'quantum',
+      'time': 'time',
+      'os': 'os',
+      'operating': 'os'
+    }
+    
+    let detectedCategory: ComponentCategory = 'other'
+    for (const [key, value] of Object.entries(categoryMap)) {
+      if (lowerInput.includes(key)) {
+        detectedCategory = value
+        break
+      }
+    }
+
+    const emojiMatch = input.match(/([\u{1F300}-\u{1F9FF}])/u)
+    const detectedEmoji = emojiMatch ? emojiMatch[1] : '🧱'
+
+    return { category: detectedCategory, emoji: detectedEmoji }
+  }
+
+  const createRepoFromCommand = async (repoName: string, fullInput: string) => {
+    if (!authStatus) {
+      return {
+        role: 'system' as const,
+        content: '⚠️ GitHub authentication required to create repositories. Please authenticate in the sidebar first.',
+        success: false
+      }
+    }
+
+    try {
+      const { category, emoji } = extractRepoDetails(fullInput)
+      const description = `Legend ${category} component ${emoji}`
+
+      toast.info(`🧱 Creating repository: ${repoName}...`)
+
+      const newRepo = await createRepository({
+        name: repoName,
+        description,
+        isPrivate: false,
+        topics: ['legend-system', `category-${category}`],
+        category,
+        emoji
+      })
+
+      onRepoCreated?.()
+
+      return {
+        role: 'system' as const,
+        content: `✅ Repository created successfully!\n\n🧱 ${newRepo.name}\n📝 ${newRepo.description}\n🔗 ${newRepo.html_url}\n\nThe new machine has been added to the quantum system! 👑`,
+        success: true
+      }
+    } catch (error: any) {
+      console.error('Failed to create repository:', error)
+      return {
+        role: 'system' as const,
+        content: `❌ Failed to create repository: ${error.message || 'Unknown error'}`,
+        success: false
+      }
+    }
+  }
+
   const processCommand = async (command: string) => {
     const cmd = command.trim().toLowerCase()
     
     if (cmd.startsWith('/create ')) {
-      const repoName = cmd.replace('/create ', '').trim()
-      return {
-        role: 'system' as const,
-        content: `🧱 Creating new repo: ${repoName}... This will be connected to the quantum system.`
+      const repoName = cmd.replace('/create ', '').trim().split(' ')[0]
+      if (!repoName) {
+        return {
+          role: 'system' as const,
+          content: '⚠️ Please provide a repository name. Usage: /create <name>'
+        }
       }
+      
+      return await createRepoFromCommand(repoName, command)
     }
     
     if (cmd === '/help') {
       return {
         role: 'system' as const,
         content: `Available commands:
-/create <name> - Create new repo
+/create <name> [emoji] - Create new repo ${authStatus ? '✅' : '⚠️ (auth required)'}
 /status - System status
 /repos - List all repos
 /sync - Sync all components
+/auth - Check authentication status
 /help - Show this help`
+      }
+    }
+
+    if (cmd === '/auth') {
+      return {
+        role: 'system' as const,
+        content: authStatus 
+          ? '✅ GitHub authenticated. You can create repositories!' 
+          : '⚠️ Not authenticated. Please authenticate in the sidebar to create repositories.'
       }
     }
     
@@ -83,6 +167,7 @@ ${repos.length} repos connected
 ${repos.filter(r => r.category === 'brain').length} brain components
 ${repos.filter(r => r.category === 'quantum').length} quantum processors
 ${repos.filter(r => r.category === 'time').length} time machines
+GitHub: ${authStatus ? '✅ Authenticated' : '⚠️ Not authenticated'}
 All systems operational 👑`
       }
     }
@@ -102,9 +187,18 @@ All systems operational 👑`
       }
     }
 
+    if (cmd.startsWith('create ') && !cmd.startsWith('/')) {
+      const repoName = cmd.replace('create ', '').trim().split(' ')[0]
+      if (repoName) {
+        return await createRepoFromCommand(repoName, command)
+      }
+    }
+
     const prompt = spark.llmPrompt`You are the Legend Terminal AI assistant for the pewpi-infinity quantum computing system. The user said: ${command}. 
 
-Current system has ${repos.length} repositories. Respond helpfully and briefly in 1-2 sentences. Use emojis from this set: 👑🧱🎵🪡🌐🟦🟡💵💰🔱✨🍄🪐⭐🦾💲🎛️`
+Current system has ${repos.length} repositories. Authentication status: ${authStatus ? 'authenticated' : 'not authenticated'}. 
+
+Respond helpfully and briefly in 1-2 sentences. If they're asking about creating repos and not authenticated, tell them to authenticate first. Use emojis from this set: 👑🧱🎵🪡🌐🟦🟡💵💰🔱✨🍄🪐⭐🦾💲🎛️`
 
     try {
       const response = await spark.llm(prompt, 'gpt-4o-mini')
@@ -233,6 +327,12 @@ Current system has ${repos.length} repositories. Respond helpfully and briefly i
       </ScrollArea>
 
       <div className="p-4 border-t border-border/50 bg-gradient-to-r from-card/50 to-card/30">
+        {!authStatus && (
+          <div className="mb-3 px-3 py-2 bg-yellow/10 border border-yellow/30 rounded-lg flex items-center gap-2 text-xs">
+            <XCircle size={16} className="text-yellow" />
+            <span className="text-yellow">Not authenticated - authenticate in sidebar to create repos</span>
+          </div>
+        )}
         <div className="flex gap-2">
           <Input
             ref={inputRef}
@@ -254,7 +354,7 @@ Current system has ${repos.length} repositories. Respond helpfully and briefly i
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-2" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-          Commands: /help /create /status /repos /sync
+          Commands: /help /create /status /repos /sync /auth
         </p>
       </div>
     </Card>
