@@ -22,11 +22,11 @@ export function EmptyState({ hasSearchQuery, searchQuery, onReset }: EmptyStateP
       <Alert className="bg-card/50 border-border/50">
         <AlertDescription className="flex items-center justify-between">
           <span>
-            No repositories match <strong>"{searchQuery}"</strong>. Try a different search term.
+            No repositories match your filters{searchQuery ? ` for "${searchQuery}"` : ''}. Try adjusting your search or filters.
           </span>
           {onReset && (
             <Button variant="outline" size="sm" onClick={onReset}>
-              Clear Search
+              Clear All Filters
             </Button>
           )}
         </AlertDescription>

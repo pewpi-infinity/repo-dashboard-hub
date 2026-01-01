@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { RepositoryCard } from './components/RepositoryCard'
 import { RepositoryListItem } from './components/RepositoryListItem'
 import { CategoryFilter } from './components/CategoryFilter'
+import { EmojiFilter } from './components/EmojiFilter'
 import { RepoStatsDialog } from './components/RepoStatsDialog'
 import { SearchSort } from './components/SearchSort'
 import { ViewToggle, type ViewMode } from './components/ViewToggle'
@@ -20,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
 import { fetchOrgRepositories, fetchCommitActivity } from './lib/github-api'
 import { addCategories } from './lib/repo-utils'
 import { calculateHealthMetrics, type HealthMetrics, type HealthAlert } from './lib/health-monitor'
+import { repoEmojiMap } from './lib/emoji-legend'
 import type { CategorizedRepo, ComponentCategory } from './lib/types'
 import { ArrowClockwise, Warning, ChartLine, Bell } from '@phosphor-icons/react'
 import { toast } from 'sonner'
@@ -41,6 +43,7 @@ function App() {
   const [viewMode, setViewMode] = useKV<ViewMode>('view-mode', 'grid')
   const [healthMetrics, setHealthMetrics] = useState<Map<string, HealthMetrics>>(new Map())
   const [monitoringEnabled, setMonitoringEnabled] = useState(true)
+  const [selectedEmojis, setSelectedEmojis] = useState<string[]>([])
 
   const currentViewMode: ViewMode = viewMode || 'grid'
 
@@ -97,6 +100,18 @@ function App() {
     setStatsDialogOpen(true)
   }
 
+  const handleEmojiToggle = (emoji: string) => {
+    setSelectedEmojis(prev => 
+      prev.includes(emoji) 
+        ? prev.filter(e => e !== emoji)
+        : [...prev, emoji]
+    )
+  }
+
+  const handleClearEmojiFilter = () => {
+    setSelectedEmojis([])
+  }
+
   useEffect(() => {
     loadRepositories()
   }, [])
@@ -117,6 +132,15 @@ function App() {
     let filtered = activeCategory === 'all' 
       ? repos 
       : repos.filter(repo => repo.category === activeCategory)
+
+    if (selectedEmojis.length > 0) {
+      filtered = filtered.filter(repo => {
+        const matchingKey = Object.keys(repoEmojiMap).find(k => 
+          repo.name.toLowerCase().includes(k.toLowerCase())
+        )
+        return matchingKey && selectedEmojis.includes(matchingKey)
+      })
+    }
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
@@ -151,7 +175,7 @@ function App() {
     })
 
     return sorted
-  }, [repos, activeCategory, searchQuery, sortBy, sortDirection])
+  }, [repos, activeCategory, searchQuery, sortBy, sortDirection, selectedEmojis])
 
   const brainRepo = repos.find(repo => repo.name.toLowerCase().includes('mongoose'))
   const otherRepos = filteredAndSortedRepos.filter(repo => repo.id !== brainRepo?.id)
@@ -273,6 +297,13 @@ function App() {
 
                 <TabsContent value="repositories" className="space-y-4 mt-6">
                   <div className="space-y-4">
+                    <EmojiFilter
+                      selectedEmojis={selectedEmojis}
+                      onEmojiToggle={handleEmojiToggle}
+                      onClear={handleClearEmojiFilter}
+                      repos={repos}
+                    />
+                    
                     <CategoryFilter
                       activeCategory={activeCategory}
                       onCategoryChange={setActiveCategory}
@@ -363,11 +394,12 @@ function App() {
                     </section>
                   ) : (
                     <EmptyState 
-                      hasSearchQuery={!!searchQuery}
+                      hasSearchQuery={!!searchQuery || selectedEmojis.length > 0}
                       searchQuery={searchQuery}
                       onReset={() => {
                         setSearchQuery('')
                         setActiveCategory('all')
+                        setSelectedEmojis([])
                       }}
                     />
                   )}

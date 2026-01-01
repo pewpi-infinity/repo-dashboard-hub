@@ -28,6 +28,12 @@ export function LegendPanel() {
           <div>👑 Authority Core</div>
         </div>
       </div>
+
+      <div className="mt-4 pt-3 border-t border-border/50">
+        <div className="text-[10px] text-muted-foreground italic">
+          💡 Tip: Click legend icons above to filter repos
+        </div>
+      </div>
     </Card>
   )
 }
