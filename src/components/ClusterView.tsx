@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { CategorizedRepo } from '@/lib/types'
 import { getEmojiForRepo } from '@/lib/emoji-legend'
 import { HealthMetrics } from '@/lib/health-monitor'
@@ -23,13 +23,26 @@ import {
   GitBranch,
   Stack,
   Target,
-  Sparkle
+  Sparkle,
+  ArrowsInLineHorizontal,
+  ArrowsOutLineHorizontal,
+  CheckCircle,
+  X
 } from '@phosphor-icons/react'
+import { toast } from 'sonner'
 
 interface ClusterViewProps {
   repos: CategorizedRepo[]
   healthMetrics: Map<string, HealthMetrics>
   onRepoClick?: (repo: CategorizedRepo) => void
+}
+
+interface ClusterTransition {
+  type: 'merge' | 'split'
+  sourceIds: string[]
+  targetClusters: Cluster[]
+  progress: number
+  startTime: number
 }
 
 export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewProps) {
@@ -46,6 +59,10 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
   const [showConnections, setShowConnections] = useState(true)
   const [showLabels, setShowLabels] = useState(true)
   const [animationTime, setAnimationTime] = useState(0)
+  const [mergeMode, setMergeMode] = useState(false)
+  const [selectedForMerge, setSelectedForMerge] = useState<Set<string>>(new Set())
+  const [clusterTransition, setClusterTransition] = useState<ClusterTransition | null>(null)
+  const [transitioningClusters, setTransitioningClusters] = useState<Cluster[]>([])
 
   const centerX = dimensions.width / 2
   const centerY = dimensions.height / 2
@@ -66,6 +83,8 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
   useEffect(() => {
     if (dimensions.width === 0 || repos.length === 0) return
 
+    if (clusterTransition) return
+
     const newClusters = createClusters(repos, clusterFormation)
     const positionedClusters = calculateClusterPositions(
       newClusters,
@@ -75,7 +94,36 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
       centerY
     )
     setClusters(positionedClusters)
-  }, [repos, dimensions, centerX, centerY, clusterFormation])
+  }, [repos, dimensions, centerX, centerY, clusterFormation, clusterTransition])
+
+  useEffect(() => {
+    if (!clusterTransition) return
+
+    const duration = 1500
+    const elapsed = Date.now() - clusterTransition.startTime
+    const progress = Math.min(elapsed / duration, 1)
+
+    if (progress >= 1) {
+      setClusters(clusterTransition.targetClusters)
+      setClusterTransition(null)
+      setTransitioningClusters([])
+      
+      if (clusterTransition.type === 'merge') {
+        toast.success('Clusters merged successfully!', {
+          description: `Combined into ${clusterTransition.targetClusters.length} cluster(s)`
+        })
+      } else {
+        toast.success('Cluster split successfully!', {
+          description: `Split into ${clusterTransition.targetClusters.length} clusters`
+        })
+      }
+    } else {
+      setClusterTransition({
+        ...clusterTransition,
+        progress
+      })
+    }
+  }, [clusterTransition, animationTime])
 
   const clusterConnections = useMemo(() => {
     return findClusterConnections(clusters)
@@ -207,8 +255,11 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
   const drawClusters = (ctx: CanvasRenderingContext2D, time: number) => {
     ctx.save()
 
-    clusters.forEach(cluster => {
+    const displayClusters = clusterTransition ? getTransitionClusters() : clusters
+
+    displayClusters.forEach(cluster => {
       const isSelected = selectedCluster?.id === cluster.id
+      const isSelectedForMerge = selectedForMerge.has(cluster.id)
       const stats = getClusterStats(cluster)
       
       const colorMap: Record<string, string> = {
@@ -233,15 +284,15 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
         0,
         cluster.position.x,
         cluster.position.y,
-        radius * 1.8
+        radius * (isSelectedForMerge ? 2.2 : 1.8)
       )
-      outerGlow.addColorStop(0, `rgba(${rgb}, 0.1)`)
-      outerGlow.addColorStop(0.5, `rgba(${rgb}, 0.05)`)
+      outerGlow.addColorStop(0, `rgba(${rgb}, ${isSelectedForMerge ? 0.2 : 0.1})`)
+      outerGlow.addColorStop(0.5, `rgba(${rgb}, ${isSelectedForMerge ? 0.1 : 0.05})`)
       outerGlow.addColorStop(1, `rgba(${rgb}, 0)`)
       
       ctx.fillStyle = outerGlow
       ctx.beginPath()
-      ctx.arc(cluster.position.x, cluster.position.y, radius * 1.8, 0, Math.PI * 2)
+      ctx.arc(cluster.position.x, cluster.position.y, radius * (isSelectedForMerge ? 2.2 : 1.8), 0, Math.PI * 2)
       ctx.fill()
 
       const innerGlow = ctx.createRadialGradient(
@@ -252,24 +303,36 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
         cluster.position.y,
         radius
       )
-      innerGlow.addColorStop(0, `rgba(${rgb}, 0.15)`)
-      innerGlow.addColorStop(0.7, `rgba(${rgb}, 0.08)`)
-      innerGlow.addColorStop(1, `rgba(${rgb}, 0.02)`)
+      innerGlow.addColorStop(0, `rgba(${rgb}, ${isSelectedForMerge ? 0.25 : 0.15})`)
+      innerGlow.addColorStop(0.7, `rgba(${rgb}, ${isSelectedForMerge ? 0.12 : 0.08})`)
+      innerGlow.addColorStop(1, `rgba(${rgb}, ${isSelectedForMerge ? 0.05 : 0.02})`)
       
       ctx.fillStyle = innerGlow
       ctx.beginPath()
       ctx.arc(cluster.position.x, cluster.position.y, radius, 0, Math.PI * 2)
       ctx.fill()
 
-      ctx.strokeStyle = isSelected 
-        ? `rgba(${rgb}, 0.8)` 
-        : `rgba(${rgb}, 0.4)`
-      ctx.lineWidth = isSelected ? 3 : 2
-      ctx.setLineDash(isSelected ? [] : [5, 5])
+      ctx.strokeStyle = isSelectedForMerge
+        ? `rgba(255, 215, 0, 0.9)` 
+        : isSelected 
+          ? `rgba(${rgb}, 0.8)` 
+          : `rgba(${rgb}, 0.4)`
+      ctx.lineWidth = isSelectedForMerge ? 4 : isSelected ? 3 : 2
+      ctx.setLineDash(isSelected || isSelectedForMerge ? [] : [5, 5])
       ctx.beginPath()
       ctx.arc(cluster.position.x, cluster.position.y, radius * 0.95, 0, Math.PI * 2)
       ctx.stroke()
       ctx.setLineDash([])
+
+      if (isSelectedForMerge) {
+        ctx.strokeStyle = 'rgba(255, 215, 0, 0.6)'
+        ctx.lineWidth = 2
+        ctx.setLineDash([10, 5])
+        ctx.beginPath()
+        ctx.arc(cluster.position.x, cluster.position.y, radius * 1.1, 0, Math.PI * 2)
+        ctx.stroke()
+        ctx.setLineDash([])
+      }
 
       for (let i = 0; i < 6; i++) {
         const angle = (i / 6) * Math.PI * 2 + time * cluster.rotationSpeed * 0.0005
@@ -280,7 +343,7 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
         const x2 = cluster.position.x + Math.cos(angle) * outerRadius
         const y2 = cluster.position.y + Math.sin(angle) * outerRadius
 
-        ctx.strokeStyle = `rgba(${rgb}, 0.3)`
+        ctx.strokeStyle = `rgba(${rgb}, ${isSelectedForMerge ? 0.5 : 0.3})`
         ctx.lineWidth = 2
         ctx.beginPath()
         ctx.moveTo(x1, y1)
@@ -293,6 +356,12 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
       ctx.textBaseline = 'middle'
       ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
       ctx.fillText(cluster.emoji, cluster.position.x, cluster.position.y)
+
+      if (isSelectedForMerge) {
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.95)'
+        ctx.font = `${cluster.radius * 0.3}px Arial`
+        ctx.fillText('✓', cluster.position.x + radius * 0.6, cluster.position.y - radius * 0.6)
+      }
 
       if (showLabels) {
         ctx.font = 'bold 14px "Space Grotesk", sans-serif'
@@ -323,7 +392,104 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
       }
     })
 
+    if (mergeMode && selectedForMerge.size >= 2) {
+      const selectedClusters = displayClusters.filter(c => selectedForMerge.has(c.id))
+      const centerX = selectedClusters.reduce((sum, c) => sum + c.position.x, 0) / selectedClusters.length
+      const centerY = selectedClusters.reduce((sum, c) => sum + c.position.y, 0) / selectedClusters.length
+
+      selectedClusters.forEach(cluster => {
+        ctx.strokeStyle = 'rgba(255, 215, 0, 0.4)'
+        ctx.lineWidth = 2
+        ctx.setLineDash([5, 5])
+        ctx.lineDashOffset = -(time * 0.05)
+        ctx.beginPath()
+        ctx.moveTo(cluster.position.x, cluster.position.y)
+        ctx.lineTo(centerX, centerY)
+        ctx.stroke()
+        ctx.setLineDash([])
+      })
+
+      const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 40)
+      gradient.addColorStop(0, 'rgba(255, 215, 0, 0.4)')
+      gradient.addColorStop(1, 'rgba(255, 215, 0, 0)')
+      ctx.fillStyle = gradient
+      ctx.beginPath()
+      ctx.arc(centerX, centerY, 40, 0, Math.PI * 2)
+      ctx.fill()
+
+      ctx.fillStyle = 'rgba(255, 215, 0, 0.9)'
+      ctx.font = '32px Arial'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText('⚡', centerX, centerY)
+    }
+
     ctx.restore()
+  }
+
+  const getTransitionClusters = (): Cluster[] => {
+    if (!clusterTransition) return clusters
+
+    const progress = clusterTransition.progress
+    const easeProgress = easeInOutCubic(progress)
+
+    if (clusterTransition.type === 'merge') {
+      const sourceClusters = clusters.filter(c => clusterTransition.sourceIds.includes(c.id))
+      const targetCluster = clusterTransition.targetClusters[0]
+      const otherClusters = clusters.filter(c => !clusterTransition.sourceIds.includes(c.id))
+
+      const transitionedSources = sourceClusters.map(source => {
+        const newX = source.position.x + (targetCluster.position.x - source.position.x) * easeProgress
+        const newY = source.position.y + (targetCluster.position.y - source.position.y) * easeProgress
+        const newRadius = source.radius + (targetCluster.radius - source.radius) * easeProgress
+        
+        return {
+          ...source,
+          position: { x: newX, y: newY },
+          radius: newRadius
+        }
+      })
+
+      if (progress > 0.5) {
+        return [
+          ...otherClusters,
+          targetCluster
+        ]
+      } else {
+        return [...otherClusters, ...transitionedSources]
+      }
+    } else {
+      const sourceCluster = clusters.find(c => c.id === clusterTransition.sourceIds[0])
+      if (!sourceCluster) return clusters
+
+      const targetClusters = clusterTransition.targetClusters
+      const otherClusters = clusters.filter(c => c.id !== sourceCluster.id)
+
+      const transitionedTargets = targetClusters.map(target => {
+        const newX = sourceCluster.position.x + (target.position.x - sourceCluster.position.x) * easeProgress
+        const newY = sourceCluster.position.y + (target.position.y - sourceCluster.position.y) * easeProgress
+        const newRadius = sourceCluster.radius + (target.radius - sourceCluster.radius) * easeProgress
+        
+        return {
+          ...target,
+          position: { x: newX, y: newY },
+          radius: newRadius
+        }
+      })
+
+      if (progress < 0.5) {
+        return [
+          ...otherClusters,
+          sourceCluster
+        ]
+      } else {
+        return [...otherClusters, ...transitionedTargets]
+      }
+    }
+  }
+
+  const easeInOutCubic = (t: number): number => {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
   }
 
   const drawRepos = (ctx: CanvasRenderingContext2D, time: number) => {
@@ -400,6 +566,29 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
 
     let clickedSomething = false
 
+    if (mergeMode) {
+      for (const cluster of clusters) {
+        const dx = x - cluster.position.x
+        const dy = y - cluster.position.y
+        const distance = Math.sqrt(dx * dx + dy * dy)
+
+        if (distance < cluster.radius) {
+          setSelectedForMerge(prev => {
+            const newSet = new Set(prev)
+            if (newSet.has(cluster.id)) {
+              newSet.delete(cluster.id)
+            } else {
+              newSet.add(cluster.id)
+            }
+            return newSet
+          })
+          clickedSomething = true
+          return
+        }
+      }
+      return
+    }
+
     for (const cluster of clusters) {
       const positions = calculateRepoPositionsInCluster(cluster, animationTime)
       
@@ -440,6 +629,135 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
     }
   }
 
+  const handleMergeClusters = () => {
+    if (selectedForMerge.size < 2) {
+      toast.error('Select at least 2 clusters to merge')
+      return
+    }
+
+    const clustersToMerge = clusters.filter(c => selectedForMerge.has(c.id))
+    
+    const allRepos = clustersToMerge.flatMap(c => c.repos)
+    const centerX = clustersToMerge.reduce((sum, c) => sum + c.position.x, 0) / clustersToMerge.length
+    const centerY = clustersToMerge.reduce((sum, c) => sum + c.position.y, 0) / clustersToMerge.length
+    
+    const mergedCluster: Cluster = {
+      id: `merged-${Date.now()}`,
+      name: `Merged Cluster`,
+      color: clustersToMerge[0].color,
+      emoji: '⚡',
+      repos: allRepos,
+      position: { x: centerX, y: centerY },
+      radius: Math.max(...clustersToMerge.map(c => c.radius)) * 1.2,
+      isActive: true,
+      connections: [],
+      strength: 1,
+      formation: 'circle',
+      rotationSpeed: 0.5
+    }
+
+    const otherClusters = clusters.filter(c => !selectedForMerge.has(c.id))
+    const targetClusters = calculateClusterPositions(
+      [...otherClusters, mergedCluster],
+      dimensions.width,
+      dimensions.height,
+      dimensions.width / 2,
+      dimensions.height / 2
+    )
+
+    setClusterTransition({
+      type: 'merge',
+      sourceIds: Array.from(selectedForMerge),
+      targetClusters,
+      progress: 0,
+      startTime: Date.now()
+    })
+
+    setSelectedForMerge(new Set())
+    setMergeMode(false)
+    toast.info('Merging clusters...', {
+      description: `Combining ${clustersToMerge.length} clusters into one`
+    })
+  }
+
+  const handleSplitCluster = () => {
+    if (!selectedCluster) {
+      toast.error('Select a cluster to split')
+      return
+    }
+
+    if (selectedCluster.repos.length < 2) {
+      toast.error('Cluster must have at least 2 repos to split')
+      return
+    }
+
+    const midPoint = Math.ceil(selectedCluster.repos.length / 2)
+    const repos1 = selectedCluster.repos.slice(0, midPoint)
+    const repos2 = selectedCluster.repos.slice(midPoint)
+
+    const angle1 = Math.random() * Math.PI * 2
+    const angle2 = angle1 + Math.PI
+    const distance = 100
+
+    const cluster1: Cluster = {
+      ...selectedCluster,
+      id: `split-1-${Date.now()}`,
+      name: `${selectedCluster.name} A`,
+      repos: repos1,
+      position: {
+        x: selectedCluster.position.x + Math.cos(angle1) * distance,
+        y: selectedCluster.position.y + Math.sin(angle1) * distance
+      },
+      radius: selectedCluster.radius * 0.8
+    }
+
+    const cluster2: Cluster = {
+      ...selectedCluster,
+      id: `split-2-${Date.now()}`,
+      name: `${selectedCluster.name} B`,
+      repos: repos2,
+      color: selectedCluster.color === 'blue' ? 'purple' : 'blue',
+      emoji: selectedCluster.emoji === '🎯' ? '⚡' : '🎯',
+      position: {
+        x: selectedCluster.position.x + Math.cos(angle2) * distance,
+        y: selectedCluster.position.y + Math.sin(angle2) * distance
+      },
+      radius: selectedCluster.radius * 0.8
+    }
+
+    const otherClusters = clusters.filter(c => c.id !== selectedCluster.id)
+    const targetClusters = calculateClusterPositions(
+      [...otherClusters, cluster1, cluster2],
+      dimensions.width,
+      dimensions.height,
+      dimensions.width / 2,
+      dimensions.height / 2
+    )
+
+    setClusterTransition({
+      type: 'split',
+      sourceIds: [selectedCluster.id],
+      targetClusters,
+      progress: 0,
+      startTime: Date.now()
+    })
+
+    toast.info('Splitting cluster...', {
+      description: `Dividing into 2 clusters`
+    })
+  }
+
+  const toggleMergeMode = () => {
+    setMergeMode(!mergeMode)
+    setSelectedForMerge(new Set())
+    
+    if (!mergeMode) {
+      toast.info('Merge mode activated', {
+        description: 'Click clusters to select them for merging'
+      })
+    }
+  }
+
   const formationOptions: Array<{ value: ClusterFormation; label: string; icon: any }> = [
     { value: 'category', label: 'Category', icon: Stack },
     { value: 'language', label: 'Language', icon: GitBranch },
@@ -467,6 +785,30 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
           <div className="text-xs text-muted-foreground">Active Clusters</div>
         </Card>
 
+        {clusterTransition && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Card className="p-3 bg-accent/90 backdrop-blur-sm border-accent">
+              <div className="text-xs font-mono text-black mb-2 font-bold">
+                {clusterTransition.type === 'merge' ? '⚡ MERGING' : '💥 SPLITTING'}
+              </div>
+              <div className="w-full h-2 bg-black/20 rounded-full overflow-hidden mb-2">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-gold via-yellow to-orange"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${clusterTransition.progress * 100}%` }}
+                  transition={{ duration: 0.1 }}
+                />
+              </div>
+              <div className="text-xs text-black font-mono">
+                {Math.round(clusterTransition.progress * 100)}% Complete
+              </div>
+            </Card>
+          </motion.div>
+        )}
+
         <Card className="p-3 bg-card/90 backdrop-blur-sm border-accent/30">
           <div className="text-xs font-mono text-muted-foreground mb-2">FORMATION</div>
           <div className="text-sm font-semibold text-accent">
@@ -474,7 +816,7 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
           </div>
         </Card>
 
-        {selectedCluster && (
+        {selectedCluster && !mergeMode && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -516,6 +858,42 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
       </div>
 
       <div className="absolute top-4 right-4 flex flex-col gap-2">
+        <AnimatePresence>
+          {mergeMode && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+            >
+              <Card className="p-3 bg-gold/90 backdrop-blur-sm border-gold">
+                <div className="text-sm font-mono text-black mb-2 font-bold">MERGE MODE</div>
+                <div className="text-xs text-black mb-3">
+                  Selected: {selectedForMerge.size} clusters
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    onClick={handleMergeClusters}
+                    disabled={selectedForMerge.size < 2}
+                    className="flex-1 gap-1 bg-green text-white hover:bg-green/90"
+                  >
+                    <CheckCircle size={14} weight="fill" />
+                    Merge
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={toggleMergeMode}
+                    className="gap-1 border-black text-black hover:bg-black/10"
+                  >
+                    <X size={14} weight="bold" />
+                  </Button>
+                </div>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="space-y-1">
           <div className="text-xs font-mono text-muted-foreground mb-1 px-1 text-right">FORMATION</div>
           {formationOptions.map(option => {
@@ -526,6 +904,7 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
                 size="sm"
                 variant="outline"
                 onClick={() => setClusterFormation(option.value)}
+                disabled={!!clusterTransition}
                 className={`w-full gap-2 bg-card/90 backdrop-blur-sm ${
                   clusterFormation === option.value
                     ? 'border-purple/50 text-purple hover:bg-purple/10'
@@ -538,6 +917,34 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
             )
           })}
         </div>
+
+        <div className="border-t border-border/50 my-1" />
+
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={toggleMergeMode}
+          disabled={clusters.length < 2 || !!clusterTransition}
+          className={`gap-2 bg-card/90 backdrop-blur-sm ${
+            mergeMode 
+              ? 'border-gold/50 text-gold hover:bg-gold/10' 
+              : 'border-muted/30 hover:bg-muted/10'
+          }`}
+        >
+          <ArrowsInLineHorizontal size={14} weight={mergeMode ? 'fill' : 'regular'} />
+          {mergeMode ? 'Cancel Merge' : 'Merge Clusters'}
+        </Button>
+
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleSplitCluster}
+          disabled={!selectedCluster || selectedCluster.repos.length < 2 || !!clusterTransition}
+          className="gap-2 bg-card/90 backdrop-blur-sm border-orange/30 hover:bg-orange/10 text-orange disabled:text-muted-foreground"
+        >
+          <ArrowsOutLineHorizontal size={14} weight="bold" />
+          Split Selected
+        </Button>
 
         <div className="border-t border-border/50 my-1" />
 
@@ -617,10 +1024,22 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
 
       <div className="absolute bottom-4 right-4 text-xs text-muted-foreground font-mono bg-card/80 backdrop-blur-sm p-2 rounded border border-border/50 max-w-xs">
         <div className="flex flex-col gap-1">
-          <div className="text-purple font-bold mb-1">🎯 CLUSTER GROUPING</div>
-          <div><span className="text-accent">⚡ Click Repos:</span> View details</div>
-          <div><span className="text-gold">🎯 Click Clusters:</span> Select group</div>
-          <div><span className="text-green">🔗 Connections:</span> Shared topics & languages</div>
+          <div className="text-purple font-bold mb-1">🎯 CLUSTER OPERATIONS</div>
+          {mergeMode ? (
+            <>
+              <div className="text-gold font-semibold">⚡ MERGE MODE ACTIVE</div>
+              <div><span className="text-gold">Click:</span> Select clusters to merge</div>
+              <div><span className="text-green">✓ Merge:</span> Combine selected clusters</div>
+            </>
+          ) : (
+            <>
+              <div><span className="text-accent">⚡ Click Repos:</span> View details</div>
+              <div><span className="text-gold">🎯 Click Clusters:</span> Select for operations</div>
+              <div><span className="text-orange">↔️ Merge:</span> Combine 2+ clusters</div>
+              <div><span className="text-orange">↕️ Split:</span> Divide selected cluster</div>
+              <div><span className="text-green">🔗 Connections:</span> Shared topics & languages</div>
+            </>
+          )}
         </div>
       </div>
     </div>
