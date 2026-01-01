@@ -227,6 +227,7 @@ export const musicLibrary: MusicTrack[] = [
     artist: 'Rush',
     album: '2112',
     duration: '20:34',
+    url: 'https://archive.org/download/78_2112_rush-geddy-lee-alex-lifeson-neil-peart_gbia0534613b/2112%20-%20Rush-restored.mp3',
     themes: ['discovery', 'rebellion', 'individuality', 'oppression', 'freedom', 'music', 'temples', 'presentation'],
     mood: ['epic', 'progressive', 'triumphant', 'melancholic', 'energetic'],
     suggestedRepos: ['legend-🎵-sync', 'legend-⭐-runtime', 'truvio-studios'],
@@ -238,6 +239,7 @@ export const musicLibrary: MusicTrack[] = [
     artist: 'Rush',
     album: '2112',
     duration: '3:34',
+    url: 'https://archive.org/download/cd_2112_rush/disc1/01.%20Rush%20-%202112%3A%20I.%20Overture_FLAC.mp3',
     themes: ['journey', 'exploration', 'world', 'travel'],
     mood: ['energetic', 'adventurous', 'upbeat'],
     suggestedRepos: ['legend-🔀-flow', 'legend-🪐-memory', 'truvio-studios']
@@ -248,6 +250,7 @@ export const musicLibrary: MusicTrack[] = [
     artist: 'Rush',
     album: '2112',
     duration: '3:17',
+    url: 'https://archive.org/download/cd_2112_rush/disc1/04.%20Rush%20-%20The%20Twilight%20Zone_FLAC.mp3',
     themes: ['mystery', 'unknown', 'surreal', 'science-fiction'],
     mood: ['mysterious', 'curious', 'haunting'],
     suggestedRepos: ['legend-🪐-memory', 'legend-🔗-semantic', 'truvio-studios']
@@ -258,6 +261,7 @@ export const musicLibrary: MusicTrack[] = [
     artist: 'Rush',
     album: '2112',
     duration: '3:51',
+    url: 'https://archive.org/download/cd_2112_rush/disc1/05.%20Rush%20-%20Lessons_FLAC.mp3',
     themes: ['learning', 'growth', 'wisdom', 'experience'],
     mood: ['reflective', 'thoughtful', 'gentle'],
     suggestedRepos: ['mongoose.os', 'legend-🧠-brain', 'truvio-studios']
@@ -268,6 +272,7 @@ export const musicLibrary: MusicTrack[] = [
     artist: 'Rush',
     album: '2112',
     duration: '3:31',
+    url: 'https://archive.org/download/cd_2112_rush/disc1/06.%20Rush%20-%20Tears_FLAC.mp3',
     themes: ['emotion', 'sadness', 'loss', 'beauty'],
     mood: ['emotional', 'melancholic', 'beautiful'],
     suggestedRepos: ['legend-✨-multistar', 'truvio-studios']
@@ -278,6 +283,7 @@ export const musicLibrary: MusicTrack[] = [
     artist: 'Rush',
     album: '2112',
     duration: '3:59',
+    url: 'https://archive.org/download/cd_2112_rush/disc1/07.%20Rush%20-%20Something%20For%20Nothing_FLAC.mp3',
     themes: ['effort', 'reward', 'work', 'value', 'philosophy'],
     mood: ['driving', 'powerful', 'motivational'],
     suggestedRepos: ['legend-core', 'legend-🎛️-modulator', 'truvio-studios']
@@ -800,6 +806,138 @@ export const musicLibrary: MusicTrack[] = [
     mood: ['psychedelic', 'mysterious', 'trippy', 'surreal', 'building'],
     suggestedRepos: ['legend-🕹️-mario-exit', 'legend-🔀-flow', 'legend-🪐-memory'],
     lyrics: '🐰 Go ask Alice - Following the rabbit hole through branching paths'
+  },
+  {
+    id: 'grateful-dead-touch-of-grey',
+    title: 'Touch of Grey',
+    artist: 'Grateful Dead',
+    album: 'In the Dark',
+    duration: '5:49',
+    url: 'https://archive.org/download/78_touch-of-grey_grateful-dead-jerry-garcia-robert-hunter_gbia0027852a/Touch%20Of%20Grey%20-%20Grateful%20Dead-restored.mp3',
+    themes: ['survival', 'resilience', 'age', 'wisdom', 'endurance', 'perspective'],
+    mood: ['uplifting', 'resilient', 'wise', 'hopeful', 'upbeat'],
+    suggestedRepos: ['mongoose.os', 'legend-🪐-memory', 'legend-🍄-auditor'],
+    lyrics: '🎸 I will survive - Resilience and survival through system changes'
+  },
+  {
+    id: 'alice-cooper-schools-out',
+    title: "School's Out",
+    artist: 'Alice Cooper',
+    album: "School's Out",
+    duration: '3:29',
+    url: 'https://archive.org/download/78_schools-out_alice-cooper-michael-bruce-glen-buxton-dennis-dunaway-neal-smith_gbia0027765a/School%27s%20Out%20-%20Alice%20Cooper-restored.mp3',
+    themes: ['freedom', 'liberation', 'escape', 'education-complete', 'release', 'celebration'],
+    mood: ['rebellious', 'celebratory', 'energetic', 'liberating', 'triumphant'],
+    suggestedRepos: ['legend-🕹️-mario-exit', 'legend-core', 'mongoose.os'],
+    lyrics: '🏫 School\'s out forever - Project completion and graduation to next phase'
+  },
+  {
+    id: 'starship-we-built-this-city',
+    title: 'We Built This City',
+    artist: 'Starship',
+    album: 'Knee Deep in the Hoopla',
+    duration: '4:57',
+    url: 'https://archive.org/download/78_we-built-this-city_starship-bernie-taupin-dennis-lambert-martin-page-peter-wolf_gbia0027891a/We%20Built%20This%20City%20-%20Starship-restored.mp3',
+    themes: ['building', 'creation', 'city', 'construction', 'rock-n-roll', 'foundation'],
+    mood: ['upbeat', 'anthemic', 'optimistic', 'building', 'energetic'],
+    suggestedRepos: ['legend-core', 'legend-🧱-encode', 'legend-spine-index', 'mongoose.os'],
+    lyrics: '🏙️ We built this city on rock and roll - Building foundational systems and architectures'
+  },
+  {
+    id: 'black-sabbath-iron-man',
+    title: 'Iron Man',
+    artist: 'Black Sabbath',
+    album: 'Paranoid',
+    duration: '5:56',
+    url: 'https://archive.org/download/78_iron-man_black-sabbath-tony-iommi-geezer-butler-ozzy-osbourne-bill-ward_gbia0027086a/Iron%20Man%20-%20Black%20Sabbath-restored.mp3',
+    themes: ['robot', 'metal', 'machine', 'power', 'transformation', 'heavy'],
+    mood: ['heavy', 'powerful', 'mechanical', 'dark', 'commanding'],
+    suggestedRepos: ['legend-🦾-robot-core', 'legend-🦿-robot-legs', 'legend-core'],
+    lyrics: '🤖 I am Iron Man - Heavy metal robot systems with commanding power'
+  },
+  {
+    id: 'black-sabbath-paranoid',
+    title: 'Paranoid',
+    artist: 'Black Sabbath',
+    album: 'Paranoid',
+    duration: '2:48',
+    url: 'https://archive.org/download/78_paranoid_black-sabbath-tony-iommi-geezer-butler-ozzy-osbourne-bill-ward_gbia0027544a/Paranoid%20-%20Black%20Sabbath-restored.mp3',
+    themes: ['anxiety', 'monitoring', 'watchfulness', 'tension', 'alertness'],
+    mood: ['intense', 'driving', 'anxious', 'energetic', 'heavy'],
+    suggestedRepos: ['legend-🍄-auditor', 'legend-👁️-token-viewer', 'legend-👀-watcher'],
+    lyrics: '👀 People think I\'m insane - Vigilant monitoring and audit systems'
+  },
+  {
+    id: 'rod-stewart-maggie-may',
+    title: 'Maggie May',
+    artist: 'Rod Stewart',
+    album: 'Every Picture Tells a Story',
+    duration: '5:46',
+    url: 'https://archive.org/download/78_maggie-may_rod-stewart-martin-quittenton_gbia0027326a/Maggie%20May%20-%20Rod%20Stewart-restored.mp3',
+    themes: ['story', 'memory', 'nostalgia', 'change', 'growing-up', 'reflection'],
+    mood: ['nostalgic', 'storytelling', 'reflective', 'bittersweet', 'upbeat'],
+    suggestedRepos: ['legend-🪐-memory', 'truvio-studios', 'legend-🎵-sync'],
+    lyrics: '📖 Wake up Maggie - Story-based memory recall and narrative systems'
+  },
+  {
+    id: 'phil-collins-in-the-air-tonight',
+    title: 'In the Air Tonight',
+    artist: 'Phil Collins',
+    album: 'Face Value',
+    duration: '5:34',
+    url: 'https://archive.org/download/78_in-the-air-tonight_phil-collins_gbia0027076a/In%20The%20Air%20Tonight%20-%20Phil%20Collins-restored.mp3',
+    themes: ['anticipation', 'buildup', 'tension', 'waiting', 'arrival', 'dramatic'],
+    mood: ['atmospheric', 'building', 'tense', 'dramatic', 'powerful'],
+    suggestedRepos: ['legend-⭐-runtime', 'legend-🪐-memory', 'mongoose.os'],
+    lyrics: '🥁 I can feel it coming in the air tonight - Anticipation and dramatic runtime moments'
+  },
+  {
+    id: 'traffic-dear-mr-fantasy',
+    title: 'Dear Mr. Fantasy',
+    artist: 'Traffic',
+    album: 'Mr. Fantasy',
+    duration: '5:32',
+    url: 'https://archive.org/download/78_dear-mr-fantasy_traffic-steve-winwood-jim-capaldi-chris-wood_gbia0026721a/Dear%20Mr.%20Fantasy%20-%20Traffic-restored.mp3',
+    themes: ['fantasy', 'imagination', 'escape', 'creativity', 'music', 'joy'],
+    mood: ['psychedelic', 'uplifting', 'imaginative', 'joyful', 'flowing'],
+    suggestedRepos: ['legend-🎵-sync', 'legend-✨-multistar', 'truvio-studios'],
+    lyrics: '🎸 Play us a tune, something to make us all happy - Creative musical flow and joyful generation'
+  },
+  {
+    id: 'van-halen-jump',
+    title: 'Jump',
+    artist: 'Van Halen',
+    album: '1984',
+    duration: '4:04',
+    url: 'https://archive.org/download/78_jump_van-halen-david-lee-roth-eddie-van-halen-alex-van-halen-michael-anthony_gbia0027207a/Jump%20-%20Van%20Halen-restored.mp3',
+    themes: ['action', 'leap', 'risk', 'excitement', 'motivation', 'energy'],
+    mood: ['energetic', 'exciting', 'motivational', 'upbeat', 'driving'],
+    suggestedRepos: ['legend-🔀-flow', 'legend-🕹️-mario-exit', 'legend-⚡-fast'],
+    lyrics: '🎹 Go ahead and jump - Taking action and making the leap'
+  },
+  {
+    id: 'stevie-ray-vaughan-pride-and-joy',
+    title: 'Pride and Joy',
+    artist: 'Stevie Ray Vaughan',
+    album: 'Texas Flood',
+    duration: '3:39',
+    url: 'https://archive.org/download/78_pride-and-joy_stevie-ray-vaughan-and-double-trouble-stevie-ray-vaughan_gbia0027591a/Pride%20And%20Joy%20-%20Stevie%20Ray%20Vaughan-restored.mp3',
+    themes: ['pride', 'joy', 'blues', 'guitar', 'celebration', 'love'],
+    mood: ['upbeat', 'joyful', 'bluesy', 'energetic', 'celebratory'],
+    suggestedRepos: ['legend-core', 'legend-✨-multistar', 'legend-🎵-sync'],
+    lyrics: '🎸 She\'s my sweet little thing - Pride in well-crafted systems'
+  },
+  {
+    id: 'bush-machinehead',
+    title: 'Machinehead',
+    artist: 'Bush',
+    album: 'Sixteen Stone',
+    duration: '4:12',
+    url: 'https://archive.org/download/78_machinehead_bush-gavin-rossdale_gbia0027323a/Machinehead%20-%20Bush-restored.mp3',
+    themes: ['machine', 'industrial', 'mechanical', 'grunge', 'power', 'automation'],
+    mood: ['heavy', 'industrial', 'powerful', 'mechanical', 'intense'],
+    suggestedRepos: ['legend-🦾-robot-core', 'legend-🎛️-modulator', 'mongoose.os'],
+    lyrics: '🤖 Breathe in, breathe out - Industrial machine systems and automation'
   }
 ]
 

@@ -22,6 +22,7 @@ import { ClusterView } from './components/ClusterView'
 import { CreepshowStory } from './components/CreepshowStory'
 import { FloatingJukebox } from './components/FloatingJukebox'
 import { MusicLibraryView } from './components/MusicLibraryView'
+import { SilverPriceDisplay } from './components/SilverPriceDisplay'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -475,6 +476,7 @@ function App() {
             <div className="flex flex-col lg:flex-row gap-6">
             <div className="lg:w-64 flex-shrink-0 space-y-4">
               <GitHubAuth onAuthChange={setGithubAuthenticated} />
+              <SilverPriceDisplay compact />
               <SystemStatus repoCount={repos.length} isLoading={loading} />
               {healthMetrics.size > 0 && (
                 <HealthOverview allMetrics={healthMetrics} />

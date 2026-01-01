@@ -840,10 +840,11 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
         width={dimensions.width}
         height={dimensions.height}
         onClick={handleCanvasClick}
-        className="absolute inset-0 cursor-pointer z-0"
+        className="absolute inset-0 cursor-pointer"
+        style={{ zIndex: 1 }}
       />
 
-      <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+      <div className="absolute top-4 left-4 flex flex-col gap-2" style={{ zIndex: 10 }}>
         <Card className="p-3 bg-card/90 backdrop-blur-sm border-primary/30">
           <div className="text-sm font-mono text-muted-foreground mb-2">QUANTUM COCKPIT</div>
           <div className="text-2xl font-bold text-primary" style={{ fontFamily: "'Orbitron', sans-serif" }}>
@@ -907,7 +908,7 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
         </Card>
       </div>
 
-      <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+      <div className="absolute top-4 right-4 flex flex-col gap-2" style={{ zIndex: 10 }}>
         <Button
           size="sm"
           variant="outline"
@@ -1044,7 +1045,8 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute bottom-4 left-4 right-4 z-10"
+          className="absolute bottom-4 left-4 right-4"
+          style={{ zIndex: 10 }}
         >
           <Card className="p-4 bg-card/95 backdrop-blur-sm border-primary/30">
             <div className="flex items-start gap-3">
@@ -1076,7 +1078,7 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
         </motion.div>
       )}
 
-      <div className="absolute bottom-4 right-4 text-xs text-muted-foreground font-mono bg-card/80 backdrop-blur-sm p-2 rounded border border-border/50 max-w-xs z-10">
+      <div className="absolute bottom-4 right-4 text-xs text-muted-foreground font-mono bg-card/80 backdrop-blur-sm p-2 rounded border border-border/50 max-w-xs" style={{ zIndex: 10 }}>
         <div className="flex flex-col gap-1">
           <div className="text-yellow font-bold mb-1">🌌 QUANTUM SPACE VIEW</div>
           <div><span className="text-accent">⚡ Max 4 Dots:</span> Intelligent rotation prevents crashes</div>

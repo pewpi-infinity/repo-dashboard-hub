@@ -881,6 +881,54 @@ export const EXTENDED_REPO_REGISTRY: Record<string, RepoDefinition> = {
     functions: [
       { name: 'investigate', purpose: 'Investigate topic', inputs: ['topic', 'sources'], outputs: ['findings'], semanticMeaning: 'Seeking hidden truth' }
     ]
+  },
+
+  'truvio-studios': {
+    name: 'truvio-studios',
+    emoji: '🎬💰',
+    category: 'other',
+    description: 'Media production and treasury management',
+    purpose: 'Manage media production and track precious metal values',
+    colorCode: 'gold',
+    numberCode: 92,
+    semanticTags: ['media', 'production', 'treasury', 'silver', 'gold', 'value', 'studio'],
+    dependencies: ['legend-core', 'legend-💰-money', 'legend-🎬-production'],
+    exports: ['media-producer', 'value-tracker', 'studio-manager'],
+    musicTheme: {
+      primary: 'Money',
+      journey: 'Welcome to the Machine',
+    },
+    position: { layer: 5, order: 16 },
+    pages: [
+      { 
+        name: 'Studio Dashboard', 
+        path: '/studio', 
+        purpose: 'Manage production and track values', 
+        components: ['ProductionQueue', 'MediaLibrary', 'TreasuryTracker', 'SilverPriceDisplay'] 
+      },
+      {
+        name: 'Price Management',
+        path: '/prices',
+        purpose: 'Track and manage precious metal prices',
+        components: ['SilverPriceEditor', 'GoldPriceEditor', 'TreasuryDashboard']
+      }
+    ],
+    functions: [
+      { 
+        name: 'trackSilverPrice', 
+        purpose: 'Display and manage true silver price', 
+        inputs: ['current-price', 'device-auth'], 
+        outputs: ['displayed-price'], 
+        semanticMeaning: 'Displaying true value - editable only by authorized device for presentation logic' 
+      },
+      {
+        name: 'produceMedia',
+        purpose: 'Produce and manage media content',
+        inputs: ['media-spec', 'production-queue'],
+        outputs: ['produced-media'],
+        semanticMeaning: 'Creating visual stories and productions'
+      }
+    ]
   }
 }
 
