@@ -11,17 +11,17 @@ interface CategoryFilterProps {
 
 export function CategoryFilter({ activeCategory, onCategoryChange, counts }: CategoryFilterProps) {
   const categories = [
-    { id: 'all' as const, label: 'All Systems', icon: SquaresFour },
-    { id: 'brain' as const, label: 'Neural Core', icon: Brain },
-    { id: 'quantum' as const, label: 'Quantum', icon: Atom },
-    { id: 'time' as const, label: 'Time Machine', icon: Clock },
-    { id: 'os' as const, label: 'OS', icon: Gear },
-    { id: 'other' as const, label: 'Other', icon: Cube },
+    { id: 'all' as const, label: 'All Systems', icon: SquaresFour, color: 'text-foreground' },
+    { id: 'brain' as const, label: 'Neural Core', icon: Brain, color: 'text-gold' },
+    { id: 'quantum' as const, label: 'Quantum', icon: Atom, color: 'text-purple' },
+    { id: 'time' as const, label: 'Time Machine', icon: Clock, color: 'text-blue' },
+    { id: 'os' as const, label: 'OS', icon: Gear, color: 'text-orange' },
+    { id: 'other' as const, label: 'Other', icon: Cube, color: 'text-green' },
   ]
 
   return (
     <div className="flex flex-wrap gap-2">
-      {categories.map(({ id, label, icon: Icon }) => {
+      {categories.map(({ id, label, icon: Icon, color }) => {
         const count = counts[id] || 0
         const isActive = activeCategory === id
         
@@ -33,10 +33,11 @@ export function CategoryFilter({ activeCategory, onCategoryChange, counts }: Cat
             onClick={() => onCategoryChange(id)}
             className={cn(
               'gap-2 transition-all duration-200',
-              isActive && 'glow-border bg-primary text-primary-foreground hover:bg-primary/90'
+              isActive && 'glow-border bg-primary text-primary-foreground hover:bg-primary/90',
+              !isActive && 'hover:border-accent hover:text-accent'
             )}
           >
-            <Icon size={16} weight={isActive ? 'fill' : 'regular'} />
+            <Icon size={16} weight={isActive ? 'fill' : 'regular'} className={!isActive ? color : ''} />
             <span>{label}</span>
             <span className={cn(
               'px-1.5 py-0.5 rounded-full text-xs font-mono',

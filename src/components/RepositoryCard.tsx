@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import * as Icons from '@phosphor-icons/react'
 import { HealthIndicator } from './HealthIndicator'
 import type { HealthMetrics } from '@/lib/health-monitor'
+import { getEmojiForRepo, getGlowClass } from '@/lib/emoji-legend'
 
 interface RepositoryCardProps {
   repo: CategorizedRepo
@@ -20,6 +21,7 @@ export function RepositoryCard({ repo, isBrain = false, onShowStats, healthMetri
   const categoryLabel = getCategoryLabel(repo.category)
   const categoryColor = getCategoryColor(repo.category)
   const lastUpdate = getRelativeTime(repo.updated_at)
+  const emojiLegend = getEmojiForRepo(repo.name)
   
   const CategoryIcon = isBrain 
     ? Icons.Brain 
@@ -46,7 +48,7 @@ export function RepositoryCard({ repo, isBrain = false, onShowStats, healthMetri
         'group relative overflow-hidden transition-all duration-300',
         isBrain 
           ? 'glow-border-accent pulse-glow float-animation bg-gradient-to-br from-accent/10 to-card' 
-          : 'glow-border hover:glow-border-accent bg-card/80 backdrop-blur-sm'
+          : 'glow-border hover:glow-border-accent bg-card/80 backdrop-blur-sm hover:scale-[1.02]'
       )}
     >
       <div className="p-6 space-y-4">
@@ -55,21 +57,38 @@ export function RepositoryCard({ repo, isBrain = false, onShowStats, healthMetri
             onClick={handleClick}
             className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
           >
-            <div className={cn(
-              'flex-shrink-0 p-2 rounded-lg',
-              isBrain ? 'bg-accent/20' : 'bg-primary/20'
-            )}>
-              <CategoryIcon 
-                className={isBrain ? 'text-accent' : 'text-primary'} 
-                size={24}
-                weight="duotone"
-              />
-            </div>
+            {emojiLegend ? (
+              <div className="flex-shrink-0">
+                <span className={cn(
+                  'text-4xl',
+                  getGlowClass(emojiLegend.color),
+                  isBrain && 'bounce-gentle'
+                )}>
+                  {emojiLegend.emoji}
+                </span>
+              </div>
+            ) : (
+              <div className={cn(
+                'flex-shrink-0 p-2 rounded-lg',
+                isBrain ? 'bg-accent/20' : 'bg-primary/20'
+              )}>
+                <CategoryIcon 
+                  className={isBrain ? 'text-accent' : 'text-primary'} 
+                  size={24}
+                  weight="duotone"
+                />
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-lg truncate" style={{ fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.05em' }}>
                 {repo.name}
               </h3>
-              {isBrain && (
+              {emojiLegend && (
+                <p className="text-xs text-muted-foreground">
+                  {emojiLegend.meaning}
+                </p>
+              )}
+              {isBrain && !emojiLegend && (
                 <p className="text-xs font-semibold text-accent uppercase tracking-wider">
                   System Core
                 </p>
@@ -125,7 +144,7 @@ export function RepositoryCard({ repo, isBrain = false, onShowStats, healthMetri
 
         <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t border-border/50">
           <div className="flex items-center gap-1">
-            <Star size={14} weight="fill" className="text-yellow-500" />
+            <Star size={14} weight="fill" className="text-yellow" />
             <span>{repo.stargazers_count}</span>
           </div>
           <div className="flex items-center gap-1">

@@ -12,6 +12,7 @@ import { QuickLinks } from './components/QuickLinks'
 import { RecentActivity } from './components/RecentActivity'
 import { HealthOverview } from './components/HealthOverview'
 import { AlertPanel } from './components/AlertPanel'
+import { LegendPanel } from './components/LegendPanel'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -162,21 +163,30 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground circuit-bg">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-purple/10 via-blue/5 to-accent/10 pointer-events-none" />
+      <div className="absolute inset-0 opacity-30 pointer-events-none" 
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 20% 50%, oklch(0.60 0.25 250 / 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, oklch(0.75 0.18 200 / 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 40% 20%, oklch(0.55 0.22 290 / 0.15) 0%, transparent 50%)
+          `
+        }}
+      />
       
       <div className="relative">
-        <header className="border-b border-border/50 backdrop-blur-sm bg-background/80 sticky top-0 z-10">
+        <header className="border-b border-border/50 backdrop-blur-sm bg-gradient-to-r from-card/90 via-card/80 to-card/90 sticky top-0 z-10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 
-                  className="text-3xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent"
+                  className="text-3xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-yellow via-accent to-pink bg-clip-text text-transparent"
                   style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: '0.02em' }}
                 >
-                  AC DASHBOARD
+                  🎮 AC DASHBOARD
                 </h1>
                 <p className="text-sm text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  Pewpi Infinity Quantum Computing & Time Machine System
+                  <span className="text-gold">👑</span> Pewpi Infinity Quantum Computing & Time Machine System
                 </p>
               </div>
               <Button
@@ -184,7 +194,7 @@ function App() {
                 size="sm"
                 onClick={loadRepositories}
                 disabled={loading}
-                className="gap-2"
+                className="gap-2 hover:bg-accent/10 hover:border-accent hover:text-accent"
               >
                 <ArrowClockwise className={loading ? 'animate-spin' : ''} size={16} />
                 Refresh
@@ -209,6 +219,7 @@ function App() {
               {healthMetrics.size > 0 && (
                 <HealthOverview allMetrics={healthMetrics} />
               )}
+              <LegendPanel />
               <QuickLinks />
               {repos.length > 0 && <RecentActivity repos={repos} />}
             </div>
@@ -293,7 +304,8 @@ function App() {
                         className="text-2xl font-semibold mb-6 flex items-center gap-2"
                         style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                       >
-                        <span className="text-accent">⚡</span>
+                        <span className="text-gold text-3xl">👑</span>
+                        <span className="text-purple text-3xl">🧠</span>
                         Neural Core System
                       </h2>
                       <div className={currentViewMode === 'list' ? '' : 'max-w-2xl'}>
@@ -319,9 +331,10 @@ function App() {
                   {otherRepos.length > 0 ? (
                     <section>
                       <h2 
-                        className="text-2xl font-semibold mb-6"
+                        className="text-2xl font-semibold mb-6 flex items-center gap-2"
                         style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                       >
+                        <span className="text-blue text-3xl">🎛️</span>
                         {activeCategory === 'all' ? 'System Components' : `${categoryCounts[activeCategory]} Components`}
                       </h2>
                       {currentViewMode === 'grid' ? (
@@ -370,10 +383,14 @@ function App() {
           </div>
         </main>
 
-        <footer className="border-t border-border/50 mt-16 py-6 backdrop-blur-sm bg-background/80">
+        <footer className="border-t border-border/50 mt-16 py-6 backdrop-blur-sm bg-gradient-to-r from-card/90 via-card/80 to-card/90">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-muted-foreground">
             <p style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-              Quantum System Architecture • pewpi-infinity
+              <span className="text-gold">👑</span> Quantum System Architecture 
+              <span className="text-accent mx-2">•</span> 
+              <span className="text-blue">🧱</span> pewpi-infinity 
+              <span className="text-purple mx-2">•</span>
+              <span className="text-yellow">✨</span> Built with Legend Code
             </p>
           </div>
         </footer>

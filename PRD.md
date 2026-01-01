@@ -140,18 +140,29 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Stale Health Data**: Health metrics refresh on page reload, indicate monitoring is real-time on page load
 
 ## Design Direction
-The design should evoke a high-tech quantum computing interface with neural network aesthetics - think glowing connections, circuit board patterns, and time-space distortion effects. The interface should feel like controlling an advanced scientific instrument.
+The design should evoke a vibrant retro gaming aesthetic with Nintendo-inspired colors, playful emoji system integration, and high-contrast elements against dark backgrounds. The interface should feel like an engaging, colorful command center with personality - combining technical precision with visual delight through bold color choices and emoji-based visual language.
 
 ## Color Selection
-A cybernetic color scheme with electric blues, deep purples, and neon accents representing quantum states and neural pathways.
+A vibrant, multi-color scheme inspired by retro gaming and modern tech interfaces, with high-contrast colors against dark backgrounds for maximum engagement and readability.
 
-- **Primary Color**: Deep Electric Blue (oklch(0.55 0.24 250)) - Represents quantum computing and data processing power
-- **Secondary Colors**: Dark Purple (oklch(0.25 0.12 280)) for backgrounds, creating depth and mystery of quantum mechanics
-- **Accent Color**: Neon Cyan (oklch(0.75 0.18 200)) - For highlighting active states and connections, representing energy flow
+- **Primary Color**: Electric Blue (oklch(0.60 0.25 250)) - Represents core computing and primary actions
+- **Accent Color**: Bright Cyan (oklch(0.80 0.20 200)) - For highlighting active states and important elements
+- **Secondary Colors**: Deep Purple/Indigo backgrounds (oklch(0.30 0.15 280)) for depth and visual interest
+- **Emoji Color System**:
+  - 🟧 Orange (oklch(0.70 0.18 50)): CEO decisions/important choices
+  - 🟦 Blue (oklch(0.60 0.25 250)): Input needed
+  - 🟥 Red (oklch(0.60 0.24 25)): Routes/paths available
+  - 🟪 Purple (oklch(0.55 0.22 290)): Assimilation/integration
+  - 🟨 Yellow (oklch(0.85 0.15 90)): Data extraction
+  - 🟩 Green (oklch(0.65 0.20 145)): Engineering/tools
+  - 🌸 Pink (oklch(0.70 0.20 350)): Investigative
+  - 💎 Gold (oklch(0.75 0.15 80)): Value/authority elements
 - **Foreground/Background Pairings**: 
-  - Primary (Deep Electric Blue oklch(0.55 0.24 250)): White text (oklch(0.98 0 0)) - Ratio 8.2:1 ✓
-  - Accent (Neon Cyan oklch(0.75 0.18 200)): Dark text (oklch(0.15 0 0)) - Ratio 12.1:1 ✓
-  - Background (Dark Purple oklch(0.25 0.12 280)): Light text (oklch(0.92 0 0)) - Ratio 11.8:1 ✓
+  - Primary (Electric Blue oklch(0.60 0.25 250)): White text (oklch(0.98 0 0)) - Ratio 8.2:1 ✓
+  - Accent (Bright Cyan oklch(0.80 0.20 200)): Dark text (oklch(0.15 0 0)) - Ratio 12.1:1 ✓
+  - Background (Deep Purple oklch(0.30 0.15 280)): Light text (oklch(0.95 0.01 280)) - Ratio 12.5:1 ✓
+  - Orange (oklch(0.70 0.18 50)): White text (oklch(0.98 0 0)) - Ratio 7.8:1 ✓
+  - Yellow (oklch(0.85 0.15 90)): Dark text (oklch(0.15 0 0)) - Ratio 14.2:1 ✓
 
 ## Font Selection
 Typefaces should convey precision, technology, and futurism - monospace for technical accuracy with a modern sans-serif for readability.
@@ -164,13 +175,13 @@ Typefaces should convey precision, technology, and futurism - monospace for tech
   - Labels (Metadata): JetBrains Mono Medium/12px/normal letter-spacing
 
 ## Animations
-Animations should reinforce the quantum computing theme with subtle particle effects, glowing pulses on hover, and smooth morphing transitions between states. Cards should have a gentle floating effect. Connections between the mongoose.os brain and other components should pulse with energy. All animations should be performant and non-distracting.
+Animations should be playful yet purposeful, drawing inspiration from retro gaming - bouncing elements, pulsing glows, gentle floating effects, and smooth color transitions. The emoji elements should have subtle glow effects. Cards should scale up slightly on hover for tactile feedback. All animations should feel responsive and delightful without being distracting, maintaining Nintendo-era charm with modern smoothness.
 
 ## Component Selection
 - **Components**: 
-  - Card component for repository display with custom hover effects
-  - Badge component for status indicators and categories
-  - Button component for stats triggers and navigation
+  - Card component for repository display with custom hover effects and emoji integration
+  - Badge component for status indicators and categories with vibrant colors
+  - Button component for stats triggers and navigation with hover glow effects
   - Dialog component for detailed repository statistics modal with tabs
   - Tabs component for organizing stats, health, and alerts views
   - Tooltip component for displaying full repository information
@@ -187,13 +198,14 @@ Animations should reinforce the quantum computing theme with subtle particle eff
   - Custom CircularGauge for overall health scores
   - Custom HealthOverview for aggregate system health
   - Custom AlertPanel for health alert management
+  - Custom LegendPanel for emoji color code display
 - **Customizations**: 
   - Custom grid layout with CSS Grid for responsive repository cards
   - Custom list layout with compact horizontal repository items
-  - Animated background with SVG patterns simulating circuit boards and neural connections
-  - Custom repository card with glowing border effects using box-shadow and health indicators
-  - Custom repository list item with horizontal layout optimized for scanning
-  - mongoose.os special card with pulsing animation and distinctive styling
+  - Animated background with SVG patterns simulating circuit boards and colorful gradient orbs
+  - Custom repository card with glowing border effects, emoji integration, and hover scale animations
+  - Custom repository list item with horizontal layout optimized for scanning and emoji display
+  - mongoose.os special card with pulsing animation and distinctive styling with bouncing emoji
   - Full-screen statistics modal with glassmorphic backdrop and tabbed navigation
   - Interactive area chart with custom color gradients matching theme
   - Contributor cards with hover effects and click-to-profile functionality
@@ -203,6 +215,8 @@ Animations should reinforce the quantum computing theme with subtle particle eff
   - Health overview panel with status counts and aggregate metrics
   - Alert panel with severity-based color coding and grouping by repository
   - Toast notifications for critical health alerts
+  - Emoji legend panel displaying color code system with vibrant styling
+  - Repository cards with emoji-based visual identification using custom glow effects
 - **States**: 
   - Cards: default (subtle glow), hover (bright glow + lift), active (pressed state)
   - Stats button: outline style with hover glow effect
