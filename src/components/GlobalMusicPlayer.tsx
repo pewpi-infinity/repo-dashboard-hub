@@ -24,7 +24,8 @@ interface MusicPlayerState {
 }
 
 const STORAGE_KEY = 'quantum-music-player-state'
-const DEFAULT_AUDIO_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' // Sample audio for demo
+// Note: In production, replace this with a local audio file or configurable URL
+const DEFAULT_AUDIO_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
 
 export function GlobalMusicPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -56,17 +57,21 @@ export function GlobalMusicPlayer() {
     }
   }, [])
 
-  // Save state to localStorage
+  // Save state to localStorage with debouncing
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        volume: state.volume,
-        isMinimized: state.isMinimized,
-        isVisible: state.isVisible
-      }))
-    } catch (error) {
-      console.error('Failed to save music player state:', error)
-    }
+    const timeoutId = setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          volume: state.volume,
+          isMinimized: state.isMinimized,
+          isVisible: state.isVisible
+        }))
+      } catch (error) {
+        console.error('Failed to save music player state:', error)
+      }
+    }, 500) // Debounce by 500ms
+
+    return () => clearTimeout(timeoutId)
   }, [state.volume, state.isMinimized, state.isVisible])
 
   // Update audio element volume
@@ -91,7 +96,10 @@ export function GlobalMusicPlayer() {
     }
 
     const handleEnded = () => {
-      setState(prev => ({ ...prev, isPlaying: false, currentTime: 0 }))
+      // Note: With loop attribute, this shouldn't fire, but keeping for fallback
+      if (!audio.loop) {
+        setState(prev => ({ ...prev, isPlaying: false, currentTime: 0 }))
+      }
     }
 
     audio.addEventListener('loadedmetadata', handleLoadedMetadata)
