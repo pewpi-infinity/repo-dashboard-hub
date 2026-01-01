@@ -571,6 +571,64 @@ export const REPO_REGISTRY: Record<string, RepoDefinition> = {
         semanticMeaning: 'Weaving the web of understanding'
       }
     ]
+  },
+
+  'truvio-studios': {
+    name: 'truvio-studios',
+    emoji: '🎬',
+    category: 'other',
+    description: 'Interactive storytelling and media production',
+    purpose: 'Create interactive stories and media experiences',
+    colorCode: 'pink',
+    numberCode: 88,
+    semanticTags: ['storytelling', 'media', 'production', 'interactive', 'cinema', 'creepshow'],
+    dependencies: ['legend-core', 'legend-🎵-sync'],
+    exports: ['story-engine', 'media-production', 'interactive-narratives'],
+    position: {
+      layer: 3,
+      order: 8
+    },
+    musicTheme: {
+      primary: 'Dear Mr. Fantasy',
+      journey: 'The Logical Song',
+      archive: 'https://archive.org/details/78_dear-mr-fantasy_traffic-steve-winwood-jim-capaldi-chris-wood_gbia0026721a'
+    },
+    pages: [
+      {
+        name: 'Story Builder',
+        path: '/stories',
+        purpose: 'Create and edit interactive stories',
+        components: ['StoryEditor', 'SceneManager', 'BranchingPaths']
+      },
+      {
+        name: 'Media Library',
+        path: '/media',
+        purpose: 'Manage media assets',
+        components: ['MediaGallery', 'AssetUpload', 'TagManager']
+      },
+      {
+        name: 'Production',
+        path: '/production',
+        purpose: 'Produce and publish stories',
+        components: ['ProductionQueue', 'PreviewPlayer', 'PublishSettings']
+      }
+    ],
+    functions: [
+      {
+        name: 'createStory',
+        purpose: 'Create new interactive story',
+        inputs: ['story-data', 'branches', 'media-assets'],
+        outputs: ['story-id', 'interactive-experience'],
+        semanticMeaning: 'Weaving tales that branch and evolve'
+      },
+      {
+        name: 'correctScript',
+        purpose: 'Correct story scripts to change outcomes',
+        inputs: ['scene-id', 'corrections'],
+        outputs: ['updated-story', 'new-fate'],
+        semanticMeaning: 'Rewriting destiny through better choices'
+      }
+    ]
   }
 }
 

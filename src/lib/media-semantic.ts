@@ -439,6 +439,7 @@ export const musicLibrary: MusicTrack[] = [
     artist: 'Pink Floyd',
     album: 'Wish You Were Here',
     duration: '12:26',
+    url: 'https://archive.org/download/PinkFloyd-ShineOnYouCrazyDiamond1975/Pink%20Floyd%20-%20Shine%20On%20You%20Crazy%20Diamond%20%281975%29.mp3',
     themes: ['tribute', 'loss', 'mental-health', 'friendship', 'nostalgia', 'diamond', 'shine', 'star', 'cosmic'],
     mood: ['ethereal', 'melancholic', 'expansive', 'atmospheric', 'reflective'],
     suggestedRepos: ['legend-✨-multistar', 'legend-💫-star', 'legend-⭐-runtime', 'legend-🪐-memory']
@@ -449,6 +450,7 @@ export const musicLibrary: MusicTrack[] = [
     artist: 'Pink Floyd',
     album: 'The Wall',
     duration: '6:21',
+    url: 'https://archive.org/download/PinkFloyd-ComfortablyNumb/Pink%20Floyd%20-%20Comfortably%20Numb.mp3',
     themes: ['isolation', 'numbness', 'disconnection', 'pain', 'healing'],
     mood: ['melancholic', 'powerful', 'epic', 'emotional'],
     suggestedRepos: ['legend-🍄-auditor', 'mongoose.os', 'truvio-studios']
@@ -479,6 +481,7 @@ export const musicLibrary: MusicTrack[] = [
     artist: 'Pink Floyd',
     album: 'Meddle',
     duration: '23:31',
+    url: 'https://archive.org/download/PinkFloyd-Echoes_201409/Pink%20Floyd%20-%20Echoes.mp3',
     themes: ['journey', 'cosmic', 'underwater', 'communication', 'connection', 'exploration'],
     mood: ['expansive', 'atmospheric', 'mysterious', 'epic', 'transcendent'],
     suggestedRepos: ['legend-🪐-memory', 'legend-🔗-semantic', 'legend-⛓️-chain', 'mongoose.os']
