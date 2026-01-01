@@ -23,6 +23,7 @@ interface Particle {
   opacity: number
   rotation: number
   pulse: number
+  collisionFlash: number
 }
 
 interface Connection {
@@ -50,6 +51,7 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
   const [centerMachine, setCenterMachine] = useState<{ x: number; y: number; radius: number }>({ x: 0, y: 0, radius: 80 })
   const [autoConnect, setAutoConnect] = useState(true)
   const [connectionMode, setConnectionMode] = useState<'learning' | 'coordinating' | 'building'>('learning')
+  const [collisionCount, setCollisionCount] = useState(0)
 
   const brainRepo = useMemo(() => repos.find(r => r.name.toLowerCase().includes('mongoose')), [repos])
 
@@ -97,7 +99,8 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
         isConnecting: false,
         opacity: 1,
         rotation: Math.random() * 360,
-        pulse: Math.random() * Math.PI * 2
+        pulse: Math.random() * Math.PI * 2,
+        collisionFlash: 0
       }
     })
 
@@ -124,12 +127,13 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
 
       drawBackground(ctx)
       
-      const updatedParticles = particles.map(particle => {
+      const updatedParticles = particles.map((particle, index) => {
         let newX = particle.x
         let newY = particle.y
         let newVx = particle.vx
         let newVy = particle.vy
         let isConnecting = particle.isConnecting
+        let collisionFlash = Math.max(0, particle.collisionFlash - deltaTime * 3)
 
         if (autoConnect && connectionMode === 'learning') {
           const dx = centerMachine.x - particle.x
@@ -185,6 +189,47 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
           isConnecting = true
         }
 
+        particles.forEach((other, otherIndex) => {
+          if (otherIndex <= index) return
+          
+          const dx = other.x - particle.x
+          const dy = other.y - particle.y
+          const distance = Math.sqrt(dx * dx + dy * dy)
+          const minDistance = (particle.size + other.size) * 0.6
+          
+          if (distance < minDistance && distance > 0) {
+            collisionFlash = 1
+            other.collisionFlash = 1
+            setCollisionCount(prev => prev + 1)
+            
+            const angle = Math.atan2(dy, dx)
+            const targetDistance = minDistance
+            const force = (targetDistance - distance) * 0.5
+            
+            const forceX = Math.cos(angle) * force
+            const forceY = Math.sin(angle) * force
+            
+            const totalMass = particle.size + other.size
+            const particleMass = particle.size / totalMass
+            const otherMass = other.size / totalMass
+            
+            newVx -= forceX * otherMass * 0.8
+            newVy -= forceY * otherMass * 0.8
+            
+            other.vx += forceX * particleMass * 0.8
+            other.vy += forceY * particleMass * 0.8
+            
+            const overlap = minDistance - distance
+            const separationX = Math.cos(angle) * overlap * 0.5
+            const separationY = Math.sin(angle) * overlap * 0.5
+            
+            newX -= separationX * otherMass
+            newY -= separationY * otherMass
+            other.x += separationX * particleMass
+            other.y += separationY * particleMass
+          }
+        })
+
         newVx *= 0.98
         newVy *= 0.98
 
@@ -216,7 +261,8 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
           vy: newVy,
           isConnecting,
           rotation: particle.rotation + speed * 2,
-          pulse: particle.pulse + deltaTime * 2
+          pulse: particle.pulse + deltaTime * 2,
+          collisionFlash
         }
       })
 
@@ -409,22 +455,55 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
       
       const rgb = colorMap[particle.color] || '96, 119, 255'
 
-      const glowGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, particle.size * pulseScale)
-      glowGradient.addColorStop(0, `rgba(${rgb}, 0.3)`)
-      glowGradient.addColorStop(0.5, `rgba(${rgb}, 0.15)`)
-      glowGradient.addColorStop(1, `rgba(${rgb}, 0)`)
+      const glowSize = particle.collisionFlash > 0 ? particle.size * pulseScale * (1 + particle.collisionFlash * 0.5) : particle.size * pulseScale
+      const glowGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, glowSize)
+      
+      if (particle.collisionFlash > 0) {
+        glowGradient.addColorStop(0, `rgba(255, 255, 255, ${particle.collisionFlash * 0.6})`)
+        glowGradient.addColorStop(0.3, `rgba(${rgb}, ${0.5 + particle.collisionFlash * 0.3})`)
+        glowGradient.addColorStop(0.6, `rgba(${rgb}, 0.15)`)
+        glowGradient.addColorStop(1, `rgba(${rgb}, 0)`)
+      } else {
+        glowGradient.addColorStop(0, `rgba(${rgb}, 0.3)`)
+        glowGradient.addColorStop(0.5, `rgba(${rgb}, 0.15)`)
+        glowGradient.addColorStop(1, `rgba(${rgb}, 0)`)
+      }
 
       ctx.fillStyle = glowGradient
       ctx.beginPath()
-      ctx.arc(0, 0, particle.size * pulseScale, 0, Math.PI * 2)
+      ctx.arc(0, 0, glowSize, 0, Math.PI * 2)
       ctx.fill()
+
+      if (particle.collisionFlash > 0) {
+        ctx.strokeStyle = `rgba(255, 255, 255, ${particle.collisionFlash * 0.8})`
+        ctx.lineWidth = 3
+        ctx.beginPath()
+        ctx.arc(0, 0, particle.size * 0.8, 0, Math.PI * 2)
+        ctx.stroke()
+
+        for (let i = 0; i < 6; i++) {
+          const angle = (i / 6) * Math.PI * 2 + particle.rotation * 0.01
+          const length = particle.size * (0.5 + particle.collisionFlash * 0.5)
+          const startX = Math.cos(angle) * particle.size * 0.8
+          const startY = Math.sin(angle) * particle.size * 0.8
+          const endX = Math.cos(angle) * length
+          const endY = Math.sin(angle) * length
+          
+          ctx.strokeStyle = `rgba(${rgb}, ${particle.collisionFlash * 0.7})`
+          ctx.lineWidth = 2
+          ctx.beginPath()
+          ctx.moveTo(startX, startY)
+          ctx.lineTo(endX, endY)
+          ctx.stroke()
+        }
+      }
 
       ctx.font = `${particle.size}px Arial`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(particle.emoji, 0, 0)
 
-      if (particle.isConnecting) {
+      if (particle.isConnecting && particle.collisionFlash === 0) {
         ctx.strokeStyle = `rgba(${rgb}, 0.6)`
         ctx.lineWidth = 2
         ctx.beginPath()
@@ -562,6 +641,14 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
             </div>
           </Card>
         )}
+
+        <Card className="p-3 bg-card/90 backdrop-blur-sm border-orange/30">
+          <div className="text-xs font-mono text-muted-foreground mb-1">COLLISIONS</div>
+          <div className="text-2xl font-bold text-orange" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+            {collisionCount}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">Physics Events</div>
+        </Card>
       </div>
 
       <div className="absolute top-4 right-4 flex flex-col gap-2">
@@ -593,6 +680,15 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
         >
           <Atom size={16} weight={autoConnect ? 'fill' : 'regular'} />
           Auto Connect
+        </Button>
+
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setCollisionCount(0)}
+          className="gap-2 bg-card/90 backdrop-blur-sm border-orange/30 hover:bg-orange/10 text-orange"
+        >
+          Reset Collisions
         </Button>
       </div>
 
@@ -637,6 +733,9 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
           <div><span className="text-accent">Learning:</span> Particles attracted to center</div>
           <div><span className="text-accent">Coordinating:</span> Particles connect with each other</div>
           <div><span className="text-accent">Building:</span> Particles orbit the center</div>
+          <div className="border-t border-border/50 mt-1 pt-1">
+            <span className="text-orange">💥 Collision Physics:</span> Repos bounce off each other
+          </div>
         </div>
       </div>
     </div>
