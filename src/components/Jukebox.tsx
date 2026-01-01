@@ -15,16 +15,18 @@ import {
   MusicNotes,
   Circle
 } from '@phosphor-icons/react'
-import { musicLibrary, type MusicTrack, getMusicForRepo } from '@/lib/media-semantic'
+import { musicLibrary, type MusicTrack, getMusicForRepo, aiMatchMusicToRepo } from '@/lib/media-semantic'
 import { motion, AnimatePresence } from 'framer-motion'
+import type { CategorizedRepo } from '@/lib/types'
 
 interface JukeboxProps {
   repoName?: string
+  repo?: CategorizedRepo
   compact?: boolean
   autoPlay?: boolean
 }
 
-export function Jukebox({ repoName, compact = false, autoPlay = false }: JukeboxProps) {
+export function Jukebox({ repoName, repo, compact = false, autoPlay = false }: JukeboxProps) {
   const [currentTrack, setCurrentTrack] = useState<MusicTrack | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [volume, setVolume] = useState(0.5)
@@ -32,6 +34,7 @@ export function Jukebox({ repoName, compact = false, autoPlay = false }: Jukebox
   const [showQueue, setShowQueue] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [rotation, setRotation] = useState(0)
+  const [loadingAiMatch, setLoadingAiMatch] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const rotationRef = useRef<number>(0)
 
@@ -40,13 +43,35 @@ export function Jukebox({ repoName, compact = false, autoPlay = false }: Jukebox
     : musicLibrary
 
   useEffect(() => {
-    if (availableTracks.length > 0 && !currentTrack) {
-      setCurrentTrack(availableTracks[0])
-      if (autoPlay) {
-        setIsPlaying(true)
+    const initializeMusic = async () => {
+      if (availableTracks.length > 0 && !currentTrack) {
+        if (repoName && repo) {
+          setLoadingAiMatch(true)
+          try {
+            const aiMatch = await aiMatchMusicToRepo(repoName, repo.description || undefined)
+            if (aiMatch) {
+              setCurrentTrack(aiMatch)
+            } else {
+              setCurrentTrack(availableTracks[0])
+            }
+          } catch (error) {
+            console.error('AI matching failed, using fallback:', error)
+            setCurrentTrack(availableTracks[0])
+          } finally {
+            setLoadingAiMatch(false)
+          }
+        } else {
+          setCurrentTrack(availableTracks[0])
+        }
+        
+        if (autoPlay) {
+          setIsPlaying(true)
+        }
       }
     }
-  }, [availableTracks, currentTrack, autoPlay])
+    
+    initializeMusic()
+  }, [availableTracks, currentTrack, autoPlay, repoName, repo])
 
   useEffect(() => {
     let animationFrame: number
@@ -66,6 +91,51 @@ export function Jukebox({ repoName, compact = false, autoPlay = false }: Jukebox
       }
     }
   }, [isPlaying])
+
+  useEffect(() => {
+    if (!currentTrack?.url) return
+
+    if (!audioRef.current) {
+      audioRef.current = new Audio(currentTrack.url)
+      audioRef.current.volume = isMuted ? 0 : volume
+      
+      audioRef.current.addEventListener('timeupdate', () => {
+        if (audioRef.current) {
+          setCurrentTime(audioRef.current.currentTime)
+        }
+      })
+      
+      audioRef.current.addEventListener('ended', () => {
+        nextTrack()
+      })
+    } else if (audioRef.current.src !== currentTrack.url) {
+      audioRef.current.pause()
+      audioRef.current.src = currentTrack.url
+      audioRef.current.volume = isMuted ? 0 : volume
+      audioRef.current.load()
+    }
+
+    if (isPlaying) {
+      audioRef.current.play().catch(err => {
+        console.error('Audio play failed:', err)
+        setIsPlaying(false)
+      })
+    } else {
+      audioRef.current.pause()
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
+    }
+  }, [currentTrack, isPlaying])
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : volume
+    }
+  }, [volume, isMuted])
 
   const togglePlay = () => {
     setIsPlaying(!isPlaying)
@@ -127,12 +197,25 @@ export function Jukebox({ repoName, compact = false, autoPlay = false }: Jukebox
           </motion.div>
           
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-bold text-foreground truncate">
-              {currentTrack?.title || 'No Track'}
-            </div>
-            <div className="text-xs text-muted-foreground truncate">
-              {currentTrack?.artist || 'Select a track'}
-            </div>
+            {loadingAiMatch ? (
+              <>
+                <div className="text-sm font-bold text-purple truncate animate-pulse">
+                  🤖 AI Selecting Track...
+                </div>
+                <div className="text-xs text-muted-foreground truncate">
+                  Analyzing machine journey
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-sm font-bold text-foreground truncate">
+                  {currentTrack?.title || 'No Track'}
+                </div>
+                <div className="text-xs text-muted-foreground truncate">
+                  {currentTrack?.artist || 'Select a track'}
+                </div>
+              </>
+            )}
           </div>
 
           <div className="flex gap-1">
@@ -141,7 +224,7 @@ export function Jukebox({ repoName, compact = false, autoPlay = false }: Jukebox
               variant="ghost"
               onClick={togglePlay}
               className="h-8 w-8 p-0"
-              disabled={!currentTrack}
+              disabled={!currentTrack || loadingAiMatch}
             >
               {isPlaying ? (
                 <Pause size={16} weight="fill" />
@@ -176,16 +259,36 @@ export function Jukebox({ repoName, compact = false, autoPlay = false }: Jukebox
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-bold text-foreground truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                {currentTrack?.title || 'No Track Selected'}
-              </h3>
-              <p className="text-sm text-muted-foreground truncate">
-                {currentTrack?.artist || 'Choose a track to play'}
-              </p>
-              {currentTrack?.album && (
-                <p className="text-xs text-muted-foreground/80 truncate">
-                  {currentTrack.album}
-                </p>
+              {loadingAiMatch ? (
+                <>
+                  <h3 className="text-lg font-bold text-purple animate-pulse" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                    🤖 AI Selecting Perfect Track...
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Analyzing machine journey & musical themes
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-foreground truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                      {currentTrack?.title || 'No Track Selected'}
+                    </h3>
+                    {repoName && currentTrack && (
+                      <Badge variant="outline" className="text-xs bg-purple/20 border-purple/30 flex items-center gap-1">
+                        🤖 AI Match
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground truncate">
+                    {currentTrack?.artist || 'Choose a track to play'}
+                  </p>
+                  {currentTrack?.album && (
+                    <p className="text-xs text-muted-foreground/80 truncate">
+                      {currentTrack.album}
+                    </p>
+                  )}
+                </>
               )}
             </div>
             
@@ -201,13 +304,20 @@ export function Jukebox({ repoName, compact = false, autoPlay = false }: Jukebox
           </div>
 
           {currentTrack && (
-            <div className="flex flex-wrap gap-1 mb-3">
-              {currentTrack.mood.slice(0, 3).map(mood => (
-                <Badge key={mood} variant="outline" className="text-xs bg-purple/20 border-purple/30">
-                  {mood}
-                </Badge>
-              ))}
-            </div>
+            <>
+              <div className="flex flex-wrap gap-1 mb-3">
+                {currentTrack.mood.slice(0, 3).map(mood => (
+                  <Badge key={mood} variant="outline" className="text-xs bg-purple/20 border-purple/30">
+                    {mood}
+                  </Badge>
+                ))}
+                {!currentTrack.url && (
+                  <Badge variant="outline" className="text-xs bg-yellow/20 border-yellow/30 text-yellow">
+                    🔗 Link pending
+                  </Badge>
+                )}
+              </div>
+            </>
           )}
 
           <div className="space-y-2">
@@ -241,8 +351,9 @@ export function Jukebox({ repoName, compact = false, autoPlay = false }: Jukebox
               <Button
                 size="sm"
                 onClick={togglePlay}
-                disabled={!currentTrack}
+                disabled={!currentTrack || !currentTrack.url}
                 className="gap-2 bg-gradient-to-r from-purple to-pink hover:from-purple/90 hover:to-pink/90"
+                title={!currentTrack?.url ? 'Music link not yet available' : undefined}
               >
                 {isPlaying ? (
                   <>
@@ -252,7 +363,7 @@ export function Jukebox({ repoName, compact = false, autoPlay = false }: Jukebox
                 ) : (
                   <>
                     <Play size={20} weight="fill" />
-                    Play
+                    {currentTrack?.url ? 'Play' : 'Link Pending'}
                   </>
                 )}
               </Button>

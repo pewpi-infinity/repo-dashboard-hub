@@ -181,7 +181,7 @@ export function RepoStatsDialog({ repo, open, onOpenChange }: RepoStatsDialogPro
 
               {hasMusic && (
                 <TabsContent value="music" className="space-y-6">
-                  <Jukebox repoName={repo.name} />
+                  <Jukebox repoName={repo.name} repo={repo} autoPlay />
                 </TabsContent>
               )}
             </Tabs>

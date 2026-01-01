@@ -32,6 +32,7 @@ export interface MusicTrack {
   artist: string
   album?: string
   duration?: string
+  url?: string
   lyrics?: string
   themes: string[]
   mood: string[]
@@ -256,6 +257,87 @@ export const musicLibrary: MusicTrack[] = [
     themes: ['effort', 'reward', 'work', 'value', 'philosophy'],
     mood: ['driving', 'powerful', 'motivational'],
     suggestedRepos: ['legend-core', 'legend-🎛️-modulator', 'truvio-studios']
+  },
+  {
+    id: 'pink-floyd-shine-on-part-1',
+    title: 'Shine On You Crazy Diamond (Parts I-V)',
+    artist: 'Pink Floyd',
+    album: 'Wish You Were Here',
+    duration: '13:31',
+    themes: ['tribute', 'loss', 'mental-health', 'friendship', 'nostalgia', 'diamond', 'shine', 'star', 'cosmic'],
+    mood: ['ethereal', 'melancholic', 'expansive', 'atmospheric', 'reflective'],
+    suggestedRepos: ['legend-✨-multistar', 'legend-💫-star', 'legend-⭐-runtime', 'legend-🪐-memory']
+  },
+  {
+    id: 'pink-floyd-welcome-machine',
+    title: 'Welcome to the Machine',
+    artist: 'Pink Floyd',
+    album: 'Wish You Were Here',
+    duration: '7:31',
+    url: 'https://archive.org/download/PinkFloyd_WelcometotheMachine_NY_2jul77/PinkFloyd_WelcometotheMachine_NY_2jul77.mp3',
+    themes: ['industry', 'automation', 'control', 'system', 'machine', 'dystopia', 'corporate', 'assimilation'],
+    mood: ['ominous', 'mechanical', 'dystopian', 'powerful', 'immersive'],
+    suggestedRepos: ['legend-🦾-robot-core', 'legend-🎛️-modulator', 'legend-spine-index', 'mongoose.os', 'legend-core']
+  },
+  {
+    id: 'pink-floyd-wish-you-were-here',
+    title: 'Wish You Were Here',
+    artist: 'Pink Floyd',
+    album: 'Wish You Were Here',
+    duration: '5:34',
+    themes: ['absence', 'longing', 'connection', 'loss', 'nostalgia'],
+    mood: ['melancholic', 'gentle', 'emotional', 'intimate'],
+    suggestedRepos: ['legend-🔗-semantic', 'legend-⛓️-chain', 'truvio-studios']
+  },
+  {
+    id: 'pink-floyd-shine-on-part-2',
+    title: 'Shine On You Crazy Diamond (Parts VI-IX)',
+    artist: 'Pink Floyd',
+    album: 'Wish You Were Here',
+    duration: '12:26',
+    themes: ['tribute', 'loss', 'mental-health', 'friendship', 'nostalgia', 'diamond', 'shine', 'star', 'cosmic'],
+    mood: ['ethereal', 'melancholic', 'expansive', 'atmospheric', 'reflective'],
+    suggestedRepos: ['legend-✨-multistar', 'legend-💫-star', 'legend-⭐-runtime', 'legend-🪐-memory']
+  },
+  {
+    id: 'pink-floyd-comfortably-numb',
+    title: 'Comfortably Numb',
+    artist: 'Pink Floyd',
+    album: 'The Wall',
+    duration: '6:21',
+    themes: ['isolation', 'numbness', 'disconnection', 'pain', 'healing'],
+    mood: ['melancholic', 'powerful', 'epic', 'emotional'],
+    suggestedRepos: ['legend-🍄-auditor', 'mongoose.os', 'truvio-studios']
+  },
+  {
+    id: 'pink-floyd-time',
+    title: 'Time',
+    artist: 'Pink Floyd',
+    album: 'The Dark Side of the Moon',
+    duration: '6:53',
+    themes: ['time', 'aging', 'mortality', 'regret', 'urgency', 'clock'],
+    mood: ['urgent', 'reflective', 'powerful', 'existential'],
+    suggestedRepos: ['legend-⭐-runtime', 'legend-🪐-memory', 'legend-🔀-flow']
+  },
+  {
+    id: 'pink-floyd-money',
+    title: 'Money',
+    artist: 'Pink Floyd',
+    album: 'The Dark Side of the Moon',
+    duration: '6:23',
+    themes: ['money', 'greed', 'capitalism', 'wealth', 'materialism'],
+    mood: ['groovy', 'satirical', 'funky', 'powerful'],
+    suggestedRepos: ['legend-💰-treasury', 'legend-💲-value', 'legend-👁️-token-viewer']
+  },
+  {
+    id: 'pink-floyd-echoes',
+    title: 'Echoes',
+    artist: 'Pink Floyd',
+    album: 'Meddle',
+    duration: '23:31',
+    themes: ['journey', 'cosmic', 'underwater', 'communication', 'connection', 'exploration'],
+    mood: ['expansive', 'atmospheric', 'mysterious', 'epic', 'transcendent'],
+    suggestedRepos: ['legend-🪐-memory', 'legend-🔗-semantic', 'legend-⛓️-chain', 'mongoose.os']
   }
 ]
 
@@ -273,6 +355,55 @@ export function getMusicForRepo(repoName: string): MusicTrack[] {
     track.suggestedRepos.some(repo => lowerName.includes(repo.toLowerCase())) ||
     track.themes.some(theme => lowerName.includes(theme))
   )
+}
+
+export async function aiMatchMusicToRepo(repoName: string, repoDescription?: string): Promise<MusicTrack | null> {
+  try {
+    const availableTracks = getMusicForRepo(repoName)
+    
+    if (availableTracks.length === 0) {
+      return musicLibrary[0] || null
+    }
+    
+    if (availableTracks.length === 1) {
+      return availableTracks[0]
+    }
+
+    const tracksInfo = availableTracks.map((track, idx) => 
+      `${idx + 1}. "${track.title}" by ${track.artist} - Themes: ${track.themes.join(', ')} - Mood: ${track.mood.join(', ')}`
+    ).join('\n')
+
+    const promptText = `You are a music curator for a quantum computing system where each repository/machine represents a unique component.
+
+Repository Name: ${repoName}
+Repository Description: ${repoDescription || 'No description available'}
+
+Available tracks that match this repository:
+${tracksInfo}
+
+Analyze the repository name, description, and emoji semantics. Select the ONE track that best captures the essence and journey of this machine/component.
+
+Consider:
+- Repository name semantics (e.g., "robot-core" → mechanical/automated themes, "memory" → cosmic/time themes)
+- Emoji meanings (🦾 = robot/automation, ⭐ = runtime/star, 🪐 = memory/cosmic, 💰 = money/value)
+- Lyrical themes and mood alignment
+- The emotional journey this machine represents
+
+Return ONLY the number (1-${availableTracks.length}) of the best matching track. No explanation, just the number.`
+
+    const result = await window.spark.llm(promptText, 'gpt-4o-mini')
+    const trackIndex = parseInt(result.trim()) - 1
+    
+    if (trackIndex >= 0 && trackIndex < availableTracks.length) {
+      return availableTracks[trackIndex]
+    }
+    
+    return availableTracks[0]
+  } catch (error) {
+    console.error('AI music matching failed:', error)
+    const fallback = getMusicForRepo(repoName)
+    return fallback[0] || musicLibrary[0] || null
+  }
 }
 
 export function getBackgroundForRepo(repoName: string): MediaAsset | null {

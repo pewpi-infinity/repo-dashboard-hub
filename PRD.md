@@ -201,6 +201,34 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Progression**: Read scene → Make choice → Next node loads with animation → New scene appears → Repeat until ending reached
 - **Success criteria**: Minimum 6 distinct endings (drowned, forgotten, grateful, perfect, heroic, transcendent), multiple paths to reach each ending, safe vs dangerous routes based on corrections, meta-narrative elements (scientist breaks fourth wall), smooth scene transitions with framer-motion
 
+### AI-Powered Music Matching System
+- **Functionality**: Intelligent music curation system that automatically selects the perfect soundtrack for each machine/repository based on its journey, themes, and purpose using AI analysis
+- **Purpose**: Create an immersive musical experience that deepens the emotional connection to each machine component and enhances the quantum system's narrative
+- **Trigger**: User opens repository stats/details dialog with Music tab, or floating jukebox loads
+- **Progression**: System analyzes repo name, description, emoji semantics → AI matches against available tracks considering themes, mood, lyrical content → Best track selected as starting song → Jukebox displays AI-matched track → User can play or browse full queue
+- **Success criteria**: AI correctly identifies thematic connections (e.g., "Welcome to the Machine" for robot-core, "Shine On You Crazy Diamond" for star/multistar repos), shows "🤖 AI Match" badge on selected tracks, provides full jukebox queue of related songs, handles gracefully when no music links available yet
+
+### Musical Journey Integration
+- **Functionality**: Curated music library with tracks semantically mapped to machine types, with special mappings like "Shine On You Crazy Diamond" for shining star repos (✨⭐💫) and "Welcome to the Machine" for automation/system repos
+- **Purpose**: Enrich the dashboard experience with thematic music that reflects each machine's purpose and the user's journey through the quantum system
+- **Trigger**: Automatic on page load (floating jukebox) or when opening repository details
+- **Progression**: User navigates system → Floating jukebox appears → Shows current machine's theme song → Can expand for full controls → Queue shows all related tracks → Can switch repos to hear different machine themes
+- **Success criteria**: Pink Floyd and Rush catalogs integrated with thematic mappings, archive.org links for actual audio playback, floating jukebox with compact/expanded states, auto-play option per machine, visual audio controls with rotating disc animation, volume controls, next machine suggestion in queue
+
+### Floating Jukebox Player
+- **Functionality**: Persistent music player that floats at bottom-right of screen, showing current track for active machine with expand/collapse controls
+- **Purpose**: Provide continuous musical accompaniment without disrupting workflow, allow quick access to music controls
+- **Trigger**: Appears on page load, updates when switching between machines/views
+- **Progression**: Jukebox loads → AI selects starting track for current machine → Shows compact view with track info → User can expand for full controls → Switch tracks or toggle play → Minimize or hide entirely
+- **Success criteria**: Sticky positioning at bottom-right, compact mode shows just track name/artist/play button, expanded mode shows full controls with queue, smooth animations between states, can be dismissed and re-opened, persists view preference
+
+### Music Library & Semantic Matching
+- **Functionality**: Comprehensive music database with tracks tagged by themes, mood, and suggested repositories, plus semantic search function
+- **Purpose**: Enable intelligent music discovery and automatic soundtrack generation for each machine
+- **Trigger**: System loads music library on initialization, used by AI matcher
+- **Progression**: Library defines tracks with metadata → Semantic matching scores tracks against repo attributes → AI refines selection → Best matches suggested → User experiences thematically perfect soundtrack
+- **Success criteria**: Library includes Pink Floyd (Wish You Were Here, The Wall, Dark Side of the Moon, Meddle) and Rush (2112), each track tagged with themes/mood/repos, URL field for audio sources, semantic matcher returns relevant tracks, fallback gracefully when no matches
+
 ### Intelligent Rotation System
 - **Functionality**: Automatic cycling through repos with adjustable speed, respecting locked slots
 - **Purpose**: Show all repos over time without performance degradation
@@ -337,6 +365,12 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Add Repo Form Validation**: Validate repository name format (kebab-case recommended), prevent duplicate names
 - **Add Repo Without GitHub Auth**: Display informative message that actual GitHub creation requires authentication
 - **Repository Name Conflicts**: Check for existing repository names before allowing creation
+- **AI Music Matching Failure**: Fall back to first available track for repo when AI service unavailable
+- **No Music URL Available**: Show "Link Pending" badge and disable play button until audio source added
+- **Audio Playback Errors**: Handle CORS issues, network failures, and unsupported formats gracefully with error messages
+- **Jukebox Without Repo Context**: Show general music library when no specific machine selected
+- **Empty Music Library**: Gracefully handle case where no tracks are available with friendly message
+- **Floating Jukebox Persistence**: Remember user's show/hide and expand/collapse preferences across sessions
 
 ## Design Direction
 The design should evoke a vibrant retro gaming aesthetic with Nintendo-inspired colors, playful emoji system integration, and high-contrast elements against dark backgrounds. The interface should feel like an engaging, colorful command center with personality - combining technical precision with visual delight through bold color choices and emoji-based visual language.
@@ -406,6 +440,8 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Custom TerminalChat component for AI-powered command interface
   - Custom AddRepoDialog for repository creation workflow
   - Custom CreepshowStory component for interactive branching narrative with script correction gameplay
+  - Custom Jukebox component for music playback with queue, volume controls, and AI-matched tracks
+  - Custom FloatingJukebox component for persistent music player with expand/collapse states
   - Textarea component for multi-line descriptions
   - AnimatePresence from framer-motion for scene transitions
 - **Customizations**: 
@@ -440,6 +476,12 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Scene transition animations with slide effect using framer-motion
   - Progress bar showing story completion percentage
   - Large emoji display for story scene icons with glow effect
+  - Jukebox with rotating disc animation synchronized to playback
+  - Jukebox compact mode with minimal track display and single play button
+  - Jukebox expanded mode with full queue, volume slider, skip controls
+  - AI Match badge showing intelligently selected tracks
+  - Link Pending badge for tracks without audio URLs yet
+  - Floating jukebox with sticky bottom-right positioning and minimize/expand animations
 - **States**: 
   - Cards: default (subtle glow), hover (bright glow + lift), active (pressed state)
   - Story cards: outcome-based borders (bad=red glow, good=green glow, neutral=purple), underwater effect on drowning scenes
@@ -458,6 +500,10 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Story progress: persistent across sessions via useKV
   - Choice buttons: enabled/disabled, hover with gradient intensification
   - Scene transitions: enter/exit animations with motion.div
+  - Jukebox: compact/expanded, playing/paused, loading AI match
+  - Audio playback: playing/paused/buffering/error states
+  - Floating jukebox: visible/hidden, minimized/expanded, persists preferences
+  - Music tracks: available (has URL)/pending (no URL yet)
 - **Icon Selection**: 
   - Brain icon (phosphor) for mongoose.os
   - Atom icon for quantum components
@@ -496,6 +542,14 @@ Animations should be playful yet purposeful, drawing inspiration from retro gami
   - Skull for bad/death endings
   - ArrowRight for story choice navigation
   - ArrowCounterClockwise for restart story button
+  - MusicNotes for music/jukebox features
+  - Play for audio playback start
+  - Pause for audio playback pause
+  - SkipForward/SkipBack for track navigation
+  - SpeakerHigh/SpeakerSlash for volume controls
+  - Queue for jukebox queue display
+  - Circle for spinning disc in jukebox
+  - CaretUp/CaretDown for floating jukebox expand/collapse
 - **Spacing**: 
   - Card grid: gap-6 for desktop, gap-4 for mobile
   - Card padding: p-6 for consistent internal spacing

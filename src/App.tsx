@@ -20,6 +20,7 @@ import { GitHubAuth } from './components/GitHubAuth'
 import { QuantumCockpit } from './components/QuantumCockpit'
 import { ClusterView } from './components/ClusterView'
 import { CreepshowStory } from './components/CreepshowStory'
+import { FloatingJukebox } from './components/FloatingJukebox'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -643,6 +644,11 @@ function App() {
         open={addRepoDialogOpen}
         onOpenChange={setAddRepoDialogOpen}
         onAdd={handleAddRepo}
+      />
+
+      <FloatingJukebox 
+        repo={brainRepo} 
+        repoName={brainRepo?.name}
       />
     </div>
   )
