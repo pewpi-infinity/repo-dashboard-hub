@@ -3,9 +3,11 @@ import { motion } from 'framer-motion'
 import { CategorizedRepo } from '@/lib/types'
 import { getEmojiForRepo, getColorClass, getGlowClass } from '@/lib/emoji-legend'
 import { HealthMetrics } from '@/lib/health-monitor'
+import { collisionSoundEngine } from '@/lib/collision-sound'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
-import { Play, Pause, Sparkle, Atom, Target } from '@phosphor-icons/react'
+import { Slider } from './ui/slider'
+import { Play, Pause, Sparkle, Atom, Target, SpeakerHigh, SpeakerSlash } from '@phosphor-icons/react'
 
 interface Particle {
   id: string
@@ -52,8 +54,28 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
   const [autoConnect, setAutoConnect] = useState(true)
   const [connectionMode, setConnectionMode] = useState<'learning' | 'coordinating' | 'building'>('learning')
   const [collisionCount, setCollisionCount] = useState(0)
+  const [soundEnabled, setSoundEnabled] = useState(true)
+  const [soundVolume, setSoundVolume] = useState(0.15)
 
   const brainRepo = useMemo(() => repos.find(r => r.name.toLowerCase().includes('mongoose')), [repos])
+
+  useEffect(() => {
+    collisionSoundEngine.initialize()
+    collisionSoundEngine.setEnabled(soundEnabled)
+    collisionSoundEngine.setVolume(soundVolume)
+
+    return () => {
+      collisionSoundEngine.stop()
+    }
+  }, [])
+
+  useEffect(() => {
+    collisionSoundEngine.setEnabled(soundEnabled)
+  }, [soundEnabled])
+
+  useEffect(() => {
+    collisionSoundEngine.setVolume(soundVolume)
+  }, [soundVolume])
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -201,6 +223,18 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
             collisionFlash = 1
             other.collisionFlash = 1
             setCollisionCount(prev => prev + 1)
+
+            const relativeVelocity = Math.sqrt(
+              Math.pow(particle.vx - other.vx, 2) + 
+              Math.pow(particle.vy - other.vy, 2)
+            )
+            const normalizedVelocity = Math.min(relativeVelocity / 8, 1)
+            
+            collisionSoundEngine.playCollisionSound(
+              particle.emoji,
+              other.emoji,
+              normalizedVelocity
+            )
             
             const angle = Math.atan2(dy, dx)
             const targetDistance = minDistance
@@ -690,6 +724,35 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
         >
           Reset Collisions
         </Button>
+
+        <div className="border-t border-border/50 my-1" />
+
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setSoundEnabled(!soundEnabled)}
+          className={`gap-2 bg-card/90 backdrop-blur-sm ${soundEnabled ? 'border-purple/50 text-purple' : 'border-muted/30'}`}
+        >
+          {soundEnabled ? <SpeakerHigh size={16} weight="fill" /> : <SpeakerSlash size={16} />}
+          Sound
+        </Button>
+
+        {soundEnabled && (
+          <Card className="p-3 bg-card/90 backdrop-blur-sm border-purple/30">
+            <div className="text-xs font-mono text-muted-foreground mb-2">VOLUME</div>
+            <Slider
+              value={[soundVolume]}
+              onValueChange={(values) => setSoundVolume(values[0])}
+              min={0}
+              max={0.5}
+              step={0.01}
+              className="w-full"
+            />
+            <div className="text-xs text-purple mt-1 font-mono text-center">
+              {Math.round(soundVolume * 200)}%
+            </div>
+          </Card>
+        )}
       </div>
 
       {selectedParticle && (
@@ -735,6 +798,9 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
           <div><span className="text-accent">Building:</span> Particles orbit the center</div>
           <div className="border-t border-border/50 mt-1 pt-1">
             <span className="text-orange">💥 Collision Physics:</span> Repos bounce off each other
+          </div>
+          <div>
+            <span className="text-purple">🔊 Sound FX:</span> Each emoji has unique collision sound
           </div>
         </div>
       </div>
