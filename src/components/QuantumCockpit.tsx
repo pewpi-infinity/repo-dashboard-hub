@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { CategorizedRepo } from '@/lib/types'
 import { getEmojiForRepo, getColorClass, getGlowClass } from '@/lib/emoji-legend'
 import { HealthMetrics } from '@/lib/health-monitor'
@@ -7,7 +7,7 @@ import { collisionSoundEngine } from '@/lib/collision-sound'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
 import { Slider } from './ui/slider'
-import { Play, Pause, Sparkle, Atom, Target, SpeakerHigh, SpeakerSlash } from '@phosphor-icons/react'
+import { Play, Pause, Sparkle, Atom, Target, SpeakerHigh, SpeakerSlash, ArrowsClockwise, Lock } from '@phosphor-icons/react'
 
 interface Particle {
   id: string
@@ -26,6 +26,10 @@ interface Particle {
   rotation: number
   pulse: number
   collisionFlash: number
+  slot: number
+  isLocked: boolean
+  trail: Array<{ x: number; y: number; opacity: number }>
+  starField: Array<{ x: number; y: number; size: number; brightness: number }>
 }
 
 interface Connection {
@@ -40,6 +44,8 @@ interface QuantumCockpitProps {
   healthMetrics: Map<string, HealthMetrics>
   onRepoClick?: (repo: CategorizedRepo) => void
 }
+
+const MAX_VISIBLE_PARTICLES = 4
 
 export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCockpitProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -56,6 +62,11 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
   const [collisionCount, setCollisionCount] = useState(0)
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [soundVolume, setSoundVolume] = useState(0.15)
+  const [currentRepoIndex, setCurrentRepoIndex] = useState(0)
+  const [lockedSlots, setLockedSlots] = useState<Set<number>>(new Set())
+  const [rotationSpeed, setRotationSpeed] = useState(1)
+  const rotationTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const [scaffoldingVisible, setScaffoldingVisible] = useState(true)
 
   const brainRepo = useMemo(() => repos.find(r => r.name.toLowerCase().includes('mongoose')), [repos])
 
@@ -98,36 +109,85 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
   useEffect(() => {
     if (dimensions.width === 0 || repos.length === 0) return
 
-    const newParticles: Particle[] = repos.map((repo, index) => {
+    const visibleRepos = repos.slice(currentRepoIndex, currentRepoIndex + MAX_VISIBLE_PARTICLES)
+    
+    while (visibleRepos.length < MAX_VISIBLE_PARTICLES && repos.length >= MAX_VISIBLE_PARTICLES) {
+      const remaining = MAX_VISIBLE_PARTICLES - visibleRepos.length
+      visibleRepos.push(...repos.slice(0, remaining))
+    }
+
+    const slotPositions = [
+      { x: 0.25, y: 0.3 },
+      { x: 0.75, y: 0.3 },
+      { x: 0.25, y: 0.7 },
+      { x: 0.75, y: 0.7 }
+    ]
+
+    const newParticles: Particle[] = visibleRepos.map((repo, index) => {
       const emojiData = getEmojiForRepo(repo.name)
-      const angle = (index / repos.length) * Math.PI * 2
-      const distance = Math.min(dimensions.width, dimensions.height) * 0.35
+      const slot = slotPositions[index % MAX_VISIBLE_PARTICLES]
       
-      const startX = dimensions.width / 2 + Math.cos(angle) * distance
-      const startY = dimensions.height / 2 + Math.sin(angle) * distance
+      const startX = dimensions.width * slot.x
+      const startY = dimensions.height * slot.y
       
       const isBrain = repo.name.toLowerCase().includes('mongoose')
+      const isLocked = lockedSlots.has(index)
+      
+      const starFieldCount = 30
+      const starField = Array.from({ length: starFieldCount }, () => ({
+        x: (Math.random() - 0.5) * 200,
+        y: (Math.random() - 0.5) * 200,
+        size: Math.random() * 2 + 0.5,
+        brightness: Math.random()
+      }))
       
       return {
         id: repo.name,
         x: startX,
         y: startY,
-        vx: (Math.random() - 0.5) * 2,
-        vy: (Math.random() - 0.5) * 2,
+        vx: isLocked ? 0 : (Math.random() - 0.5) * 1.5,
+        vy: isLocked ? 0 : (Math.random() - 0.5) * 1.5,
         emoji: emojiData?.emoji || '⚡',
         color: emojiData?.color || 'blue',
-        size: isBrain ? 48 : 32,
+        size: isBrain ? 56 : 44,
         repo,
         isConnecting: false,
         opacity: 1,
         rotation: Math.random() * 360,
         pulse: Math.random() * Math.PI * 2,
-        collisionFlash: 0
+        collisionFlash: 0,
+        slot: index,
+        isLocked,
+        trail: [],
+        starField
       }
     })
 
     setParticles(newParticles)
-  }, [repos, dimensions])
+  }, [repos, dimensions, currentRepoIndex, lockedSlots])
+
+  useEffect(() => {
+    if (isPaused || repos.length <= MAX_VISIBLE_PARTICLES) return
+
+    const interval = 5000 / rotationSpeed
+    
+    rotationTimerRef.current = setInterval(() => {
+      setCurrentRepoIndex(prev => {
+        const unlockedSlots = Array.from({ length: MAX_VISIBLE_PARTICLES }, (_, i) => i)
+          .filter(slot => !lockedSlots.has(slot))
+        
+        if (unlockedSlots.length === 0) return prev
+        
+        return (prev + 1) % repos.length
+      })
+    }, interval)
+
+    return () => {
+      if (rotationTimerRef.current) {
+        clearInterval(rotationTimerRef.current)
+      }
+    }
+  }, [repos.length, isPaused, lockedSlots, rotationSpeed])
 
   useEffect(() => {
     if (isPaused || particles.length === 0) return
@@ -157,7 +217,30 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
         let isConnecting = particle.isConnecting
         let collisionFlash = Math.max(0, particle.collisionFlash - deltaTime * 3)
 
-        if (autoConnect && connectionMode === 'learning') {
+        const newTrail = [
+          { x: particle.x, y: particle.y, opacity: 0.8 },
+          ...particle.trail.map(t => ({ ...t, opacity: t.opacity * 0.95 }))
+        ].slice(0, 15)
+
+        if (particle.isLocked) {
+          const slotPositions = [
+            { x: 0.25, y: 0.3 },
+            { x: 0.75, y: 0.3 },
+            { x: 0.25, y: 0.7 },
+            { x: 0.75, y: 0.7 }
+          ]
+          const targetSlot = slotPositions[particle.slot % MAX_VISIBLE_PARTICLES]
+          const targetX = dimensions.width * targetSlot.x
+          const targetY = dimensions.height * targetSlot.y
+          
+          const pullStrength = 0.15
+          newVx += (targetX - particle.x) * pullStrength
+          newVy += (targetY - particle.y) * pullStrength
+          newVx *= 0.92
+          newVy *= 0.92
+        }
+
+        if (autoConnect && connectionMode === 'learning' && !particle.isLocked) {
           const dx = centerMachine.x - particle.x
           const dy = centerMachine.y - particle.y
           const distance = Math.sqrt(dx * dx + dy * dy)
@@ -181,7 +264,7 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
           } else {
             isConnecting = false
           }
-        } else if (connectionMode === 'coordinating') {
+        } else if (connectionMode === 'coordinating' && !particle.isLocked) {
           particles.forEach(other => {
             if (other.id === particle.id) return
             const dx = other.x - particle.x
@@ -194,7 +277,7 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
               newVy += (dy / distance) * pullStrength
             }
           })
-        } else if (connectionMode === 'building') {
+        } else if (connectionMode === 'building' && !particle.isLocked) {
           const orbitRadius = centerMachine.radius * 2.5
           const angle = Math.atan2(particle.y - centerMachine.y, particle.x - centerMachine.x)
           const targetX = centerMachine.x + Math.cos(angle) * orbitRadius
@@ -296,7 +379,12 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
           isConnecting,
           rotation: particle.rotation + speed * 2,
           pulse: particle.pulse + deltaTime * 2,
-          collisionFlash
+          collisionFlash,
+          trail: newTrail,
+          starField: particle.starField.map(star => ({
+            ...star,
+            brightness: 0.3 + Math.sin(Date.now() / 1000 + star.x * 0.1) * 0.7
+          }))
         }
       })
 
@@ -331,6 +419,42 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
     
     ctx.fillStyle = gradient
     ctx.fillRect(0, 0, dimensions.width, dimensions.height)
+
+    if (scaffoldingVisible) {
+      const slotPositions = [
+        { x: 0.25, y: 0.3 },
+        { x: 0.75, y: 0.3 },
+        { x: 0.25, y: 0.7 },
+        { x: 0.75, y: 0.7 }
+      ]
+
+      slotPositions.forEach((slot, index) => {
+        const x = dimensions.width * slot.x
+        const y = dimensions.height * slot.y
+        const isLocked = lockedSlots.has(index)
+
+        ctx.strokeStyle = isLocked ? 'rgba(255, 215, 0, 0.3)' : 'rgba(96, 119, 255, 0.15)'
+        ctx.lineWidth = 2
+        ctx.setLineDash([5, 5])
+        ctx.beginPath()
+        ctx.arc(x, y, 60, 0, Math.PI * 2)
+        ctx.stroke()
+        ctx.setLineDash([])
+
+        ctx.strokeStyle = isLocked ? 'rgba(255, 215, 0, 0.4)' : 'rgba(96, 119, 255, 0.2)'
+        ctx.lineWidth = 1
+        ctx.beginPath()
+        ctx.moveTo(centerMachine.x, centerMachine.y)
+        ctx.lineTo(x, y)
+        ctx.stroke()
+
+        ctx.fillStyle = isLocked ? 'rgba(255, 215, 0, 0.5)' : 'rgba(96, 119, 255, 0.3)'
+        ctx.font = '16px "JetBrains Mono", monospace'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(`SLOT ${index + 1}`, x, y - 80)
+      })
+    }
 
     ctx.strokeStyle = 'rgba(96, 119, 255, 0.1)'
     ctx.lineWidth = 1
@@ -472,9 +596,56 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
 
     currentParticles.forEach(particle => {
       ctx.save()
+
+      particle.starField.forEach(star => {
+        const starX = particle.x + star.x
+        const starY = particle.y + star.y
+        
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness * 0.6})`
+        ctx.beginPath()
+        ctx.arc(starX, starY, star.size, 0, Math.PI * 2)
+        ctx.fill()
+        
+        if (star.brightness > 0.7) {
+          ctx.strokeStyle = `rgba(255, 255, 255, ${(star.brightness - 0.7) * 0.5})`
+          ctx.lineWidth = 1
+          ctx.beginPath()
+          ctx.moveTo(starX - star.size * 2, starY)
+          ctx.lineTo(starX + star.size * 2, starY)
+          ctx.stroke()
+          ctx.beginPath()
+          ctx.moveTo(starX, starY - star.size * 2)
+          ctx.lineTo(starX, starY + star.size * 2)
+          ctx.stroke()
+        }
+      })
+
+      particle.trail.forEach((point, i) => {
+        if (point.opacity < 0.1) return
+        
+        const colorMap: Record<string, string> = {
+          gold: '255, 215, 0',
+          blue: '96, 119, 255',
+          purple: '138, 43, 226',
+          yellow: '255, 220, 100',
+          red: '255, 80, 80',
+          orange: '255, 150, 80',
+          green: '100, 255, 150',
+          pink: '255, 100, 220'
+        }
+        
+        const rgb = colorMap[particle.color] || '96, 119, 255'
+        const size = (particle.size * 0.3) * (point.opacity / 0.8)
+        
+        ctx.fillStyle = `rgba(${rgb}, ${point.opacity * 0.4})`
+        ctx.beginPath()
+        ctx.arc(point.x, point.y, size, 0, Math.PI * 2)
+        ctx.fill()
+      })
+
       ctx.translate(particle.x, particle.y)
 
-      const pulseScale = 1 + Math.sin(particle.pulse) * 0.1
+      const pulseScale = 1 + Math.sin(particle.pulse) * 0.15
 
       const colorMap: Record<string, string> = {
         gold: '255, 215, 0',
@@ -489,6 +660,16 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
       
       const rgb = colorMap[particle.color] || '96, 119, 255'
 
+      const outerGlowSize = particle.size * pulseScale * 2.5
+      const outerGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, outerGlowSize)
+      outerGlow.addColorStop(0, `rgba(${rgb}, 0.15)`)
+      outerGlow.addColorStop(0.5, `rgba(${rgb}, 0.08)`)
+      outerGlow.addColorStop(1, `rgba(${rgb}, 0)`)
+      ctx.fillStyle = outerGlow
+      ctx.beginPath()
+      ctx.arc(0, 0, outerGlowSize, 0, Math.PI * 2)
+      ctx.fill()
+
       const glowSize = particle.collisionFlash > 0 ? particle.size * pulseScale * (1 + particle.collisionFlash * 0.5) : particle.size * pulseScale
       const glowGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, glowSize)
       
@@ -498,8 +679,8 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
         glowGradient.addColorStop(0.6, `rgba(${rgb}, 0.15)`)
         glowGradient.addColorStop(1, `rgba(${rgb}, 0)`)
       } else {
-        glowGradient.addColorStop(0, `rgba(${rgb}, 0.3)`)
-        glowGradient.addColorStop(0.5, `rgba(${rgb}, 0.15)`)
+        glowGradient.addColorStop(0, `rgba(${rgb}, 0.4)`)
+        glowGradient.addColorStop(0.5, `rgba(${rgb}, 0.2)`)
         glowGradient.addColorStop(1, `rgba(${rgb}, 0)`)
       }
 
@@ -537,6 +718,12 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
       ctx.textBaseline = 'middle'
       ctx.fillText(particle.emoji, 0, 0)
 
+      if (particle.isLocked) {
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.9)'
+        ctx.font = `${particle.size * 0.3}px Arial`
+        ctx.fillText('🔒', particle.size * 0.5, -particle.size * 0.5)
+      }
+
       if (particle.isConnecting && particle.collisionFlash === 0) {
         ctx.strokeStyle = `rgba(${rgb}, 0.6)`
         ctx.lineWidth = 2
@@ -566,9 +753,33 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
     })
 
     if (clickedParticle) {
-      setSelectedParticle(clickedParticle)
-      onRepoClick?.(clickedParticle.repo)
+      if (e.shiftKey) {
+        setLockedSlots(prev => {
+          const newSet = new Set(prev)
+          if (newSet.has(clickedParticle.slot)) {
+            newSet.delete(clickedParticle.slot)
+          } else {
+            newSet.add(clickedParticle.slot)
+          }
+          return newSet
+        })
+      } else {
+        setSelectedParticle(clickedParticle)
+        onRepoClick?.(clickedParticle.repo)
+      }
     }
+  }
+
+  const toggleLockSlot = (slot: number) => {
+    setLockedSlots(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(slot)) {
+        newSet.delete(slot)
+      } else {
+        newSet.add(slot)
+      }
+      return newSet
+    })
   }
 
   const cycleConnectionMode = () => {
@@ -649,6 +860,17 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
             />
           </div>
           <div className="text-xs text-right text-primary mt-1 font-mono">{connectionPercentage}%</div>
+          
+          {repos.length > MAX_VISIBLE_PARTICLES && (
+            <div className="mt-3 pt-3 border-t border-border/50">
+              <div className="text-xs text-yellow font-mono">
+                Viewing {MAX_VISIBLE_PARTICLES} of {repos.length} repos
+              </div>
+              <div className="text-xs text-muted-foreground font-mono mt-1">
+                {lockedSlots.size > 0 ? `${lockedSlots.size} locked` : 'Auto-rotating'}
+              </div>
+            </div>
+          )}
         </Card>
 
         <Card className="p-3 bg-card/90 backdrop-blur-sm border-accent/30">
@@ -719,13 +941,76 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
         <Button
           size="sm"
           variant="outline"
+          onClick={() => setScaffoldingVisible(!scaffoldingVisible)}
+          className={`gap-2 bg-card/90 backdrop-blur-sm ${scaffoldingVisible ? 'border-blue/50 text-blue' : 'border-muted/30'}`}
+        >
+          <Target size={16} weight={scaffoldingVisible ? 'fill' : 'regular'} />
+          Scaffolding
+        </Button>
+
+        <div className="border-t border-border/50 my-1" />
+
+        {repos.length > MAX_VISIBLE_PARTICLES && (
+          <>
+            <Card className="p-3 bg-card/90 backdrop-blur-sm border-yellow/30">
+              <div className="text-xs font-mono text-muted-foreground mb-2">ROTATION</div>
+              <div className="flex items-center gap-2 mb-2">
+                <ArrowsClockwise size={16} className="text-yellow" weight="bold" />
+                <span className="text-sm font-semibold text-yellow">
+                  {lockedSlots.size === MAX_VISIBLE_PARTICLES ? 'ALL LOCKED' : `${repos.length - MAX_VISIBLE_PARTICLES} QUEUED`}
+                </span>
+              </div>
+              <Slider
+                value={[rotationSpeed]}
+                onValueChange={(values) => setRotationSpeed(values[0])}
+                min={0.1}
+                max={3}
+                step={0.1}
+                className="w-full"
+                disabled={lockedSlots.size === MAX_VISIBLE_PARTICLES}
+              />
+              <div className="text-xs text-yellow mt-1 font-mono text-center">
+                Speed: {rotationSpeed.toFixed(1)}x
+              </div>
+            </Card>
+
+            <div className="border-t border-border/50 my-1" />
+          </>
+        )}
+
+        <div className="space-y-1">
+          <div className="text-xs font-mono text-muted-foreground mb-1 px-1">LOCK SLOTS</div>
+          {[0, 1, 2, 3].map(slot => (
+            <Button
+              key={slot}
+              size="sm"
+              variant="outline"
+              onClick={() => toggleLockSlot(slot)}
+              className={`w-full gap-2 bg-card/90 backdrop-blur-sm ${
+                lockedSlots.has(slot) 
+                  ? 'border-gold/50 text-gold hover:bg-gold/10' 
+                  : 'border-muted/30 hover:bg-muted/10'
+              }`}
+            >
+              <Lock size={14} weight={lockedSlots.has(slot) ? 'fill' : 'regular'} />
+              Slot {slot + 1}
+              {particles[slot] && (
+                <span className="ml-auto text-xs">{particles[slot].emoji}</span>
+              )}
+            </Button>
+          ))}
+        </div>
+
+        <div className="border-t border-border/50 my-1" />
+
+        <Button
+          size="sm"
+          variant="outline"
           onClick={() => setCollisionCount(0)}
           className="gap-2 bg-card/90 backdrop-blur-sm border-orange/30 hover:bg-orange/10 text-orange"
         >
           Reset Collisions
         </Button>
-
-        <div className="border-t border-border/50 my-1" />
 
         <Button
           size="sm"
@@ -791,16 +1076,17 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
         </motion.div>
       )}
 
-      <div className="absolute bottom-4 right-4 text-xs text-muted-foreground font-mono bg-card/80 backdrop-blur-sm p-2 rounded border border-border/50">
+      <div className="absolute bottom-4 right-4 text-xs text-muted-foreground font-mono bg-card/80 backdrop-blur-sm p-2 rounded border border-border/50 max-w-xs">
         <div className="flex flex-col gap-1">
-          <div><span className="text-accent">Learning:</span> Particles attracted to center</div>
-          <div><span className="text-accent">Coordinating:</span> Particles connect with each other</div>
-          <div><span className="text-accent">Building:</span> Particles orbit the center</div>
+          <div className="text-yellow font-bold mb-1">🌌 QUANTUM SPACE VIEW</div>
+          <div><span className="text-accent">⚡ Max 4 Dots:</span> Intelligent rotation prevents crashes</div>
+          <div><span className="text-gold">🔒 Lock Slots:</span> Shift+Click or use sidebar to pin repos</div>
+          <div><span className="text-blue">🎯 Scaffolding:</span> Shows slot positions & connections</div>
           <div className="border-t border-border/50 mt-1 pt-1">
-            <span className="text-orange">💥 Collision Physics:</span> Repos bounce off each other
+            <span className="text-green">Click:</span> View repo details
           </div>
           <div>
-            <span className="text-purple">🔊 Sound FX:</span> Each emoji has unique collision sound
+            <span className="text-purple">🔊 Sound FX:</span> Unique sounds per emoji collision
           </div>
         </div>
       </div>

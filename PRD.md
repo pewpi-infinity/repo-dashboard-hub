@@ -75,6 +75,41 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Progression**: Health data aggregated → Count repos by status → Calculate average score → Display in overview panel → User sees system-wide health
 - **Success criteria**: Shows counts of healthy/warning/critical/inactive repos, average health score, system health percentage bar, total alerts count
 
+### Quantum Cockpit Visualization  
+- **Functionality**: Interactive 3D space-like visualization showing up to 4 intelligent quantum dots (repos) at a time with automatic rotation, locking, and physics-based interactions
+- **Purpose**: Provide an engaging, performance-optimized view of repo coordination without overwhelming the system
+- **Trigger**: User switches to Quantum Cockpit view via /K button
+- **Progression**: User activates /K → System loads 4 repos into slots → Dots display with star fields and trails → Auto-rotation cycles through repos → User can lock specific slots → Dots interact with physics and connect to center machine
+- **Success criteria**: Only 4 dots visible at once preventing crashes, smooth 60fps animation, auto-rotation working, slots lockable, star field effects visible, collision physics functional
+
+### Quantum Slot Management
+- **Functionality**: 4 fixed slots that can be individually locked to keep specific repos visible while others rotate
+- **Purpose**: Allow users to monitor key repos while cycling through the full set
+- **Trigger**: User clicks lock buttons or Shift+Click on dots
+- **Progression**: User locks slot → That repo stays fixed → Other unlocked slots continue rotating → Scaffolding shows locked status
+- **Success criteria**: Lock persists during rotation, locked dots have gold lock icon, locked slots shown in scaffolding, up to 4 slots can be locked simultaneously
+
+### Intelligent Rotation System
+- **Functionality**: Automatic cycling through repos with adjustable speed, respecting locked slots
+- **Purpose**: Show all repos over time without performance degradation
+- **Trigger**: Automatic when more than 4 repos exist and not paused
+- **Progression**: System identifies unlocked slots → Rotates repos through them → Speed adjustable 0.1x-3x → Pauses when all slots locked
+- **Success criteria**: Smooth transitions between repos, speed control works, locked slots don't rotate, current index visible in UI
+
+### Quantum Scaffolding
+- **Functionality**: Visual guide showing 4 slot positions with connection lines to center machine
+- **Purpose**: Help users understand slot layout and repo positioning
+- **Trigger**: Toggle via Scaffolding button
+- **Progression**: User enables scaffolding → Slot circles appear → Connection lines to center visible → Slot numbers labeled → Lock status shown
+- **Success criteria**: Scaffolding toggleable, slots clearly marked, locked slots shown in gold, unlocked in blue
+
+### Space-like Particle Effects
+- **Functionality**: Each quantum dot has surrounding star field (30 stars) with twinkling and trail effects
+- **Purpose**: Create immersive space environment and visual richness
+- **Trigger**: Automatic with particle rendering
+- **Progression**: Stars positioned around dot → Brightness pulsates → Movement creates trails → Trails fade over time
+- **Success criteria**: Stars twinkle realistically, trails follow movement, no performance impact, outer glow extends beyond emoji
+
 ### Real-Time Repository Statistics
 - **Functionality**: Interactive statistics modal showing detailed repository metrics with health tabs
 - **Purpose**: Provide deep insights into repository health, activity, and contributor engagement
