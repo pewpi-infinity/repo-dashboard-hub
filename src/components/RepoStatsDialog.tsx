@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CommitActivityChart } from './CommitActivityChart'
 import { ContributorsList } from './ContributorsList'
 import { LanguageStats } from './LanguageStats'
 import { RepoStatsOverview } from './RepoStatsOverview'
+import { HealthMonitorDashboard } from './HealthMonitorDashboard'
+import { AlertPanel } from './AlertPanel'
 import { fetchRepoStats } from '@/lib/github-api'
+import { calculateHealthMetrics } from '@/lib/health-monitor'
 import type { CategorizedRepo, RepoStats } from '@/lib/types'
-import { Warning } from '@phosphor-icons/react'
+import { Warning, ChartLine, Bell } from '@phosphor-icons/react'
 
 interface RepoStatsDialogProps {
   repo: CategorizedRepo | null
@@ -46,6 +50,11 @@ export function RepoStatsDialog({ repo, open, onOpenChange }: RepoStatsDialogPro
     loadStats()
   }, [repo, open])
 
+  const healthMetrics = useMemo(() => {
+    if (!stats || !repo) return null
+    return calculateHealthMetrics(repo, stats.commitActivity)
+  }, [repo, stats])
+
   if (!repo) return null
 
   return (
@@ -64,43 +73,81 @@ export function RepoStatsDialog({ repo, open, onOpenChange }: RepoStatsDialogPro
         </DialogHeader>
 
         <div className="space-y-6 mt-6">
-          <RepoStatsOverview repo={repo} />
-
-          {error && (
-            <Alert variant="destructive">
-              <Warning size={20} />
-              <AlertDescription className="ml-2">
-                {error}
-              </AlertDescription>
-            </Alert>
-          )}
-
           {loading ? (
             <div className="space-y-6">
+              <Skeleton className="h-32 rounded-xl" />
               <Skeleton className="h-64 rounded-xl" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Skeleton className="h-96 rounded-xl" />
                 <Skeleton className="h-96 rounded-xl" />
               </div>
             </div>
-          ) : stats ? (
+          ) : error ? (
             <>
-              <CommitActivityChart 
-                activity={stats.commitActivity} 
-                repoName={repo.name} 
-              />
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ContributorsList 
-                  contributors={stats.contributors} 
-                  repoName={repo.name} 
-                />
-                <LanguageStats 
-                  languages={stats.languages} 
-                  repoName={repo.name} 
-                />
-              </div>
+              <RepoStatsOverview repo={repo} />
+              <Alert variant="destructive">
+                <Warning size={20} />
+                <AlertDescription className="ml-2">
+                  {error}
+                </AlertDescription>
+              </Alert>
             </>
+          ) : stats && healthMetrics ? (
+            <Tabs defaultValue="overview" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
+                <TabsTrigger value="overview" className="gap-2">
+                  <ChartLine size={16} />
+                  <span className="hidden sm:inline">Overview</span>
+                </TabsTrigger>
+                <TabsTrigger value="health" className="gap-2">
+                  <ChartLine size={16} />
+                  <span className="hidden sm:inline">Health</span>
+                </TabsTrigger>
+                <TabsTrigger value="alerts" className="gap-2">
+                  <Bell size={16} />
+                  <span className="hidden sm:inline">Alerts</span>
+                  {healthMetrics.alerts.length > 0 && (
+                    <span className="ml-1 px-1.5 py-0.5 text-xs bg-destructive text-destructive-foreground rounded-full">
+                      {healthMetrics.alerts.length}
+                    </span>
+                  )}
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="overview" className="space-y-6">
+                <RepoStatsOverview repo={repo} />
+                <CommitActivityChart 
+                  activity={stats.commitActivity} 
+                  repoName={repo.name} 
+                />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ContributorsList 
+                    contributors={stats.contributors} 
+                    repoName={repo.name} 
+                  />
+                  <LanguageStats 
+                    languages={stats.languages} 
+                    repoName={repo.name} 
+                  />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="health" className="space-y-6">
+                <HealthMonitorDashboard 
+                  metrics={healthMetrics}
+                  repoName={repo.name}
+                />
+                <CommitActivityChart 
+                  activity={stats.commitActivity} 
+                  repoName={repo.name} 
+                />
+              </TabsContent>
+
+              <TabsContent value="alerts">
+                <AlertPanel alerts={healthMetrics.alerts} compact />
+              </TabsContent>
+            </Tabs>
           ) : null}
         </div>
       </DialogContent>

@@ -47,12 +47,40 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Progression**: Fetch repo stats → Calculate activity → Display indicators → User sees health
 - **Success criteria**: Each repository shows last update time and activity status
 
+### Real-Time Repository Health Monitoring
+- **Functionality**: Continuous monitoring of repository health with multi-dimensional metrics and real-time alerts
+- **Purpose**: Proactively identify issues, track repository vitality, and maintain system-wide health awareness
+- **Trigger**: Automatic on application load and refresh
+- **Progression**: App loads → Fetch repos → Calculate health metrics (commit frequency, issue ratio, staleness, activity trends) → Generate alerts → Display health indicators → User monitors system
+- **Success criteria**: Each repository displays health status with visual indicators, health score calculated from multiple metrics, critical alerts trigger toast notifications
+
+### Health Alert System
+- **Functionality**: Real-time alert generation based on health thresholds with severity levels (info, warning, critical)
+- **Purpose**: Notify users of repositories requiring attention before problems escalate
+- **Trigger**: Automatic during health monitoring, alerts shown in dedicated panel and inline on cards
+- **Progression**: System analyzes metrics → Detects threshold violations → Generates categorized alerts → Displays in alert panel → User takes action
+- **Success criteria**: Alerts properly categorized by severity, critical alerts appear as toast notifications, alert panel shows all active alerts grouped by repository
+
+### Health Metrics Dashboard
+- **Functionality**: Detailed health breakdown showing commit frequency, issue health, freshness, and activity trends
+- **Purpose**: Provide deep visibility into repository health factors for informed decision-making
+- **Trigger**: Displayed in repository statistics modal under "Health" tab
+- **Progression**: User opens stats → Switches to Health tab → Views circular overall health gauge → Reviews individual metric bars → Understands health factors
+- **Success criteria**: Health dashboard shows overall score with circular gauge, four key indicators with progress bars, color-coded status, metric descriptions
+
+### System Health Overview
+- **Functionality**: Aggregate health statistics across all repositories with distribution breakdown
+- **Purpose**: Give users bird's-eye view of entire system health at a glance
+- **Trigger**: Displays in sidebar when health monitoring is active
+- **Progression**: Health data aggregated → Count repos by status → Calculate average score → Display in overview panel → User sees system-wide health
+- **Success criteria**: Shows counts of healthy/warning/critical/inactive repos, average health score, system health percentage bar, total alerts count
+
 ### Real-Time Repository Statistics
-- **Functionality**: Interactive statistics modal showing detailed repository metrics
+- **Functionality**: Interactive statistics modal showing detailed repository metrics with health tabs
 - **Purpose**: Provide deep insights into repository health, activity, and contributor engagement
 - **Trigger**: User clicks "Stats" button on any repository card
-- **Progression**: User clicks Stats → Modal opens → Fetch detailed stats from GitHub API → Display visualizations → User explores metrics
-- **Success criteria**: Modal displays commit activity chart, top contributors, language breakdown, and key statistics (stars, forks, issues)
+- **Progression**: User clicks Stats → Modal opens with tabs (Overview, Health, Alerts) → Fetch detailed stats from GitHub API → Display visualizations → User explores metrics
+- **Success criteria**: Modal displays commit activity chart, top contributors, language breakdown, key statistics, health monitoring dashboard, and active alerts
 
 ### Commit Activity Visualization
 - **Functionality**: Interactive area chart showing 12-week commit history
@@ -107,6 +135,9 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Private Contributors**: Handle cases where contributor data is restricted
 - **No Search Results**: Display friendly message when search query returns no matching repositories
 - **Sort with Empty Fields**: Handle repositories with missing data (null language, no stars) by placing them at the end of sorted lists
+- **Health Metrics Failure**: Gracefully handle when individual repo health metrics fail to load, continue monitoring others
+- **No Alerts State**: Show encouraging "all systems healthy" message when no alerts are present
+- **Stale Health Data**: Health metrics refresh on page reload, indicate monitoring is real-time on page load
 
 ## Design Direction
 The design should evoke a high-tech quantum computing interface with neural network aesthetics - think glowing connections, circuit board patterns, and time-space distortion effects. The interface should feel like controlling an advanced scientific instrument.
@@ -140,27 +171,38 @@ Animations should reinforce the quantum computing theme with subtle particle eff
   - Card component for repository display with custom hover effects
   - Badge component for status indicators and categories
   - Button component for stats triggers and navigation
-  - Dialog component for detailed repository statistics modal
+  - Dialog component for detailed repository statistics modal with tabs
+  - Tabs component for organizing stats, health, and alerts views
   - Tooltip component for displaying full repository information
   - Skeleton component for loading states
   - Avatar component for contributor profiles
-  - Progress component for language statistics visualization
+  - Progress component for health metric visualization
   - Recharts AreaChart for commit activity trends
-  - Alert component for error states
+  - Alert component for health alerts and error states
   - Input component for search functionality with icon prefix
   - Select component for sort options dropdown
+  - ScrollArea component for alert panel scrolling
   - Custom ViewToggle component with grid/list mode buttons
+  - Custom HealthIndicator component with animated status icons
+  - Custom CircularGauge for overall health scores
+  - Custom HealthOverview for aggregate system health
+  - Custom AlertPanel for health alert management
 - **Customizations**: 
   - Custom grid layout with CSS Grid for responsive repository cards
   - Custom list layout with compact horizontal repository items
   - Animated background with SVG patterns simulating circuit boards and neural connections
-  - Custom repository card with glowing border effects using box-shadow
+  - Custom repository card with glowing border effects using box-shadow and health indicators
   - Custom repository list item with horizontal layout optimized for scanning
   - mongoose.os special card with pulsing animation and distinctive styling
-  - Full-screen statistics modal with glassmorphic backdrop
+  - Full-screen statistics modal with glassmorphic backdrop and tabbed navigation
   - Interactive area chart with custom color gradients matching theme
   - Contributor cards with hover effects and click-to-profile functionality
   - View toggle button group with active state highlighting
+  - Health indicator with animated heart icons (healthy/warning/critical/inactive states)
+  - Circular gauge with animated fill and glow effects for health scores
+  - Health overview panel with status counts and aggregate metrics
+  - Alert panel with severity-based color coding and grouping by repository
+  - Toast notifications for critical health alerts
 - **States**: 
   - Cards: default (subtle glow), hover (bright glow + lift), active (pressed state)
   - Stats button: outline style with hover glow effect
@@ -176,17 +218,25 @@ Animations should reinforce the quantum computing theme with subtle particle eff
   - ArrowSquareOut for external links
   - GitBranch for repository indicators
   - GitCommit for commit activity
-  - ChartLine for statistics trigger
+  - ChartLine for statistics trigger and health monitoring
   - Users for contributors
   - Code for programming languages
   - Star for stargazers
   - Eye for watchers
-  - Warning for issues
+  - Warning for issues and warning alerts
   - FileCode for repository size
   - MagnifyingGlass for search input
   - ArrowUp/ArrowDown for sort direction toggle
   - SquaresFour for grid view mode
   - List for list view mode
+  - Bell for alerts and notifications
+  - Heart (filled) for healthy status
+  - HeartBreak for critical status
+  - CircleDashed for inactive status
+  - Lightning for commit frequency metric
+  - TrendUp for activity trends
+  - Info for informational alerts
+  - XCircle for critical alerts
 - **Spacing**: 
   - Card grid: gap-6 for desktop, gap-4 for mobile
   - Card padding: p-6 for consistent internal spacing

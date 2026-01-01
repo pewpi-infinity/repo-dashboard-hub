@@ -6,14 +6,17 @@ import type { CategorizedRepo } from '@/lib/types'
 import { getCategoryLabel, getCategoryColor, getRelativeTime } from '@/lib/repo-utils'
 import { cn } from '@/lib/utils'
 import * as Icons from '@phosphor-icons/react'
+import { HealthIndicator } from './HealthIndicator'
+import type { HealthMetrics } from '@/lib/health-monitor'
 
 interface RepositoryCardProps {
   repo: CategorizedRepo
   isBrain?: boolean
   onShowStats?: (repo: CategorizedRepo) => void
+  healthMetrics?: HealthMetrics
 }
 
-export function RepositoryCard({ repo, isBrain = false, onShowStats }: RepositoryCardProps) {
+export function RepositoryCard({ repo, isBrain = false, onShowStats, healthMetrics }: RepositoryCardProps) {
   const categoryLabel = getCategoryLabel(repo.category)
   const categoryColor = getCategoryColor(repo.category)
   const lastUpdate = getRelativeTime(repo.updated_at)
@@ -106,6 +109,17 @@ export function RepositoryCard({ repo, isBrain = false, onShowStats }: Repositor
             <Badge variant="outline" className="text-xs">
               {repo.language}
             </Badge>
+          )}
+          {healthMetrics && (
+            <div className="ml-auto">
+              <HealthIndicator 
+                status={healthMetrics.status}
+                score={healthMetrics.score}
+                size="sm"
+                showLabel={false}
+                animated={healthMetrics.status === 'critical'}
+              />
+            </div>
           )}
         </div>
 

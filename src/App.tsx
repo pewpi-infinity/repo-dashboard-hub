@@ -10,13 +10,17 @@ import { EmptyState } from './components/EmptyState'
 import { SystemStatus } from './components/SystemStatus'
 import { QuickLinks } from './components/QuickLinks'
 import { RecentActivity } from './components/RecentActivity'
+import { HealthOverview } from './components/HealthOverview'
+import { AlertPanel } from './components/AlertPanel'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
-import { fetchOrgRepositories } from './lib/github-api'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
+import { fetchOrgRepositories, fetchCommitActivity } from './lib/github-api'
 import { addCategories } from './lib/repo-utils'
+import { calculateHealthMetrics, type HealthMetrics, type HealthAlert } from './lib/health-monitor'
 import type { CategorizedRepo, ComponentCategory } from './lib/types'
-import { ArrowClockwise, Warning } from '@phosphor-icons/react'
+import { ArrowClockwise, Warning, ChartLine, Bell } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
 
@@ -34,6 +38,8 @@ function App() {
   const [sortBy, setSortBy] = useState<SortOption>('updated')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
   const [viewMode, setViewMode] = useKV<ViewMode>('view-mode', 'grid')
+  const [healthMetrics, setHealthMetrics] = useState<Map<string, HealthMetrics>>(new Map())
+  const [monitoringEnabled, setMonitoringEnabled] = useState(true)
 
   const currentViewMode: ViewMode = viewMode || 'grid'
 
@@ -46,6 +52,10 @@ function App() {
       const categorizedRepos = addCategories(fetchedRepos)
       setRepos(categorizedRepos)
       toast.success(`Loaded ${categorizedRepos.length} repositories`)
+      
+      if (monitoringEnabled) {
+        loadHealthMetrics(categorizedRepos)
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load repositories'
       setError(message)
@@ -53,6 +63,32 @@ function App() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const loadHealthMetrics = async (reposToMonitor: CategorizedRepo[]) => {
+    const metricsMap = new Map<string, HealthMetrics>()
+    
+    const promises = reposToMonitor.map(async (repo) => {
+      try {
+        const commitActivity = await fetchCommitActivity(repo.name)
+        const metrics = calculateHealthMetrics(repo, commitActivity)
+        metricsMap.set(repo.name, metrics)
+        
+        if (metrics.alerts.length > 0) {
+          const criticalAlerts = metrics.alerts.filter(a => a.severity === 'critical')
+          if (criticalAlerts.length > 0) {
+            toast.error(`${repo.name}: ${criticalAlerts[0].message}`, {
+              duration: 5000
+            })
+          }
+        }
+      } catch (err) {
+        console.error(`Failed to load health metrics for ${repo.name}:`, err)
+      }
+    })
+    
+    await Promise.all(promises)
+    setHealthMetrics(metricsMap)
   }
 
   const handleShowStats = (repo: CategorizedRepo) => {
@@ -63,6 +99,18 @@ function App() {
   useEffect(() => {
     loadRepositories()
   }, [])
+
+  const allAlerts = useMemo(() => {
+    const alerts: HealthAlert[] = []
+    healthMetrics.forEach((metrics) => {
+      alerts.push(...metrics.alerts)
+    })
+    return alerts
+  }, [healthMetrics])
+
+  const criticalAlertsCount = useMemo(() => {
+    return allAlerts.filter(a => a.severity === 'critical').length
+  }, [allAlerts])
 
   const filteredAndSortedRepos = useMemo(() => {
     let filtered = activeCategory === 'all' 
@@ -158,6 +206,9 @@ function App() {
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="lg:w-64 flex-shrink-0 space-y-4">
               <SystemStatus repoCount={repos.length} isLoading={loading} />
+              {healthMetrics.size > 0 && (
+                <HealthOverview allMetrics={healthMetrics} />
+              )}
               <QuickLinks />
               {repos.length > 0 && <RecentActivity repos={repos} />}
             </div>
@@ -192,83 +243,127 @@ function App() {
                 <>
                   <DashboardMetrics repos={repos} loading={loading} />
               
-              <div className="mb-8 space-y-4">
-                <CategoryFilter
-                  activeCategory={activeCategory}
-                  onCategoryChange={setActiveCategory}
-                  counts={categoryCounts}
-                />
-                
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
-                  <SearchSort
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    sortBy={sortBy}
-                    onSortByChange={setSortBy}
-                    sortDirection={sortDirection}
-                    onSortDirectionChange={setSortDirection}
-                    resultCount={filteredAndSortedRepos.length}
-                    totalCount={repos.length}
-                  />
-                  
-                  <ViewToggle
-                    viewMode={currentViewMode}
-                    onViewModeChange={setViewMode}
-                  />
-                </div>
-              </div>
-
-              {brainRepo && (activeCategory === 'all' || activeCategory === 'brain') && !searchQuery && (
-                <section className="mb-12">
-                  <h2 
-                    className="text-2xl font-semibold mb-6 flex items-center gap-2"
-                    style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                  >
-                    <span className="text-accent">⚡</span>
-                    Neural Core System
-                  </h2>
-                  <div className={currentViewMode === 'list' ? '' : 'max-w-2xl'}>
-                    {currentViewMode === 'grid' ? (
-                      <RepositoryCard repo={brainRepo} isBrain onShowStats={handleShowStats} />
-                    ) : (
-                      <RepositoryListItem repo={brainRepo} isBrain onShowStats={handleShowStats} />
+              <Tabs defaultValue="repositories" className="mb-8">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="repositories" className="gap-2">
+                    <ChartLine size={16} />
+                    Repositories
+                  </TabsTrigger>
+                  <TabsTrigger value="alerts" className="gap-2">
+                    <Bell size={16} />
+                    Health Alerts
+                    {criticalAlertsCount > 0 && (
+                      <span className="ml-1 px-1.5 py-0.5 text-xs bg-destructive text-destructive-foreground rounded-full">
+                        {criticalAlertsCount}
+                      </span>
                     )}
-                  </div>
-                </section>
-              )}
+                  </TabsTrigger>
+                </TabsList>
 
-              {otherRepos.length > 0 ? (
-                <section>
-                  <h2 
-                    className="text-2xl font-semibold mb-6"
-                    style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                  >
-                    {activeCategory === 'all' ? 'System Components' : `${categoryCounts[activeCategory]} Components`}
-                  </h2>
-                  {currentViewMode === 'grid' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                      {otherRepos.map(repo => (
-                        <RepositoryCard key={repo.id} repo={repo} onShowStats={handleShowStats} />
-                      ))}
+                <TabsContent value="repositories" className="space-y-4 mt-6">
+                  <div className="space-y-4">
+                    <CategoryFilter
+                      activeCategory={activeCategory}
+                      onCategoryChange={setActiveCategory}
+                      counts={categoryCounts}
+                    />
+                    
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
+                      <SearchSort
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        sortBy={sortBy}
+                        onSortByChange={setSortBy}
+                        sortDirection={sortDirection}
+                        onSortDirectionChange={setSortDirection}
+                        resultCount={filteredAndSortedRepos.length}
+                        totalCount={repos.length}
+                      />
+                      
+                      <ViewToggle
+                        viewMode={currentViewMode}
+                        onViewModeChange={setViewMode}
+                      />
                     </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {otherRepos.map(repo => (
-                        <RepositoryListItem key={repo.id} repo={repo} onShowStats={handleShowStats} />
-                      ))}
-                    </div>
+                  </div>
+
+                  {brainRepo && (activeCategory === 'all' || activeCategory === 'brain') && !searchQuery && (
+                    <section className="mb-12">
+                      <h2 
+                        className="text-2xl font-semibold mb-6 flex items-center gap-2"
+                        style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                      >
+                        <span className="text-accent">⚡</span>
+                        Neural Core System
+                      </h2>
+                      <div className={currentViewMode === 'list' ? '' : 'max-w-2xl'}>
+                        {currentViewMode === 'grid' ? (
+                          <RepositoryCard 
+                            repo={brainRepo} 
+                            isBrain 
+                            onShowStats={handleShowStats}
+                            healthMetrics={healthMetrics.get(brainRepo.name)}
+                          />
+                        ) : (
+                          <RepositoryListItem 
+                            repo={brainRepo} 
+                            isBrain 
+                            onShowStats={handleShowStats}
+                            healthMetrics={healthMetrics.get(brainRepo.name)}
+                          />
+                        )}
+                      </div>
+                    </section>
                   )}
-                </section>
-              ) : (
-                <EmptyState 
-                  hasSearchQuery={!!searchQuery}
-                  searchQuery={searchQuery}
-                  onReset={() => {
-                    setSearchQuery('')
-                    setActiveCategory('all')
-                  }}
-                />
-              )}
+
+                  {otherRepos.length > 0 ? (
+                    <section>
+                      <h2 
+                        className="text-2xl font-semibold mb-6"
+                        style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                      >
+                        {activeCategory === 'all' ? 'System Components' : `${categoryCounts[activeCategory]} Components`}
+                      </h2>
+                      {currentViewMode === 'grid' ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                          {otherRepos.map(repo => (
+                            <RepositoryCard 
+                              key={repo.id} 
+                              repo={repo} 
+                              onShowStats={handleShowStats}
+                              healthMetrics={healthMetrics.get(repo.name)}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {otherRepos.map(repo => (
+                            <RepositoryListItem 
+                              key={repo.id} 
+                              repo={repo} 
+                              onShowStats={handleShowStats}
+                              healthMetrics={healthMetrics.get(repo.name)}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </section>
+                  ) : (
+                    <EmptyState 
+                      hasSearchQuery={!!searchQuery}
+                      searchQuery={searchQuery}
+                      onReset={() => {
+                        setSearchQuery('')
+                        setActiveCategory('all')
+                      }}
+                    />
+                  )}
+                </TabsContent>
+
+                <TabsContent value="alerts" className="mt-6">
+                  <AlertPanel alerts={allAlerts} maxHeight={600} />
+                </TabsContent>
+              </Tabs>
             </>
           )}
             </div>

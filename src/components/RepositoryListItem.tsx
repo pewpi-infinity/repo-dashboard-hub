@@ -5,14 +5,17 @@ import type { CategorizedRepo } from '@/lib/types'
 import { getCategoryLabel, getCategoryColor, getRelativeTime } from '@/lib/repo-utils'
 import { cn } from '@/lib/utils'
 import * as Icons from '@phosphor-icons/react'
+import { HealthIndicator } from './HealthIndicator'
+import type { HealthMetrics } from '@/lib/health-monitor'
 
 interface RepositoryListItemProps {
   repo: CategorizedRepo
   isBrain?: boolean
   onShowStats?: (repo: CategorizedRepo) => void
+  healthMetrics?: HealthMetrics
 }
 
-export function RepositoryListItem({ repo, isBrain = false, onShowStats }: RepositoryListItemProps) {
+export function RepositoryListItem({ repo, isBrain = false, onShowStats, healthMetrics }: RepositoryListItemProps) {
   const categoryLabel = getCategoryLabel(repo.category)
   const categoryColor = getCategoryColor(repo.category)
   const lastUpdate = getRelativeTime(repo.updated_at)
@@ -91,6 +94,17 @@ export function RepositoryListItem({ repo, isBrain = false, onShowStats }: Repos
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
+          {healthMetrics && (
+            <div className="hidden lg:block">
+              <HealthIndicator 
+                status={healthMetrics.status}
+                score={healthMetrics.score}
+                size="sm"
+                showLabel={false}
+                animated={healthMetrics.status === 'critical'}
+              />
+            </div>
+          )}
           <div className="hidden md:flex items-center gap-2">
             <Badge className={cn('text-xs', categoryColor)}>
               {categoryLabel}
