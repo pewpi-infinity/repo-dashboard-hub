@@ -1,18 +1,18 @@
+import { Octokit } from 'octokit'
 import type { Repository, CommitActivity, Contributor, RepoStats } from './types'
 
 const ORG_NAME = 'pewpi-infinity'
-const GITHUB_API = 'https://api.github.com'
+const octokit = new Octokit()
 
 export async function fetchOrgRepositories(): Promise<Repository[]> {
   try {
-    const response = await fetch(`${GITHUB_API}/orgs/${ORG_NAME}/repos?per_page=100&sort=updated`)
+    const { data } = await octokit.rest.repos.listForOrg({
+      org: ORG_NAME,
+      per_page: 100,
+      sort: 'updated'
+    })
     
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`)
-    }
-    
-    const repos: Repository[] = await response.json()
-    return repos
+    return data as Repository[]
   } catch (error) {
     console.error('Failed to fetch repositories:', error)
     throw error
@@ -21,14 +21,12 @@ export async function fetchOrgRepositories(): Promise<Repository[]> {
 
 export async function fetchRepository(repoName: string): Promise<Repository> {
   try {
-    const response = await fetch(`${GITHUB_API}/repos/${ORG_NAME}/${repoName}`)
+    const { data } = await octokit.rest.repos.get({
+      owner: ORG_NAME,
+      repo: repoName
+    })
     
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`)
-    }
-    
-    const repo: Repository = await response.json()
-    return repo
+    return data as Repository
   } catch (error) {
     console.error(`Failed to fetch repository ${repoName}:`, error)
     throw error
@@ -37,17 +35,12 @@ export async function fetchRepository(repoName: string): Promise<Repository> {
 
 export async function fetchCommitActivity(repoName: string): Promise<CommitActivity[]> {
   try {
-    const response = await fetch(`${GITHUB_API}/repos/${ORG_NAME}/${repoName}/stats/commit_activity`)
+    const { data } = await octokit.rest.repos.getCommitActivityStats({
+      owner: ORG_NAME,
+      repo: repoName
+    })
     
-    if (!response.ok) {
-      if (response.status === 202) {
-        return []
-      }
-      throw new Error(`GitHub API error: ${response.status}`)
-    }
-    
-    const activity: CommitActivity[] = await response.json()
-    return activity || []
+    return (data || []) as CommitActivity[]
   } catch (error) {
     console.error(`Failed to fetch commit activity for ${repoName}:`, error)
     return []
@@ -56,14 +49,13 @@ export async function fetchCommitActivity(repoName: string): Promise<CommitActiv
 
 export async function fetchContributors(repoName: string): Promise<Contributor[]> {
   try {
-    const response = await fetch(`${GITHUB_API}/repos/${ORG_NAME}/${repoName}/contributors?per_page=10`)
+    const { data } = await octokit.rest.repos.listContributors({
+      owner: ORG_NAME,
+      repo: repoName,
+      per_page: 10
+    })
     
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`)
-    }
-    
-    const contributors: Contributor[] = await response.json()
-    return contributors || []
+    return (data || []) as Contributor[]
   } catch (error) {
     console.error(`Failed to fetch contributors for ${repoName}:`, error)
     return []
@@ -72,14 +64,12 @@ export async function fetchContributors(repoName: string): Promise<Contributor[]
 
 export async function fetchLanguages(repoName: string): Promise<Record<string, number>> {
   try {
-    const response = await fetch(`${GITHUB_API}/repos/${ORG_NAME}/${repoName}/languages`)
+    const { data } = await octokit.rest.repos.listLanguages({
+      owner: ORG_NAME,
+      repo: repoName
+    })
     
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`)
-    }
-    
-    const languages: Record<string, number> = await response.json()
-    return languages || {}
+    return data || {}
   } catch (error) {
     console.error(`Failed to fetch languages for ${repoName}:`, error)
     return {}
