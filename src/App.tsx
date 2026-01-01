@@ -1,8 +1,10 @@
 import { useEffect, useState, useMemo } from 'react'
 import { RepositoryCard } from './components/RepositoryCard'
+import { RepositoryListItem } from './components/RepositoryListItem'
 import { CategoryFilter } from './components/CategoryFilter'
 import { RepoStatsDialog } from './components/RepoStatsDialog'
 import { SearchSort } from './components/SearchSort'
+import { ViewToggle, type ViewMode } from './components/ViewToggle'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -11,6 +13,7 @@ import { addCategories } from './lib/repo-utils'
 import type { CategorizedRepo, ComponentCategory } from './lib/types'
 import { ArrowClockwise, Warning } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+import { useKV } from '@github/spark/hooks'
 
 export type SortOption = 'name' | 'updated' | 'stars' | 'language'
 export type SortDirection = 'asc' | 'desc'
@@ -25,6 +28,9 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('updated')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
+  const [viewMode, setViewMode] = useKV<ViewMode>('view-mode', 'grid')
+
+  const currentViewMode: ViewMode = viewMode || 'grid'
 
   const loadRepositories = async () => {
     setLoading(true)
@@ -166,16 +172,23 @@ function App() {
                   counts={categoryCounts}
                 />
                 
-                <SearchSort
-                  searchQuery={searchQuery}
-                  onSearchChange={setSearchQuery}
-                  sortBy={sortBy}
-                  onSortByChange={setSortBy}
-                  sortDirection={sortDirection}
-                  onSortDirectionChange={setSortDirection}
-                  resultCount={filteredAndSortedRepos.length}
-                  totalCount={repos.length}
-                />
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
+                  <SearchSort
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    sortBy={sortBy}
+                    onSortByChange={setSortBy}
+                    sortDirection={sortDirection}
+                    onSortDirectionChange={setSortDirection}
+                    resultCount={filteredAndSortedRepos.length}
+                    totalCount={repos.length}
+                  />
+                  
+                  <ViewToggle
+                    viewMode={currentViewMode}
+                    onViewModeChange={setViewMode}
+                  />
+                </div>
               </div>
 
               {brainRepo && (activeCategory === 'all' || activeCategory === 'brain') && !searchQuery && (
@@ -187,8 +200,12 @@ function App() {
                     <span className="text-accent">⚡</span>
                     Neural Core System
                   </h2>
-                  <div className="max-w-2xl">
-                    <RepositoryCard repo={brainRepo} isBrain onShowStats={handleShowStats} />
+                  <div className={currentViewMode === 'list' ? '' : 'max-w-2xl'}>
+                    {currentViewMode === 'grid' ? (
+                      <RepositoryCard repo={brainRepo} isBrain onShowStats={handleShowStats} />
+                    ) : (
+                      <RepositoryListItem repo={brainRepo} isBrain onShowStats={handleShowStats} />
+                    )}
                   </div>
                 </section>
               )}
@@ -201,11 +218,19 @@ function App() {
                   >
                     {activeCategory === 'all' ? 'System Components' : `${categoryCounts[activeCategory]} Components`}
                   </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {otherRepos.map(repo => (
-                      <RepositoryCard key={repo.id} repo={repo} onShowStats={handleShowStats} />
-                    ))}
-                  </div>
+                  {currentViewMode === 'grid' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {otherRepos.map(repo => (
+                        <RepositoryCard key={repo.id} repo={repo} onShowStats={handleShowStats} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {otherRepos.map(repo => (
+                        <RepositoryListItem key={repo.id} repo={repo} onShowStats={handleShowStats} />
+                      ))}
+                    </div>
+                  )}
                 </section>
               ) : (
                 <Alert className="bg-card/50 border-border/50">

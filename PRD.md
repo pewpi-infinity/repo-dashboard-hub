@@ -89,6 +89,13 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Progression**: User selects sort criteria → Choose ascending/descending → Repositories reorder → User sees sorted list
 - **Success criteria**: Repositories sort correctly by selected field with visual indication of sort direction (arrow icon)
 
+### View Mode Toggle
+- **Functionality**: Switch between grid view (cards) and compact list view for repository display
+- **Purpose**: Allow users to choose their preferred viewing density - spacious grid for visual browsing or compact list for scanning many items
+- **Trigger**: User clicks grid or list icon button in view toggle control
+- **Progression**: User selects view mode → Layout switches instantly → Preference persists across sessions → User sees repositories in chosen format
+- **Success criteria**: Both grid and list views display all repository information appropriately, view preference persists using useKV storage
+
 ## Edge Case Handling
 - **API Rate Limiting**: Display cached data with a refresh timestamp when GitHub API limits are hit
 - **Missing Repositories**: Show placeholder cards with "Repository private or unavailable" message
@@ -142,14 +149,18 @@ Animations should reinforce the quantum computing theme with subtle particle eff
   - Alert component for error states
   - Input component for search functionality with icon prefix
   - Select component for sort options dropdown
+  - Custom ViewToggle component with grid/list mode buttons
 - **Customizations**: 
   - Custom grid layout with CSS Grid for responsive repository cards
+  - Custom list layout with compact horizontal repository items
   - Animated background with SVG patterns simulating circuit boards and neural connections
   - Custom repository card with glowing border effects using box-shadow
+  - Custom repository list item with horizontal layout optimized for scanning
   - mongoose.os special card with pulsing animation and distinctive styling
   - Full-screen statistics modal with glassmorphic backdrop
   - Interactive area chart with custom color gradients matching theme
   - Contributor cards with hover effects and click-to-profile functionality
+  - View toggle button group with active state highlighting
 - **States**: 
   - Cards: default (subtle glow), hover (bright glow + lift), active (pressed state)
   - Stats button: outline style with hover glow effect
@@ -174,6 +185,8 @@ Animations should reinforce the quantum computing theme with subtle particle eff
   - FileCode for repository size
   - MagnifyingGlass for search input
   - ArrowUp/ArrowDown for sort direction toggle
+  - SquaresFour for grid view mode
+  - List for list view mode
 - **Spacing**: 
   - Card grid: gap-6 for desktop, gap-4 for mobile
   - Card padding: p-6 for consistent internal spacing
@@ -185,8 +198,10 @@ Animations should reinforce the quantum computing theme with subtle particle eff
   - Single column card layout on mobile (<768px)
   - Two columns on tablet (768-1024px)
   - Three to four columns on desktop (>1024px)
+  - List view always single column on all screen sizes for optimal readability
   - Full-width modal on mobile with scrollable content
   - Stats grid adapts to 2 columns on mobile, 5 on desktop
   - Collapsible filter tabs on mobile with hamburger-style menu
   - Touch-optimized card sizes with minimum 44px touch targets
   - Responsive chart sizing with proper aspect ratios
+  - View toggle visible on all screen sizes with responsive label visibility
