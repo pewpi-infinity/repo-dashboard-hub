@@ -131,6 +131,41 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Progression**: Draw outer glow → Inner glow gradient → Cluster boundary → Rotating energy markers → Emoji center → Name label → Stats label
 - **Success criteria**: Distinct glow for each cluster color, pulse animation synchronized, 6 rotating markers around boundary, cluster name and stats clearly readable, selected cluster highlighted
 
+### Semantic Media Placement System
+- **Functionality**: Intelligent content library matching media assets (images, videos, music) to repositories based on semantic analysis of keywords, themes, mood, and content
+- **Purpose**: Automatically place thematically appropriate backgrounds, videos, and music in machine pages based on repo purpose and content
+- **Trigger**: System analyzes repo name, description, and topics against media library metadata
+- **Progression**: User views repo → System queries media library → Semantic matching scores content → Top matches displayed → User browses media/music tabs
+- **Success criteria**: Media assets correctly matched to repos (Rush for music repos, Creepshow for Truvio Studios, Periodic Table for research/encoding repos), background images automatically selected, music tracks semantically grouped
+
+### Jukebox Component
+- **Functionality**: Full-featured music player with vinyl record animation, track queue, volume control, and semantic track matching per repository
+- **Purpose**: Provide immersive audio experience with preloaded music appropriate for each machine (Rush 2112 album for music/sync repos)
+- **Trigger**: Available in Music tab of repo stats dialog when repo has matched music tracks
+- **Progression**: User opens music tab → Jukebox displays with matched tracks → Spinning vinyl animates when playing → User can play/pause/skip → Queue shows all tracks with themes → Track lyrics and metadata displayed
+- **Success criteria**: Vinyl animation rotates smoothly when playing, all Rush 2112 tracks loaded with lyrics, track themes and moods displayed, autoplay option works, volume control functional, compact mode available
+
+### Media Gallery Component  
+- **Functionality**: Tabbed gallery displaying images, videos, and music with fullscreen preview, semantic tagging, and mood-based organization
+- **Purpose**: Showcase repository-specific visual content like album art, movie scenes, diagrams, and video demos with rich metadata
+- **Trigger**: Available in Media tab of repo stats dialog when repo has matched media assets
+- **Progression**: User opens media tab → Gallery displays organized tabs → Click image/video for fullscreen → Hover shows metadata → Tags indicate mood and themes → Videos play on hover
+- **Success criteria**: Creepshow scenes display for production repos, Rush 2112 artwork for music repos, Periodic Table for research repos, fullscreen mode works, video playback functional, semantic tags visible
+
+### Interactive Background System
+- **Functionality**: Dynamic background images selected per repository based on semantic content analysis
+- **Purpose**: Create immersive, thematically consistent page backgrounds that reflect repo purpose (underwater Creepshow scenes warn of script issues, Rush cosmic imagery for runtime systems)
+- **Trigger**: Automatic background selection when viewing individual machine pages
+- **Progression**: System analyzes repo → Matches background from media library → Applies with appropriate opacity/blur → User sees themed environment
+- **Success criteria**: Backgrounds don't obscure content, opacity/blur applied correctly, theme matches repo category, Creepshow for interactive/storytelling repos, Rush for progressive/quantum systems
+
+### Semantic Content Search
+- **Functionality**: Natural language search across media library using keywords, themes, moods, and descriptions with scoring algorithm
+- **Purpose**: Allow users to find media by meaning rather than filename (search "rebellion" finds Rush 2112, "underwater horror" finds Creepshow scenes)
+- **Trigger**: User enters search query in media browser
+- **Progression**: User types query → System tokenizes words → Scores all media against query → Returns ranked results → User browses semantically matched content
+- **Success criteria**: Thematic searches work (search "discovery" finds Rush tracks, "investigative" finds Periodic Table), scoring prioritizes exact matches, multi-word queries supported, search works across all metadata fields
+
 ### Intelligent Rotation System
 - **Functionality**: Automatic cycling through repos with adjustable speed, respecting locked slots
 - **Purpose**: Show all repos over time without performance degradation

@@ -9,10 +9,13 @@ import { LanguageStats } from './LanguageStats'
 import { RepoStatsOverview } from './RepoStatsOverview'
 import { HealthMonitorDashboard } from './HealthMonitorDashboard'
 import { AlertPanel } from './AlertPanel'
+import { Jukebox } from './Jukebox'
+import { MediaGallery } from './MediaGallery'
 import { fetchRepoStats } from '@/lib/github-api'
 import { calculateHealthMetrics } from '@/lib/health-monitor'
+import { getMediaForRepo, getMusicForRepo } from '@/lib/media-semantic'
 import type { CategorizedRepo, RepoStats } from '@/lib/types'
-import { Warning, ChartLine, Bell } from '@phosphor-icons/react'
+import { Warning, ChartLine, Bell, Image, MusicNotes } from '@phosphor-icons/react'
 
 interface RepoStatsDialogProps {
   repo: CategorizedRepo | null
@@ -55,6 +58,16 @@ export function RepoStatsDialog({ repo, open, onOpenChange }: RepoStatsDialogPro
     return calculateHealthMetrics(repo, stats.commitActivity)
   }, [repo, stats])
 
+  const hasMedia = useMemo(() => {
+    if (!repo) return false
+    return getMediaForRepo(repo.name).length > 0
+  }, [repo])
+
+  const hasMusic = useMemo(() => {
+    if (!repo) return false
+    return getMusicForRepo(repo.name).length > 0
+  }, [repo])
+
   if (!repo) return null
 
   return (
@@ -94,7 +107,7 @@ export function RepoStatsDialog({ repo, open, onOpenChange }: RepoStatsDialogPro
             </>
           ) : stats && healthMetrics ? (
             <Tabs defaultValue="overview" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
+              <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5 lg:w-auto lg:inline-grid">
                 <TabsTrigger value="overview" className="gap-2">
                   <ChartLine size={16} />
                   <span className="hidden sm:inline">Overview</span>
@@ -112,6 +125,18 @@ export function RepoStatsDialog({ repo, open, onOpenChange }: RepoStatsDialogPro
                     </span>
                   )}
                 </TabsTrigger>
+                {hasMedia && (
+                  <TabsTrigger value="media" className="gap-2">
+                    <Image size={16} />
+                    <span className="hidden sm:inline">Media</span>
+                  </TabsTrigger>
+                )}
+                {hasMusic && (
+                  <TabsTrigger value="music" className="gap-2">
+                    <MusicNotes size={16} />
+                    <span className="hidden sm:inline">Music</span>
+                  </TabsTrigger>
+                )}
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">
@@ -147,6 +172,18 @@ export function RepoStatsDialog({ repo, open, onOpenChange }: RepoStatsDialogPro
               <TabsContent value="alerts">
                 <AlertPanel alerts={healthMetrics.alerts} compact />
               </TabsContent>
+
+              {hasMedia && (
+                <TabsContent value="media" className="space-y-6">
+                  <MediaGallery repoName={repo.name} />
+                </TabsContent>
+              )}
+
+              {hasMusic && (
+                <TabsContent value="music" className="space-y-6">
+                  <Jukebox repoName={repo.name} />
+                </TabsContent>
+              )}
             </Tabs>
           ) : null}
         </div>
