@@ -994,7 +994,7 @@ export const musicLibrary: MusicTrack[] = [
     duration: '3:34',
     themes: ['time', 'season', 'cycle', 'change', 'transformation'],
     mood: ['psychedelic', 'groovy', 'mysterious', 'sensual', 'atmospheric'],
-    suggestedRepos: ['legend-🛞-tire', 'legend-⭐-runtime', 'legend-🔀-flow'],
+    suggestedRepos: ['legend-🛞-tire', 'legend-���-runtime', 'legend-🔀-flow'],
     lyrics: '🛞 It\'s the time of the season - Cyclical rotation and seasonal changes'
   },
   {
@@ -1171,7 +1171,7 @@ export const musicLibrary: MusicTrack[] = [
     themes: ['night', 'dreams', 'emotion', 'beauty', 'love', 'transcendence'],
     mood: ['ethereal', 'emotional', 'dramatic', 'orchestral', 'romantic'],
     suggestedRepos: ['legend-🪐-memory', 'legend-✨-multistar', 'truvio-studios'],
-    lyrics: '🪐 Nights in white satin, never reaching the end - Memory and dream states'
+    lyrics: '���� Nights in white satin, never reaching the end - Memory and dream states'
   },
   {
     id: 'procol-harum-whiter-shade-pale',
