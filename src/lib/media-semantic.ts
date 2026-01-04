@@ -941,6 +941,402 @@ export const musicLibrary: MusicTrack[] = [
     mood: ['heavy', 'industrial', 'powerful', 'mechanical', 'intense'],
     suggestedRepos: ['legend-🦾-robot-core', 'legend-🎛️-modulator', 'mongoose.os'],
     lyrics: '🤖 Breathe in, breathe out - Industrial machine systems and automation'
+  },
+  {
+    id: 'the-doors-break-on-through',
+    title: 'Break On Through (To the Other Side)',
+    artist: 'The Doors',
+    album: 'The Doors',
+    duration: '2:29',
+    themes: ['breakthrough', 'revolution', 'breaking', 'liberation', 'freedom', 'unlock'],
+    mood: ['rebellious', 'energetic', 'liberating', 'psychedelic', 'powerful'],
+    suggestedRepos: ['legend-⛓️‍💥-chain-breaker', 'legend-🔀-flow', 'legend-🕹️-mario-exit'],
+    lyrics: '⛓️‍💥 Break on through to the other side - Chain breaking and liberation'
+  },
+  {
+    id: 'the-ramones-i-wanna-be-sedated',
+    title: 'I Wanna Be Sedated',
+    artist: 'Ramones',
+    album: 'Road to Ruin',
+    duration: '2:30',
+    themes: ['rest', 'calm', 'peace', 'escape', 'sleep'],
+    mood: ['fast', 'energetic', 'ironic', 'punk', 'driving'],
+    suggestedRepos: ['legend-🛞-tire', 'legend-🔀-flow', 'legend-⭐-runtime'],
+    lyrics: '🛞 Twenty-twenty-twenty-four hours to go - Cyclical rotation and time management'
+  },
+  {
+    id: 'eurythmics-sweet-dreams',
+    title: 'Sweet Dreams (Are Made of This)',
+    artist: 'Eurythmics',
+    album: 'Sweet Dreams',
+    duration: '3:36',
+    themes: ['dreams', 'searching', 'journey', 'exploration', 'desire'],
+    mood: ['haunting', 'hypnotic', 'mysterious', 'driving', 'electronic'],
+    suggestedRepos: ['legend-🪐-memory', 'mongoose.os', 'legend-🔗-semantic'],
+    lyrics: '🪐 Who am I to disagree? - Memory and dream storage systems'
+  },
+  {
+    id: 'the-kinks-lola',
+    title: 'Lola',
+    artist: 'The Kinks',
+    album: 'Lola Versus Powerman',
+    duration: '4:04',
+    themes: ['identity', 'story', 'transformation', 'recognition', 'acceptance'],
+    mood: ['storytelling', 'upbeat', 'catchy', 'playful', 'narrative'],
+    suggestedRepos: ['legend-📖-reader', 'legend-🔗-semantic', 'truvio-studios'],
+    lyrics: '📖 I\'m glad I\'m a man, and so is Lola - Reading and understanding stories'
+  },
+  {
+    id: 'the-zombies-time-of-season',
+    title: 'Time of the Season',
+    artist: 'The Zombies',
+    album: 'Odessey and Oracle',
+    duration: '3:34',
+    themes: ['time', 'season', 'cycle', 'change', 'transformation'],
+    mood: ['psychedelic', 'groovy', 'mysterious', 'sensual', 'atmospheric'],
+    suggestedRepos: ['legend-🛞-tire', 'legend-⭐-runtime', 'legend-🔀-flow'],
+    lyrics: '🛞 It\'s the time of the season - Cyclical rotation and seasonal changes'
+  },
+  {
+    id: 'cream-white-room',
+    title: 'White Room',
+    artist: 'Cream',
+    album: 'Wheels of Fire',
+    duration: '4:58',
+    themes: ['space', 'isolation', 'transformation', 'journey', 'platform', 'station'],
+    mood: ['psychedelic', 'powerful', 'mysterious', 'epic', 'bluesy'],
+    suggestedRepos: ['legend-🖼️-frame', 'legend-🪐-memory', 'legend-core'],
+    lyrics: '🖼️ In a white room with black curtains - Frame and boundary creation'
+  },
+  {
+    id: 'the-yardbirds-for-your-love',
+    title: 'For Your Love',
+    artist: 'The Yardbirds',
+    album: 'For Your Love',
+    duration: '2:30',
+    themes: ['dedication', 'service', 'giving', 'sacrifice', 'commitment'],
+    mood: ['upbeat', 'catchy', 'energetic', 'romantic', 'driving'],
+    suggestedRepos: ['legend-🗣️-voice', 'legend-🎵-sync', 'legend-💰-money'],
+    lyrics: '🗣️ I\'d give the stars above - Voice of dedication and service'
+  },
+  {
+    id: 'buffalo-springfield-for-what-its-worth',
+    title: "For What It's Worth",
+    artist: 'Buffalo Springfield',
+    album: 'Buffalo Springfield',
+    duration: '2:37',
+    themes: ['awareness', 'watching', 'observation', 'tension', 'vigilance', 'monitoring'],
+    mood: ['cautious', 'observant', 'tense', 'folk-rock', 'reflective'],
+    suggestedRepos: ['legend-👀-watcher', 'legend-👁️-viewer', 'legend-🍄-auditor'],
+    lyrics: '👀 Stop, hey, what\'s that sound? Everybody look what\'s going down - System watching and monitoring'
+  },
+  {
+    id: 'simon-garfunkel-bridge-over-troubled-water',
+    title: 'Bridge Over Troubled Water',
+    artist: 'Simon & Garfunkel',
+    album: 'Bridge Over Troubled Water',
+    duration: '4:52',
+    themes: ['support', 'bridge', 'connection', 'help', 'comfort', 'crossing'],
+    mood: ['uplifting', 'emotional', 'powerful', 'comforting', 'epic'],
+    suggestedRepos: ['legend-⛓️-chain', 'legend-🔗-semantic', 'legend-🔌-socket'],
+    lyrics: '⛓️ I\'m on your side - Bridge connections and support chains'
+  },
+  {
+    id: 'bob-dylan-like-a-rolling-stone',
+    title: 'Like a Rolling Stone',
+    artist: 'Bob Dylan',
+    album: 'Highway 61 Revisited',
+    duration: '6:13',
+    themes: ['freedom', 'independence', 'rolling', 'movement', 'transformation', 'change'],
+    mood: ['defiant', 'energetic', 'liberating', 'revolutionary', 'iconic'],
+    suggestedRepos: ['legend-🛞-tire', 'legend-🔀-flow', 'legend-⛓️‍💥-chain-breaker'],
+    lyrics: '🛞 How does it feel, to be on your own, like a rolling stone - Continuous rotation and movement'
+  },
+  {
+    id: 'the-animals-house-of-rising-sun',
+    title: 'House of the Rising Sun',
+    artist: 'The Animals',
+    album: 'The Animals',
+    duration: '4:30',
+    themes: ['house', 'dwelling', 'memory', 'warning', 'story', 'history'],
+    mood: ['haunting', 'emotional', 'powerful', 'tragic', 'legendary'],
+    suggestedRepos: ['legend-🖼️-frame', 'legend-🪐-memory', 'truvio-studios'],
+    lyrics: '🏠 There is a house in New Orleans - Frame structures and memory houses'
+  },
+  {
+    id: 'the-clash-rock-the-casbah',
+    title: 'Rock the Casbah',
+    artist: 'The Clash',
+    album: 'Combat Rock',
+    duration: '3:42',
+    themes: ['revolution', 'rebellion', 'music', 'freedom', 'defiance', 'rock'],
+    mood: ['rebellious', 'energetic', 'defiant', 'upbeat', 'funky'],
+    suggestedRepos: ['legend-🎵-sync', 'legend-⛓️‍💥-chain-breaker', 'legend-core'],
+    lyrics: '🎵 Rock the Casbah - Music sync and rebellious rhythm'
+  },
+  {
+    id: 'squeeze-tempted',
+    title: 'Tempted',
+    artist: 'Squeeze',
+    album: 'East Side Story',
+    duration: '4:03',
+    themes: ['temptation', 'resistance', 'choice', 'decision', 'control'],
+    mood: ['smooth', 'soulful', 'groovy', 'reflective', 'tempting'],
+    suggestedRepos: ['legend-🎛️-modulator', 'legend-🔀-flow', 'mongoose.os'],
+    lyrics: '🎛️ I\'m tempted by the fruit of another - Modulation and choice filtering'
+  },
+  {
+    id: 'the-rolling-stones-paint-it-black',
+    title: 'Paint It Black',
+    artist: 'The Rolling Stones',
+    album: 'Aftermath',
+    duration: '3:44',
+    themes: ['transformation', 'change', 'color', 'painting', 'darkness', 'emotion'],
+    mood: ['dark', 'intense', 'dramatic', 'psychedelic', 'driving'],
+    suggestedRepos: ['legend-🎨-printer', 'legend-🖼️-frame', 'legend-core'],
+    lyrics: '🎨 I see a red door and I want it painted black - Rendering and color transformation'
+  },
+  {
+    id: 'ccr-fortunate-son',
+    title: 'Fortunate Son',
+    artist: 'Creedence Clearwater Revival',
+    album: 'Willy and the Poor Boys',
+    duration: '2:20',
+    themes: ['inequality', 'privilege', 'protest', 'military', 'defiance'],
+    mood: ['defiant', 'energetic', 'rebellious', 'powerful', 'driving'],
+    suggestedRepos: ['legend-core', 'legend-⛓️‍💥-chain-breaker', 'mongoose.os'],
+    lyrics: '👑 It ain\'t me, I ain\'t no fortunate son - Questioning authority and privilege'
+  },
+  {
+    id: 'ccr-have-you-ever-seen-the-rain',
+    title: 'Have You Ever Seen the Rain',
+    artist: 'Creedence Clearwater Revival',
+    album: 'Pendulum',
+    duration: '2:40',
+    themes: ['rain', 'weather', 'cycles', 'change', 'nature', 'reflection'],
+    mood: ['reflective', 'melancholic', 'gentle', 'nostalgic', 'folk-rock'],
+    suggestedRepos: ['legend-👁️-viewer', 'legend-🪐-memory', 'legend-🛞-tire'],
+    lyrics: '👁️ Have you ever seen the rain coming down on a sunny day - Observation and pattern recognition'
+  },
+  {
+    id: 'the-guess-who-american-woman',
+    title: 'American Woman',
+    artist: 'The Guess Who',
+    album: 'American Woman',
+    duration: '5:08',
+    themes: ['independence', 'freedom', 'rejection', 'autonomy', 'separation'],
+    mood: ['powerful', 'defiant', 'driving', 'bluesy', 'heavy'],
+    suggestedRepos: ['legend-⛓️‍💥-chain-breaker', 'legend-🔀-flow', 'legend-core'],
+    lyrics: '⛓️ American woman, stay away from me - Breaking dependencies and chains'
+  },
+  {
+    id: 'derek-and-dominos-layla',
+    title: 'Layla',
+    artist: 'Derek and the Dominos',
+    album: 'Layla and Other Assorted Love Songs',
+    duration: '7:10',
+    themes: ['passion', 'desire', 'pursuit', 'connection', 'longing'],
+    mood: ['passionate', 'powerful', 'emotional', 'bluesy', 'epic'],
+    suggestedRepos: ['legend-🔗-semantic', 'legend-⛓️-chain', 'truvio-studios'],
+    lyrics: '🔗 Layla, you got me on my knees - Semantic connection and passionate linking'
+  },
+  {
+    id: 'tom-petty-free-fallin',
+    title: "Free Fallin'",
+    artist: 'Tom Petty',
+    album: 'Full Moon Fever',
+    duration: '4:15',
+    themes: ['freedom', 'falling', 'liberation', 'flow', 'movement', 'descent'],
+    mood: ['carefree', 'smooth', 'liberating', 'upbeat', 'flowing'],
+    suggestedRepos: ['legend-🔀-flow', 'legend-⛓️‍💥-chain-breaker', 'legend-🛞-tire'],
+    lyrics: '🔀 Free fallin\' - Uninhibited flow and movement'
+  },
+  {
+    id: 'the-cars-just-what-i-needed',
+    title: 'Just What I Needed',
+    artist: 'The Cars',
+    album: 'The Cars',
+    duration: '3:44',
+    themes: ['necessity', 'need', 'satisfaction', 'fulfillment', 'perfect-fit'],
+    mood: ['upbeat', 'energetic', 'catchy', 'new-wave', 'driving'],
+    suggestedRepos: ['legend-🎛️-modulator', 'legend-🔗-semantic', 'mongoose.os'],
+    lyrics: '🎛️ You\'re just what I needed - Finding the perfect modulation and match'
+  },
+  {
+    id: 'the-moody-blues-nights-in-white-satin',
+    title: 'Nights in White Satin',
+    artist: 'The Moody Blues',
+    album: 'Days of Future Passed',
+    duration: '7:24',
+    themes: ['night', 'dreams', 'emotion', 'beauty', 'love', 'transcendence'],
+    mood: ['ethereal', 'emotional', 'dramatic', 'orchestral', 'romantic'],
+    suggestedRepos: ['legend-🪐-memory', 'legend-✨-multistar', 'truvio-studios'],
+    lyrics: '🪐 Nights in white satin, never reaching the end - Memory and dream states'
+  },
+  {
+    id: 'procol-harum-whiter-shade-pale',
+    title: 'A Whiter Shade of Pale',
+    artist: 'Procol Harum',
+    album: 'Procol Harum',
+    duration: '4:04',
+    themes: ['mystery', 'transformation', 'color', 'shade', 'change', 'psychedelic'],
+    mood: ['mysterious', 'dreamy', 'baroque', 'haunting', 'ethereal'],
+    suggestedRepos: ['legend-🎨-printer', 'legend-🖼️-frame', 'legend-🪐-memory'],
+    lyrics: '🎨 We skipped the light fandango - Color rendering and transformation'
+  },
+  {
+    id: 'golden-earring-radar-love',
+    title: 'Radar Love',
+    artist: 'Golden Earring',
+    album: 'Moontan',
+    duration: '6:44',
+    themes: ['radar', 'detection', 'connection', 'signal', 'communication', 'drive'],
+    mood: ['driving', 'energetic', 'urgent', 'powerful', 'hypnotic'],
+    suggestedRepos: ['legend-🔌-socket', 'legend-👀-watcher', 'legend-🔗-semantic'],
+    lyrics: '🔌 I\'ve got a feeling called radar love - Socket connections and real-time signals'
+  },
+  {
+    id: 'alice-cooper-eighteen',
+    title: "I'm Eighteen",
+    artist: 'Alice Cooper',
+    album: 'Love It to Death',
+    duration: '2:58',
+    themes: ['age', 'identity', 'confusion', 'transition', 'growing', 'change'],
+    mood: ['rebellious', 'confused', 'energetic', 'rock', 'anthemic'],
+    suggestedRepos: ['legend-core', 'mongoose.os', 'legend-⭐-runtime'],
+    lyrics: '⭐ I\'m eighteen and I don\'t know what I want - Runtime identity and system age'
+  },
+  {
+    id: 'mountain-mississippi-queen',
+    title: 'Mississippi Queen',
+    artist: 'Mountain',
+    album: 'Climbing!',
+    duration: '2:30',
+    themes: ['power', 'queen', 'authority', 'dominance', 'leadership'],
+    mood: ['powerful', 'heavy', 'driving', 'bluesy', 'commanding'],
+    suggestedRepos: ['legend-core', 'legend-👑-authority', 'mongoose.os'],
+    lyrics: '👑 Mississippi Queen - Authority and commanding presence'
+  },
+  {
+    id: 'blue-oyster-cult-dont-fear-reaper',
+    title: "(Don't Fear) The Reaper",
+    artist: 'Blue Öyster Cult',
+    album: 'Agents of Fortune',
+    duration: '5:08',
+    themes: ['death', 'eternity', 'transcendence', 'fearless', 'acceptance', 'cycle'],
+    mood: ['haunting', 'ethereal', 'powerful', 'mysterious', 'epic'],
+    suggestedRepos: ['legend-🛞-tire', 'legend-⭐-runtime', 'legend-🍄-auditor'],
+    lyrics: '🛞 Seasons don\'t fear the reaper - Accepting the cycles of time'
+  },
+  {
+    id: 'jethro-tull-aqualung',
+    title: 'Aqualung',
+    artist: 'Jethro Tull',
+    album: 'Aqualung',
+    duration: '6:35',
+    themes: ['observation', 'watching', 'society', 'breathing', 'survival'],
+    mood: ['heavy', 'progressive', 'gritty', 'powerful', 'observant'],
+    suggestedRepos: ['legend-👁️-viewer', 'legend-👀-watcher', 'mongoose.os'],
+    lyrics: '👁️ Eyeing little girls with bad intent - Observation and watching systems'
+  },
+  {
+    id: 'yes-roundabout',
+    title: 'Roundabout',
+    artist: 'Yes',
+    album: 'Fragile',
+    duration: '8:29',
+    themes: ['circle', 'rotation', 'cycle', 'journey', 'roundabout', 'complexity'],
+    mood: ['progressive', 'complex', 'uplifting', 'virtuosic', 'epic'],
+    suggestedRepos: ['legend-🛞-tire', 'legend-🔀-flow', 'legend-⛓️-chain'],
+    lyrics: '🛞 I\'ll be the roundabout - Cyclical rotation and complex routing'
+  },
+  {
+    id: 'steely-dan-reelin-in-years',
+    title: "Reelin' in the Years",
+    artist: 'Steely Dan',
+    album: 'Can\'t Buy a Thrill',
+    duration: '4:36',
+    themes: ['time', 'memory', 'reflection', 'accumulation', 'years', 'storage'],
+    mood: ['jazzy', 'smooth', 'reflective', 'sophisticated', 'groovy'],
+    suggestedRepos: ['legend-🪐-memory', 'legend-⭐-runtime', 'mongoose.os'],
+    lyrics: '🪐 Reelin\' in the years - Accumulating and storing memories over time'
+  },
+  {
+    id: 'the-velvet-underground-sweet-jane',
+    title: 'Sweet Jane',
+    artist: 'The Velvet Underground',
+    album: 'Loaded',
+    duration: '4:32',
+    themes: ['story', 'life', 'simplicity', 'joy', 'celebration'],
+    mood: ['upbeat', 'joyful', 'celebratory', 'rock', 'anthemic'],
+    suggestedRepos: ['legend-📖-reader', 'truvio-studios', 'legend-🎵-sync'],
+    lyrics: '📖 Sweet Jane - Reading life stories and narratives'
+  },
+  {
+    id: 'lou-reed-walk-on-wild-side',
+    title: 'Walk on the Wild Side',
+    artist: 'Lou Reed',
+    album: 'Transformer',
+    duration: '4:12',
+    themes: ['walk', 'journey', 'adventure', 'exploration', 'wild', 'freedom'],
+    mood: ['smooth', 'jazzy', 'storytelling', 'cool', 'laid-back'],
+    suggestedRepos: ['legend-🕹️-mario-exit', 'legend-🔀-flow', 'truvio-studios'],
+    lyrics: '🕹️ Take a walk on the wild side - Navigating unconventional paths'
+  },
+  {
+    id: 'iggy-pop-lust-for-life',
+    title: 'Lust for Life',
+    artist: 'Iggy Pop',
+    album: 'Lust for Life',
+    duration: '5:13',
+    themes: ['life', 'energy', 'vitality', 'passion', 'living', 'drive'],
+    mood: ['energetic', 'driving', 'powerful', 'upbeat', 'anthemic'],
+    suggestedRepos: ['legend-core', 'mongoose.os', 'legend-⭐-runtime'],
+    lyrics: '⭐ I\'ve got a lust for life - Core vitality and runtime energy'
+  },
+  {
+    id: 'the-pretenders-brass-in-pocket',
+    title: 'Brass in Pocket',
+    artist: 'The Pretenders',
+    album: 'Pretenders',
+    duration: '3:05',
+    themes: ['confidence', 'pride', 'assertion', 'money', 'currency', 'possession'],
+    mood: ['confident', 'catchy', 'upbeat', 'new-wave', 'assertive'],
+    suggestedRepos: ['legend-💰-money', 'legend-💵-currency', 'legend-core'],
+    lyrics: '💰 I\'m gonna use my arms, gonna use my legs - Currency and confident value'
+  },
+  {
+    id: 'pat-benatar-hit-me-with-best-shot',
+    title: 'Hit Me with Your Best Shot',
+    artist: 'Pat Benatar',
+    album: 'Crimes of Passion',
+    duration: '2:50',
+    themes: ['challenge', 'resilience', 'strength', 'defiance', 'toughness'],
+    mood: ['defiant', 'powerful', 'energetic', 'rock', 'confident'],
+    suggestedRepos: ['legend-🍄-auditor', 'legend-core', 'legend-🦾-robot-core'],
+    lyrics: '🍄 Hit me with your best shot - Audit challenges and resilient verification'
+  },
+  {
+    id: 'dire-straits-sultans-of-swing',
+    title: 'Sultans of Swing',
+    artist: 'Dire Straits',
+    album: 'Dire Straits',
+    duration: '5:50',
+    themes: ['music', 'mastery', 'skill', 'performance', 'flow', 'groove'],
+    mood: ['smooth', 'masterful', 'groovy', 'skillful', 'jazzy'],
+    suggestedRepos: ['legend-🎵-sync', 'legend-🔀-flow', 'truvio-studios'],
+    lyrics: '🎵 The Sultans of Swing - Musical mastery and flowing synchronization'
+  },
+  {
+    id: 'kansas-carry-on-wayward-son',
+    title: 'Carry On Wayward Son',
+    artist: 'Kansas',
+    album: 'Leftoverture',
+    duration: '5:26',
+    themes: ['journey', 'perseverance', 'completion', 'peace', 'rest', 'closure'],
+    mood: ['epic', 'anthemic', 'progressive', 'powerful', 'triumphant'],
+    suggestedRepos: ['legend-🔀-flow', 'legend-spine-index', 'legend-⭐-runtime'],
+    lyrics: '🔀 Carry on my wayward son - Continuous flow and journey persistence'
   }
 ]
 
@@ -1022,6 +1418,58 @@ export function getMusicForRepo(repoName: string): MusicTrack[] {
     
     if (lowerName.includes('fast') || lowerName.includes('urgent') || lowerName.includes('⚡')) {
       return track.id === 'foreigner-urgent' || track.id === 'ac-dc-thunderstruck' || track.id === 'led-zeppelin-immigrant-song'
+    }
+    
+    if (lowerName.includes('socket') || lowerName.includes('🔌') || lowerName.includes('connection')) {
+      return track.id === 'golden-earring-radar-love' || track.id === 'simon-garfunkel-bridge-over-troubled-water' || track.id === 'the-beatles-come-together'
+    }
+    
+    if (lowerName.includes('chain-breaker') || lowerName.includes('⛓️‍💥') || lowerName.includes('break') || lowerName.includes('liberation')) {
+      return track.id === 'the-doors-break-on-through' || track.id === 'the-guess-who-american-woman' || track.id === 'tom-petty-free-fallin'
+    }
+    
+    if (lowerName.includes('frame') || lowerName.includes('🖼️') || lowerName.includes('boundary')) {
+      return track.id === 'cream-white-room' || track.id === 'the-rolling-stones-paint-it-black' || track.id === 'the-animals-house-of-rising-sun'
+    }
+    
+    if (lowerName.includes('tire') || lowerName.includes('🛞') || lowerName.includes('rotation') || lowerName.includes('cycle')) {
+      return track.id === 'bob-dylan-like-a-rolling-stone' || track.id === 'the-zombies-time-of-season' || track.id === 'yes-roundabout' || track.id === 'blue-oyster-cult-dont-fear-reaper'
+    }
+    
+    if (lowerName.includes('printer') || lowerName.includes('🎨') || lowerName.includes('render') || lowerName.includes('paint')) {
+      return track.id === 'the-rolling-stones-paint-it-black' || track.id === 'procol-harum-whiter-shade-pale'
+    }
+    
+    if (lowerName.includes('reader') || lowerName.includes('📖') || lowerName.includes('read') || lowerName.includes('story')) {
+      return track.id === 'the-kinks-lola' || track.id === 'the-velvet-underground-sweet-jane' || track.id === 'rod-stewart-maggie-may'
+    }
+    
+    if (lowerName.includes('money') || lowerName.includes('💰') || lowerName.includes('currency') || lowerName.includes('💵')) {
+      return track.id === 'pink-floyd-money' || track.id === 'eddie-money-take-me-home' || track.id === 'the-pretenders-brass-in-pocket'
+    }
+    
+    if (lowerName.includes('voice') || lowerName.includes('🗣️') || lowerName.includes('speech')) {
+      return track.id === 'the-yardbirds-for-your-love' || track.id === 'billy-joel-piano-man'
+    }
+    
+    if (lowerName.includes('listener') || lowerName.includes('👂') || lowerName.includes('listen')) {
+      return track.id === 'buffalo-springfield-for-what-its-worth' || track.id === 'the-police-every-breath'
+    }
+    
+    if (lowerName.includes('viewer') || lowerName.includes('👁️') || lowerName.includes('view')) {
+      return track.id === 'jethro-tull-aqualung' || track.id === 'ccr-have-you-ever-seen-the-rain' || track.id === 'blondie-heart-of-glass'
+    }
+    
+    if (lowerName.includes('watcher') || lowerName.includes('👀') || lowerName.includes('watch')) {
+      return track.id === 'buffalo-springfield-for-what-its-worth' || track.id === 'the-police-every-breath' || track.id === 'black-sabbath-paranoid'
+    }
+    
+    if (lowerName.includes('map') || lowerName.includes('🗺️') || lowerName.includes('navigate')) {
+      return track.id === 'toto-africa' || track.id === 'lou-reed-walk-on-wild-side' || track.id === 'jefferson-airplane-white-rabbit'
+    }
+    
+    if (lowerName.includes('dictionary') || lowerName.includes('📚') || lowerName.includes('language') || lowerName.includes('🌐')) {
+      return track.id === 'supertramp-logical-song' || track.id === 'the-kinks-lola'
     }
     
     return false
@@ -1134,7 +1582,61 @@ SEMANTIC MUSIC SELECTION RULES:
     - Keywords: fast, urgent, quick, immediate, speed, rapid
     - Also: "Urgent" for priority processing
 
-15. DARK SIDE OF THE MOON - Track by semantic need:
+15. 🔌 SOCKET / CONNECTION (Radar Love - Golden Earring):
+    - Use when: Real-time connections, socket communication, signals
+    - Keywords: socket, connection, communication, real-time, signal
+    - Also: "Bridge Over Troubled Water" for connection bridges
+
+16. ⛓️‍💥 CHAIN BREAKER / LIBERATION (Break On Through - The Doors):
+    - Use when: Breaking chains, liberation, freedom, unlocking
+    - Keywords: break, freedom, liberation, unlock, revolution
+    - Also: "American Woman" for independence, "Free Fallin'" for liberation
+
+17. 🖼️ FRAME / BOUNDARY (White Room - Cream):
+    - Use when: Frames, boundaries, structure, containers
+    - Keywords: frame, boundary, structure, container, border
+    - Also: "House of the Rising Sun" for structures
+
+18. 🛞 TIRE / ROTATION (Like a Rolling Stone - Bob Dylan):
+    - Use when: Rotation, cycles, wheels, continuous movement
+    - Keywords: rotation, cycle, wheel, roll, circular, roundabout
+    - Also: "Time of the Season" for cycles, "Roundabout" for complex rotation
+
+19. 🎨 PRINTER / RENDERING (Paint It Black - Rolling Stones):
+    - Use when: Printing, rendering, output, color, visual display
+    - Keywords: print, render, paint, color, output, display
+    - Also: "A Whiter Shade of Pale" for color transformation
+
+20. 📖 READER / STORY (Lola - The Kinks):
+    - Use when: Reading, parsing, stories, narratives, understanding
+    - Keywords: read, story, parse, understand, narrative
+    - Also: "Sweet Jane" for life stories
+
+21. 💰💵 MONEY / CURRENCY (Money - Pink Floyd):
+    - Use when: Money, currency, payments, value, financial systems
+    - Keywords: money, currency, payment, value, finance, treasury
+    - Also: "Brass in Pocket" for confidence and currency
+
+22. 👁️ VIEWER / OBSERVATION (Aqualung - Jethro Tull):
+    - Use when: Viewing, visual observation, seeing
+    - Keywords: view, see, observe, visual, display
+    - Also: "Have You Ever Seen the Rain" for visual observation
+
+23. 👀 WATCHER / MONITORING (For What It's Worth - Buffalo Springfield):
+    - Use when: Watching, monitoring, surveillance, change detection
+    - Keywords: watch, monitor, surveillance, detect, observe
+    - Also: "Every Breath You Take" for persistent watching
+
+24. 🗺️ MAPS / NAVIGATION (Africa - Toto):
+    - Use when: Navigation, mapping, routes, geography
+    - Keywords: map, navigate, route, path, geography
+    - Also: "Walk on the Wild Side" for unconventional paths
+
+25. 🔌 SOCKET / COMMUNICATION (Radar Love):
+    - Use when: Real-time signals, connections, communication channels
+    - Keywords: socket, signal, radar, connection, real-time
+
+26. DARK SIDE OF THE MOON - Track by semantic need:
     - "Speak to Me" → initialization, beginning
     - "Breathe" → life, existence, calm start  
     - "Time" ⭐ → runtime, timing, clocks, scheduling
@@ -1157,8 +1659,18 @@ ANALYZE:
 - Does it handle time/runtime? → Time or Fly Like an Eagle
 - Does it handle flow/routing? → Long Train Runnin' or Truckin'
 - Does it handle memory/storage? → More Than a Feeling or Hotel California
-- Does it chain/connect? → Come Together
+- Does it chain/connect? → Come Together or Bridge Over Troubled Water
 - Does it navigate/branch? → White Rabbit or Drive
+- Does it break/liberate? → Break On Through or Free Fallin'
+- Does it rotate/cycle? → Like a Rolling Stone or Roundabout
+- Does it frame/structure? → White Room or House of the Rising Sun
+- Does it print/render? → Paint It Black
+- Does it read/parse? → Lola or Sweet Jane
+- Does it watch/monitor? → For What It's Worth or Paranoid
+- Does it view/observe? → Aqualung or Have You Ever Seen the Rain
+- Does it handle money/currency? → Money or Brass in Pocket
+- Does it communicate/socket? → Radar Love
+- Does it map/navigate? → Africa or Walk on the Wild Side
 
 Return ONLY the number (1-${availableTracks.length}) of the BEST matching track based on these semantic rules.`
 

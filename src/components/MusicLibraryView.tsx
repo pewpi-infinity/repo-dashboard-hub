@@ -278,6 +278,15 @@ export function MusicLibraryView({ onSelectTrack, currentTrackId }: MusicLibrary
           <p><strong className="text-gold">⛓️ Come Together (The Beatles):</strong> Chain linking and semantic connections</p>
           <p><strong className="text-pink">🕹️ White Rabbit (Jefferson Airplane):</strong> Navigation and branching paths - follow the rabbit hole</p>
           <p><strong className="text-red">⚡ Thunderstruck (AC/DC):</strong> Fast urgent processing and explosive energy</p>
+          <p><strong className="text-orange">⛓️‍💥 Break On Through (The Doors):</strong> Chain breaking and liberation - breaking through to freedom</p>
+          <p><strong className="text-purple">🖼️ White Room (Cream):</strong> Frame and boundary creation - structured containers</p>
+          <p><strong className="text-yellow">🛞 Like a Rolling Stone (Bob Dylan):</strong> Continuous rotation and cyclical movement</p>
+          <p><strong className="text-pink">🎨 Paint It Black (Rolling Stones):</strong> Rendering and color transformation - visual output</p>
+          <p><strong className="text-blue">📖 Lola (The Kinks):</strong> Reading and understanding stories - data parsing</p>
+          <p><strong className="text-green">💰 Brass in Pocket (The Pretenders):</strong> Currency confidence and value possession</p>
+          <p><strong className="text-orange">👀 For What It's Worth (Buffalo Springfield):</strong> System watching and monitoring changes</p>
+          <p><strong className="text-accent">🔌 Radar Love (Golden Earring):</strong> Socket connections and real-time signals</p>
+          <p><strong className="text-purple">🗺️ Africa (Toto):</strong> Global navigation and distant coordination</p>
           <p className="pt-2 border-t border-border/30 mt-2"><strong className="text-blue">🌙 Dark Side of the Moon:</strong> Individual tracks semantically timed to proper needs - Time for runtime, Money for treasury, Brain Damage for neural systems, Eclipse for completion</p>
         </div>
       </Card>
