@@ -37,17 +37,38 @@ export function GitHubAuth({ onAuthChange }: GitHubAuthProps) {
         setAuthenticated(true)
         setUsername(user.login)
         onAuthChange?.(true)
-        toast.success(`🔑 Authenticated as ${user.login}`)
+        toast.success(`🔑 Authenticated as ${user.login}`, {
+          description: 'You can now create repositories',
+          duration: 4000
+        })
       } else {
         throw new Error('Invalid token')
       }
-    } catch (error) {
+    } catch (error: any) {
       clearGitHubToken()
       setAuthenticated(false)
       setUsername(null)
       setStoredToken('')
       onAuthChange?.(false)
-      toast.error('Authentication failed. Please check your token.')
+      
+      let errorMessage = 'Authentication failed. Please check your token.'
+      let description = 'Make sure your token has the required permissions.'
+      
+      if (error?.message?.includes('401')) {
+        errorMessage = 'Invalid GitHub token'
+        description = 'The token you provided is not valid. Please create a new one.'
+      } else if (error?.message?.includes('403')) {
+        errorMessage = 'Token permissions issue'
+        description = 'Your token may not have the required "repo" scope.'
+      } else if (error?.message?.includes('fetch')) {
+        errorMessage = 'Network error'
+        description = 'Unable to connect to GitHub. Please check your internet connection.'
+      }
+      
+      toast.error(errorMessage, {
+        description,
+        duration: 6000
+      })
     } finally {
       setIsVerifying(false)
     }
@@ -75,7 +96,7 @@ export function GitHubAuth({ onAuthChange }: GitHubAuthProps) {
 
   if (!authenticated && !showTokenInput) {
     return (
-      <Card className="p-4 bg-gradient-to-br from-card/90 to-card/70 border-primary/30">
+      <Card className="p-4 bg-gradient-to-br from-card/90 to-card/70 border-primary/30" data-github-auth>
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             <GithubLogo size={24} className="text-primary" weight="fill" />
@@ -100,7 +121,7 @@ export function GitHubAuth({ onAuthChange }: GitHubAuthProps) {
 
   if (!authenticated && showTokenInput) {
     return (
-      <Card className="p-4 bg-gradient-to-br from-card/90 to-card/70 border-primary/30">
+      <Card className="p-4 bg-gradient-to-br from-card/90 to-card/70 border-primary/30" data-github-auth>
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             <GithubLogo size={24} className="text-primary" weight="fill" />

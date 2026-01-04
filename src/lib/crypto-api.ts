@@ -3,6 +3,8 @@
  * Rate limit: 10-50 requests/minute (free tier)
  */
 
+import { toast } from 'sonner'
+
 export interface CryptoPrice {
   id: string
   symbol: string
@@ -123,14 +125,35 @@ export async function fetchCryptoPrices(
     )
     
     if (!response.ok) {
+      if (response.status === 429) {
+        toast.error('CoinGecko rate limit reached', {
+          description: 'Too many requests. Please wait a moment and try again.',
+          duration: 5000
+        })
+        throw new Error('Rate limit exceeded')
+      }
       throw new Error(`CoinGecko API error: ${response.status}`)
     }
     
     const data: CryptoPrice[] = await response.json()
     setCache(cacheKey, data)
     return data
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching crypto prices:', error)
+    
+    if (error?.message !== 'Rate limit exceeded') {
+      toast.error('Failed to load crypto prices', {
+        description: error?.message?.includes('fetch') 
+          ? 'Network error. Please check your connection.' 
+          : 'Unable to retrieve cryptocurrency data',
+        action: {
+          label: 'Retry',
+          onClick: () => window.location.reload()
+        },
+        duration: 5000
+      })
+    }
+    
     throw error
   }
 }
@@ -139,11 +162,19 @@ export async function fetchCryptoPrices(
  * Fetch price for a single cryptocurrency
  */
 export async function fetchCryptoPrice(id: string): Promise<CryptoPrice> {
-  const prices = await fetchCryptoPrices([id])
-  if (prices.length === 0) {
-    throw new Error(`Cryptocurrency not found: ${id}`)
+  try {
+    const prices = await fetchCryptoPrices([id])
+    if (prices.length === 0) {
+      toast.warning(`Cryptocurrency not found: ${id}`, {
+        description: 'The requested cryptocurrency could not be found',
+        duration: 4000
+      })
+      throw new Error(`Cryptocurrency not found: ${id}`)
+    }
+    return prices[0]
+  } catch (error) {
+    throw error
   }
-  return prices[0]
 }
 
 /**
@@ -166,14 +197,29 @@ export async function fetchCryptoChart(
     )
     
     if (!response.ok) {
+      if (response.status === 429) {
+        toast.error('CoinGecko rate limit reached', {
+          description: 'Too many requests. Please wait before loading more charts.',
+          duration: 5000
+        })
+        throw new Error('Rate limit exceeded')
+      }
       throw new Error(`CoinGecko API error: ${response.status}`)
     }
     
     const data: CryptoChartData = await response.json()
     setCache(cacheKey, data)
     return data
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching crypto chart:', error)
+    
+    if (error?.message !== 'Rate limit exceeded') {
+      toast.error(`Failed to load chart for ${id}`, {
+        description: 'Unable to retrieve historical price data',
+        duration: 4000
+      })
+    }
+    
     throw error
   }
 }
@@ -188,14 +234,25 @@ export async function searchCrypto(query: string): Promise<any[]> {
     )
     
     if (!response.ok) {
+      if (response.status === 429) {
+        toast.warning('Rate limit reached', {
+          description: 'Please wait before searching again',
+          duration: 3000
+        })
+        return []
+      }
       throw new Error(`CoinGecko API error: ${response.status}`)
     }
     
     const data = await response.json()
     return data.coins || []
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error searching crypto:', error)
-    throw error
+    toast.warning('Search failed', {
+      description: 'Unable to search for cryptocurrencies',
+      duration: 3000
+    })
+    return []
   }
 }
 
@@ -233,41 +290,59 @@ export async function calculatePortfolioValue(
     }
   }
   
-  // Fetch prices for all holdings
-  const ids = holdings.map((h) => h.id)
-  const prices = await fetchCryptoPrices(ids)
-  const priceMap = new Map<string, number>()
-  
-  prices.forEach((p) => {
-    priceMap.set(p.id, p.current_price)
-  })
-  
-  // Calculate values
-  let totalValue = 0
-  const breakdown = holdings.map((holding) => {
-    const price = priceMap.get(holding.id) || 0
-    const value = holding.amount * price
-    totalValue += value
+  try {
+    const ids = holdings.map((h) => h.id)
+    const prices = await fetchCryptoPrices(ids)
+    const priceMap = new Map<string, number>()
+    
+    prices.forEach((p) => {
+      priceMap.set(p.id, p.current_price)
+    })
+    
+    let totalValue = 0
+    const breakdown = holdings.map((holding) => {
+      const price = priceMap.get(holding.id) || 0
+      const value = holding.amount * price
+      totalValue += value
+      
+      return {
+        id: holding.id,
+        symbol: holding.symbol,
+        amount: holding.amount,
+        value,
+        percentage: 0,
+      }
+    })
+    
+    breakdown.forEach((item) => {
+      item.percentage = totalValue > 0 ? (item.value / totalValue) * 100 : 0
+    })
     
     return {
-      id: holding.id,
-      symbol: holding.symbol,
-      amount: holding.amount,
-      value,
-      percentage: 0, // Will be calculated after we know total
+      holdings,
+      prices: priceMap,
+      totalValue,
+      breakdown,
     }
-  })
-  
-  // Calculate percentages
-  breakdown.forEach((item) => {
-    item.percentage = totalValue > 0 ? (item.value / totalValue) * 100 : 0
-  })
-  
-  return {
-    holdings,
-    prices: priceMap,
-    totalValue,
-    breakdown,
+  } catch (error) {
+    console.error('Error calculating portfolio value:', error)
+    toast.error('Failed to calculate portfolio value', {
+      description: 'Unable to retrieve current prices',
+      duration: 4000
+    })
+    
+    return {
+      holdings,
+      prices: new Map(),
+      totalValue: 0,
+      breakdown: holdings.map(h => ({
+        id: h.id,
+        symbol: h.symbol,
+        amount: h.amount,
+        value: 0,
+        percentage: 0
+      }))
+    }
   }
 }
 

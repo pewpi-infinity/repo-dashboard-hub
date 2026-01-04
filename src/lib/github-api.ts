@@ -1,5 +1,6 @@
 import { Octokit } from 'octokit'
 import type { Repository, CommitActivity, Contributor, RepoStats, ComponentCategory } from './types'
+import { toast } from 'sonner'
 
 const USERNAME = 'pewpi-infinity'
 let octokit = new Octokit()
@@ -21,6 +22,49 @@ function getOctokit(): Octokit {
   return authenticatedOctokit || octokit
 }
 
+function handleApiError(error: any, context: string): never {
+  console.error(`${context}:`, error)
+  
+  let errorMessage = 'An unexpected error occurred'
+  let shouldRetry = false
+  
+  if (error?.status === 401) {
+    errorMessage = 'Authentication failed. Please check your GitHub token.'
+  } else if (error?.status === 403) {
+    if (error?.response?.headers?.['x-ratelimit-remaining'] === '0') {
+      const resetTime = error?.response?.headers?.['x-ratelimit-reset']
+      const resetDate = resetTime ? new Date(parseInt(resetTime) * 1000) : null
+      errorMessage = `GitHub API rate limit exceeded. Resets at ${resetDate?.toLocaleTimeString() || 'soon'}.`
+      shouldRetry = true
+    } else {
+      errorMessage = 'Access forbidden. You may need authentication or permissions.'
+    }
+  } else if (error?.status === 404) {
+    errorMessage = 'Resource not found. Repository may not exist or is private.'
+  } else if (error?.status === 422) {
+    errorMessage = 'Invalid request. Please check your input.'
+  } else if (error?.status >= 500) {
+    errorMessage = 'GitHub server error. Please try again later.'
+    shouldRetry = true
+  } else if (error?.message?.includes('fetch')) {
+    errorMessage = 'Network error. Please check your connection.'
+    shouldRetry = true
+  } else if (error?.message) {
+    errorMessage = error.message
+  }
+  
+  toast.error(`${context}`, {
+    description: errorMessage,
+    action: shouldRetry ? {
+      label: 'Retry',
+      onClick: () => window.location.reload()
+    } : undefined,
+    duration: 6000
+  })
+  
+  throw new Error(errorMessage)
+}
+
 export async function fetchOrgRepositories(): Promise<Repository[]> {
   try {
     const client = getOctokit()
@@ -32,8 +76,7 @@ export async function fetchOrgRepositories(): Promise<Repository[]> {
     
     return data as Repository[]
   } catch (error) {
-    console.error('Failed to fetch repositories:', error)
-    throw error
+    handleApiError(error, 'Failed to load repositories')
   }
 }
 
@@ -47,8 +90,7 @@ export async function fetchRepository(repoName: string): Promise<Repository> {
     
     return data as Repository
   } catch (error) {
-    console.error(`Failed to fetch repository ${repoName}:`, error)
-    throw error
+    handleApiError(error, `Failed to fetch repository: ${repoName}`)
   }
 }
 
@@ -61,8 +103,14 @@ export async function fetchCommitActivity(repoName: string): Promise<CommitActiv
     })
     
     return (data || []) as CommitActivity[]
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Failed to fetch commit activity for ${repoName}:`, error)
+    if (error?.status !== 404) {
+      toast.warning(`Unable to load commit activity for ${repoName}`, {
+        description: 'Statistics may be temporarily unavailable',
+        duration: 3000
+      })
+    }
     return []
   }
 }
@@ -77,8 +125,14 @@ export async function fetchContributors(repoName: string): Promise<Contributor[]
     })
     
     return (data || []) as Contributor[]
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Failed to fetch contributors for ${repoName}:`, error)
+    if (error?.status !== 404) {
+      toast.warning(`Unable to load contributors for ${repoName}`, {
+        description: 'Contributor data may be temporarily unavailable',
+        duration: 3000
+      })
+    }
     return []
   }
 }
@@ -92,7 +146,7 @@ export async function fetchLanguages(repoName: string): Promise<Record<string, n
     })
     
     return data || {}
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Failed to fetch languages for ${repoName}:`, error)
     return {}
   }
@@ -112,7 +166,10 @@ export async function fetchRepoStats(repoName: string): Promise<RepoStats> {
       languages
     }
   } catch (error) {
-    console.error(`Failed to fetch stats for ${repoName}:`, error)
+    toast.error(`Failed to load complete stats for ${repoName}`, {
+      description: 'Some repository statistics could not be retrieved',
+      duration: 4000
+    })
     throw error
   }
 }
@@ -129,7 +186,19 @@ export interface CreateRepoParams {
 
 export async function createRepository(params: CreateRepoParams): Promise<Repository> {
   if (!authenticatedOctokit) {
-    throw new Error('GitHub authentication required. Please authenticate first.')
+    const errorMsg = 'GitHub authentication required. Please authenticate first.'
+    toast.error('Cannot create repository', {
+      description: errorMsg,
+      action: {
+        label: 'Authenticate',
+        onClick: () => {
+          const authElement = document.querySelector('[data-github-auth]')
+          authElement?.scrollIntoView({ behavior: 'smooth' })
+        }
+      },
+      duration: 6000
+    })
+    throw new Error(errorMsg)
   }
 
   try {
@@ -153,22 +222,45 @@ export async function createRepository(params: CreateRepoParams): Promise<Reposi
     })
 
     if (topics.length > 0) {
-      await authenticatedOctokit.rest.repos.replaceAllTopics({
-        owner: data.owner.login,
-        repo: data.name,
-        names: topics
-      })
+      try {
+        await authenticatedOctokit.rest.repos.replaceAllTopics({
+          owner: data.owner.login,
+          repo: data.name,
+          names: topics
+        })
+      } catch (topicError) {
+        console.error('Failed to set topics:', topicError)
+        toast.warning('Repository created but topics failed', {
+          description: 'You can manually add topics to the repository later',
+          duration: 4000
+        })
+      }
     }
 
     return data as Repository
   } catch (error: any) {
+    let errorMessage = 'Failed to create repository'
+    let description = 'An unexpected error occurred'
+    
     if (error?.status === 422) {
-      throw new Error('Repository name already exists or is invalid')
+      errorMessage = 'Repository creation failed'
+      description = 'Repository name already exists or is invalid'
     } else if (error?.status === 401) {
-      throw new Error('Authentication failed. Please re-authenticate.')
+      errorMessage = 'Authentication expired'
+      description = 'Please re-authenticate with GitHub'
+    } else if (error?.status === 403) {
+      errorMessage = 'Permission denied'
+      description = 'You may not have permission to create repositories'
+    } else if (error?.message) {
+      description = error.message
     }
+    
     console.error('Failed to create repository:', error)
-    throw error
+    toast.error(errorMessage, {
+      description,
+      duration: 6000
+    })
+    throw new Error(description)
   }
 }
 
@@ -180,8 +272,16 @@ export async function getAuthenticatedUser() {
   try {
     const { data } = await authenticatedOctokit.rest.users.getAuthenticated()
     return data
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to get authenticated user:', error)
+    
+    if (error?.status === 401) {
+      toast.error('Authentication expired', {
+        description: 'Please re-authenticate with GitHub',
+        duration: 5000
+      })
+    }
+    
     return null
   }
 }

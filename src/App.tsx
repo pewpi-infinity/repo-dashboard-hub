@@ -75,7 +75,10 @@ function App() {
       const fetchedRepos = await fetchOrgRepositories()
       const categorizedRepos = addCategories(fetchedRepos)
       setRepos(categorizedRepos)
-      toast.success(`Loaded ${categorizedRepos.length} repositories`)
+      toast.success(`✨ Loaded ${categorizedRepos.length} repositories`, {
+        description: 'All quantum machines online',
+        duration: 3000
+      })
       
       if (monitoringEnabled) {
         loadHealthMetrics(categorizedRepos)
@@ -83,7 +86,6 @@ function App() {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load repositories'
       setError(message)
-      toast.error('Failed to load repositories')
     } finally {
       setLoading(false)
     }
@@ -91,6 +93,7 @@ function App() {
 
   const loadHealthMetrics = async (reposToMonitor: CategorizedRepo[]) => {
     const metricsMap = new Map<string, HealthMetrics>()
+    let failedCount = 0
     
     const promises = reposToMonitor.map(async (repo) => {
       try {
@@ -101,18 +104,27 @@ function App() {
         if (metrics.alerts.length > 0) {
           const criticalAlerts = metrics.alerts.filter(a => a.severity === 'critical')
           if (criticalAlerts.length > 0) {
-            toast.error(`${repo.name}: ${criticalAlerts[0].message}`, {
+            toast.error(`⚠️ ${repo.name}`, {
+              description: criticalAlerts[0].message,
               duration: 5000
             })
           }
         }
       } catch (err) {
         console.error(`Failed to load health metrics for ${repo.name}:`, err)
+        failedCount++
       }
     })
     
     await Promise.all(promises)
     setHealthMetrics(metricsMap)
+    
+    if (failedCount > 0) {
+      toast.warning('Health monitoring incomplete', {
+        description: `Unable to load metrics for ${failedCount} machine${failedCount > 1 ? 's' : ''}`,
+        duration: 4000
+      })
+    }
   }
 
   const handleShowStats = (repo: CategorizedRepo) => {
@@ -141,13 +153,16 @@ function App() {
   }) => {
     if (!githubAuthenticated) {
       toast.error('GitHub authentication required', {
-        description: 'Please authenticate with GitHub in the sidebar first.'
+        description: 'Please authenticate with GitHub in the sidebar first.',
+        duration: 4000
       })
       return
     }
 
     try {
-      toast.info(`🧱 Creating repository: ${repoData.name}...`)
+      toast.info(`🧱 Creating repository: ${repoData.name}...`, {
+        duration: 3000
+      })
       
       const { createRepository } = await import('./lib/github-api')
       const newRepo = await createRepository({
@@ -167,10 +182,6 @@ function App() {
       setAddRepoDialogOpen(false)
       await loadRepositories()
     } catch (error: any) {
-      toast.error('Failed to create repository', {
-        description: error.message || 'Unknown error occurred',
-        duration: 5000
-      })
     }
   }
 
