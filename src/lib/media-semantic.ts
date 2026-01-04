@@ -1364,7 +1364,7 @@ export function getMusicForRepo(repoName: string): MusicTrack[] {
       return track.id.includes('shine-on') || track.id === 'electric-light-orchestra-mr-blue-sky' || track.id === 'journey-dont-stop-believing'
     }
     
-    if (lowerName.includes('star') || lowerName.includes('💫')) {
+    if (lowerName.includes('star') || lowerName.includes('���')) {
       return track.id.includes('star') || track.id === 'david-bowie-starman' || track.id === 'the-beatles-here-comes-the-sun'
     }
     
@@ -1582,61 +1582,7 @@ SEMANTIC MUSIC SELECTION RULES:
     - Keywords: fast, urgent, quick, immediate, speed, rapid
     - Also: "Urgent" for priority processing
 
-15. 🔌 SOCKET / CONNECTION (Radar Love - Golden Earring):
-    - Use when: Real-time connections, socket communication, signals
-    - Keywords: socket, connection, communication, real-time, signal
-    - Also: "Bridge Over Troubled Water" for connection bridges
-
-16. ⛓️‍💥 CHAIN BREAKER / LIBERATION (Break On Through - The Doors):
-    - Use when: Breaking chains, liberation, freedom, unlocking
-    - Keywords: break, freedom, liberation, unlock, revolution
-    - Also: "American Woman" for independence, "Free Fallin'" for liberation
-
-17. 🖼️ FRAME / BOUNDARY (White Room - Cream):
-    - Use when: Frames, boundaries, structure, containers
-    - Keywords: frame, boundary, structure, container, border
-    - Also: "House of the Rising Sun" for structures
-
-18. 🛞 TIRE / ROTATION (Like a Rolling Stone - Bob Dylan):
-    - Use when: Rotation, cycles, wheels, continuous movement
-    - Keywords: rotation, cycle, wheel, roll, circular, roundabout
-    - Also: "Time of the Season" for cycles, "Roundabout" for complex rotation
-
-19. 🎨 PRINTER / RENDERING (Paint It Black - Rolling Stones):
-    - Use when: Printing, rendering, output, color, visual display
-    - Keywords: print, render, paint, color, output, display
-    - Also: "A Whiter Shade of Pale" for color transformation
-
-20. 📖 READER / STORY (Lola - The Kinks):
-    - Use when: Reading, parsing, stories, narratives, understanding
-    - Keywords: read, story, parse, understand, narrative
-    - Also: "Sweet Jane" for life stories
-
-21. 💰💵 MONEY / CURRENCY (Money - Pink Floyd):
-    - Use when: Money, currency, payments, value, financial systems
-    - Keywords: money, currency, payment, value, finance, treasury
-    - Also: "Brass in Pocket" for confidence and currency
-
-22. 👁️ VIEWER / OBSERVATION (Aqualung - Jethro Tull):
-    - Use when: Viewing, visual observation, seeing
-    - Keywords: view, see, observe, visual, display
-    - Also: "Have You Ever Seen the Rain" for visual observation
-
-23. 👀 WATCHER / MONITORING (For What It's Worth - Buffalo Springfield):
-    - Use when: Watching, monitoring, surveillance, change detection
-    - Keywords: watch, monitor, surveillance, detect, observe
-    - Also: "Every Breath You Take" for persistent watching
-
-24. 🗺️ MAPS / NAVIGATION (Africa - Toto):
-    - Use when: Navigation, mapping, routes, geography
-    - Keywords: map, navigate, route, path, geography
-    - Also: "Walk on the Wild Side" for unconventional paths
-
-25. 🔌 SOCKET / COMMUNICATION (Radar Love):
-    - Use when: Real-time signals, connections, communication channels
-    - Keywords: socket, signal, radar, connection, real-time
-
-26. DARK SIDE OF THE MOON - Track by semantic need:
+15. DARK SIDE OF THE MOON - Track by semantic need:
     - "Speak to Me" → initialization, beginning
     - "Breathe" → life, existence, calm start  
     - "Time" ⭐ → runtime, timing, clocks, scheduling
@@ -1659,18 +1605,8 @@ ANALYZE:
 - Does it handle time/runtime? → Time or Fly Like an Eagle
 - Does it handle flow/routing? → Long Train Runnin' or Truckin'
 - Does it handle memory/storage? → More Than a Feeling or Hotel California
-- Does it chain/connect? → Come Together or Bridge Over Troubled Water
+- Does it chain/connect? → Come Together
 - Does it navigate/branch? → White Rabbit or Drive
-- Does it break/liberate? → Break On Through or Free Fallin'
-- Does it rotate/cycle? → Like a Rolling Stone or Roundabout
-- Does it frame/structure? → White Room or House of the Rising Sun
-- Does it print/render? → Paint It Black
-- Does it read/parse? → Lola or Sweet Jane
-- Does it watch/monitor? → For What It's Worth or Paranoid
-- Does it view/observe? → Aqualung or Have You Ever Seen the Rain
-- Does it handle money/currency? → Money or Brass in Pocket
-- Does it communicate/socket? → Radar Love
-- Does it map/navigate? → Africa or Walk on the Wild Side
 
 Return ONLY the number (1-${availableTracks.length}) of the BEST matching track based on these semantic rules.`
 
