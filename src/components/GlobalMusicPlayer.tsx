@@ -14,6 +14,8 @@ import {
   MusicNotes,
   Infinity
 } from '@phosphor-icons/react'
+import { AudioVisualizer } from './AudioVisualizer'
+import { MusicParticles } from './MusicParticles'
 
 interface MusicPlayerState {
   isPlaying: boolean
@@ -199,9 +201,11 @@ export function GlobalMusicPlayer() {
           exit={{ opacity: 0, y: 20 }}
           className="fixed bottom-4 left-4 z-[60] w-full max-w-sm"
         >
-          <div className="bg-card/95 backdrop-blur-lg border-2 border-purple/30 rounded-xl shadow-2xl overflow-hidden">
+          <div className="bg-card/95 backdrop-blur-lg border-2 border-purple/30 rounded-xl shadow-2xl overflow-hidden relative">
+            <MusicParticles isPlaying={state.isPlaying} intensity={0.4} particleCount={20} />
+            
             {/* Header */}
-            <div className="flex items-center justify-between p-3 border-b border-border/50 bg-gradient-to-r from-purple/10 via-pink/10 to-gold/10">
+            <div className="flex items-center justify-between p-3 border-b border-border/50 bg-gradient-to-r from-purple/10 via-pink/10 to-gold/10 relative z-10">
               <div className="flex items-center gap-2">
                 <Infinity size={20} weight="fill" className="text-gold animate-spin" style={{ animationDuration: '8s' }} />
                 <MusicNotes size={20} weight="fill" className="text-purple" />
@@ -248,7 +252,20 @@ export function GlobalMusicPlayer() {
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="p-4 space-y-4">
+                  <div className="p-4 space-y-4 relative z-10">
+                    {/* Visualizer */}
+                    <div className="mb-2">
+                      <AudioVisualizer 
+                        audioElement={audioRef.current}
+                        isPlaying={state.isPlaying}
+                        variant="circle"
+                        barCount={32}
+                        color="oklch(0.75 0.18 200)"
+                        height={120}
+                        className="rounded-lg overflow-hidden bg-gradient-to-br from-purple/10 via-pink/10 to-gold/10 border border-purple/20"
+                      />
+                    </div>
+
                     {/* Track Info */}
                     <div className="text-center space-y-1">
                       <p 
@@ -328,7 +345,20 @@ export function GlobalMusicPlayer() {
 
             {/* Minimized View */}
             {state.isMinimized && (
-              <div className="p-3 flex items-center justify-between">
+              <div className="p-3 relative z-10">
+                <div className="mb-2">
+                  <AudioVisualizer 
+                    audioElement={audioRef.current}
+                    isPlaying={state.isPlaying}
+                    variant="bars"
+                    barCount={20}
+                    color="oklch(0.75 0.18 200)"
+                    height={30}
+                    className="rounded overflow-hidden"
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <Button
                     onClick={togglePlay}
@@ -362,6 +392,7 @@ export function GlobalMusicPlayer() {
                   </span>
                 </div>
               </div>
+            </div>
             )}
           </div>
         </motion.div>

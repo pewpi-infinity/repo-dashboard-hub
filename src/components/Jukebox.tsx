@@ -18,6 +18,9 @@ import {
 import { musicLibrary, type MusicTrack, getMusicForRepo, aiMatchMusicToRepo } from '@/lib/media-semantic'
 import { MusicSemanticInfo } from './MusicSemanticInfo'
 import { SemanticMusicControls } from './SemanticMusicControls'
+import { AudioVisualizer } from './AudioVisualizer'
+import { MusicParticles } from './MusicParticles'
+import { FrequencyBands } from './FrequencyBands'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { CategorizedRepo } from '@/lib/types'
 
@@ -38,6 +41,7 @@ export function Jukebox({ repoName, repo, compact = false, autoPlay = false, ext
   const [currentTime, setCurrentTime] = useState(0)
   const [rotation, setRotation] = useState(0)
   const [loadingAiMatch, setLoadingAiMatch] = useState(false)
+  const [visualizerMode, setVisualizerMode] = useState<'wave' | 'frequency'>('wave')
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const rotationRef = useRef<number>(0)
 
@@ -198,6 +202,18 @@ export function Jukebox({ repoName, repo, compact = false, autoPlay = false, ext
   if (compact) {
     return (
       <Card className="p-3 bg-gradient-to-br from-purple/20 via-pink/10 to-gold/20 backdrop-blur-sm border-purple/30">
+        <div className="mb-2">
+          <AudioVisualizer 
+            audioElement={audioRef.current}
+            isPlaying={isPlaying}
+            variant="bars"
+            barCount={24}
+            color="oklch(0.60 0.25 250)"
+            height={40}
+            className="rounded overflow-hidden"
+          />
+        </div>
+        
         <div className="flex items-center gap-3">
           <motion.div
             animate={{ rotate: isPlaying ? rotation : 0 }}
@@ -249,8 +265,56 @@ export function Jukebox({ repoName, repo, compact = false, autoPlay = false, ext
   }
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-purple/20 via-pink/10 to-gold/20 backdrop-blur-sm border-purple/30 glow-border">
-      <div className="flex items-start gap-4 mb-4">
+    <Card className="p-6 bg-gradient-to-br from-purple/20 via-pink/10 to-gold/20 backdrop-blur-sm border-purple/30 glow-border relative overflow-hidden">
+      <MusicParticles isPlaying={isPlaying} intensity={0.6} />
+      
+      <div className="mb-4 relative z-10">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-foreground/80" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            🎛️ Audio Visualization
+          </h3>
+          <div className="flex gap-1">
+            <Button
+              size="sm"
+              variant={visualizerMode === 'wave' ? 'default' : 'ghost'}
+              onClick={() => setVisualizerMode('wave')}
+              className="h-7 px-2 text-xs"
+            >
+              Wave
+            </Button>
+            <Button
+              size="sm"
+              variant={visualizerMode === 'frequency' ? 'default' : 'ghost'}
+              onClick={() => setVisualizerMode('frequency')}
+              className="h-7 px-2 text-xs"
+            >
+              Spectrum
+            </Button>
+          </div>
+        </div>
+        
+        {visualizerMode === 'wave' ? (
+          <AudioVisualizer 
+            audioElement={audioRef.current}
+            isPlaying={isPlaying}
+            variant="wave"
+            barCount={48}
+            color="oklch(0.60 0.25 250)"
+            height={100}
+            className="rounded-lg overflow-hidden bg-gradient-to-br from-purple/10 to-pink/10 border border-purple/20"
+          />
+        ) : (
+          <div className="relative">
+            <FrequencyBands
+              audioElement={audioRef.current}
+              isPlaying={isPlaying}
+              className="relative"
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-start gap-4 mb-4 relative z-10">
         <motion.div
           animate={{ rotate: isPlaying ? rotation : 0 }}
           className="relative w-24 h-24 rounded-full bg-gradient-to-br from-purple via-pink to-gold flex items-center justify-center flex-shrink-0 shadow-lg"
@@ -336,7 +400,7 @@ export function Jukebox({ repoName, repo, compact = false, autoPlay = false, ext
             </>
           )}
 
-          <div className="space-y-2">
+          <div className="space-y-2 relative z-10">
             <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
               <span>{formatTime(currentTime)}</span>
               <div className="flex-1 h-1.5 bg-muted/30 rounded-full overflow-hidden">
@@ -427,7 +491,7 @@ export function Jukebox({ repoName, repo, compact = false, autoPlay = false, ext
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="border-t border-border/50 pt-4"
+            className="border-t border-border/50 pt-4 relative z-10"
           >
             <div className="flex items-center gap-2 mb-3">
               <MusicNotes size={16} className="text-purple" weight="fill" />
