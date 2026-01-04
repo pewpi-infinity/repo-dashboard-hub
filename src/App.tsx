@@ -25,6 +25,8 @@ import { MusicLibraryView } from './components/MusicLibraryView'
 import { SilverPriceDisplay } from './components/SilverPriceDisplay'
 import { CryptoPriceTracker } from './components/CryptoPriceTracker'
 import { GlobalMusicPlayer } from './components/GlobalMusicPlayer'
+import { OfflineBanner } from './components/OfflineBanner'
+import { OfflineIndicator } from './components/OfflineIndicator'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -37,12 +39,14 @@ import type { CategorizedRepo, ComponentCategory } from './lib/types'
 import { ArrowClockwise, Warning, ChartLine, Bell, Plus, Terminal, Atom, Graph, FilmStrip, MusicNotes, CurrencyBtc } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { useKV } from '@github/spark/hooks'
+import { useOnlineStatus } from './hooks/use-online-status'
 
 export type SortOption = 'name' | 'updated' | 'stars' | 'language'
 export type SortDirection = 'asc' | 'desc'
 
 function App() {
   const [repos, setRepos] = useState<CategorizedRepo[]>([])
+  const [cachedRepos, setCachedRepos] = useKV<CategorizedRepo[]>('cached-repos', [])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<ComponentCategory | 'all'>('all')
@@ -60,6 +64,7 @@ function App() {
   const [githubAuthenticated, setGithubAuthenticated] = useState(false)
   const [currentView, setCurrentView] = useKV<'dashboard' | 'quantum' | 'clusters' | 'creepshow' | 'music'>('current-view', 'dashboard')
   const [jukeboxTrack, setJukeboxTrack] = useState<any>(null)
+  const { isOnline, wasOffline } = useOnlineStatus()
 
   const currentViewMode: ViewMode = viewMode || 'grid'
 
@@ -67,14 +72,39 @@ function App() {
     setGithubAuthenticated(isAuthenticated())
   }, [])
 
+  useEffect(() => {
+    if (wasOffline && isOnline) {
+      toast.success('🌐 Connection restored!', {
+        description: 'Reloading quantum machines...',
+        duration: 3000
+      })
+      loadRepositories()
+    }
+  }, [wasOffline, isOnline])
+
   const loadRepositories = async () => {
     setLoading(true)
     setError(null)
+    
+    if (!isOnline) {
+      if (cachedRepos && cachedRepos.length > 0) {
+        setRepos(cachedRepos)
+        toast.info('📡 Offline Mode', {
+          description: `Using ${cachedRepos.length} cached machine${cachedRepos.length !== 1 ? 's' : ''}`,
+          duration: 4000
+        })
+      } else {
+        setError('No cached data available offline')
+      }
+      setLoading(false)
+      return
+    }
     
     try {
       const fetchedRepos = await fetchOrgRepositories()
       const categorizedRepos = addCategories(fetchedRepos)
       setRepos(categorizedRepos)
+      setCachedRepos(categorizedRepos)
       toast.success(`✨ Loaded ${categorizedRepos.length} repositories`, {
         description: 'All quantum machines online',
         duration: 3000
@@ -86,6 +116,14 @@ function App() {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load repositories'
       setError(message)
+      
+      if (cachedRepos && cachedRepos.length > 0) {
+        setRepos(cachedRepos)
+        toast.warning('Using cached data', {
+          description: `Loaded ${cachedRepos.length} cached machine${cachedRepos.length !== 1 ? 's' : ''}`,
+          duration: 4000
+        })
+      }
     } finally {
       setLoading(false)
     }
@@ -151,6 +189,14 @@ function App() {
     emoji: string
     isPrivate: boolean
   }) => {
+    if (!isOnline) {
+      toast.error('⚠️ Offline Mode', {
+        description: 'Cannot create repositories while offline. Please check your connection.',
+        duration: 4000
+      })
+      return
+    }
+
     if (!githubAuthenticated) {
       toast.error('GitHub authentication required', {
         description: 'Please authenticate with GitHub in the sidebar first.',
@@ -182,6 +228,12 @@ function App() {
       setAddRepoDialogOpen(false)
       await loadRepositories()
     } catch (error: any) {
+      if (!isOnline) {
+        toast.error('Connection lost during creation', {
+          description: 'Please check your internet connection and try again.',
+          duration: 4000
+        })
+      }
     }
   }
 
@@ -275,7 +327,7 @@ function App() {
         <header className="border-b border-border/50 backdrop-blur-sm bg-gradient-to-r from-card/90 via-card/80 to-card/90 sticky top-0 z-50">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <h1 
                     className="text-2xl sm:text-3xl font-bold mb-1 bg-gradient-to-r from-yellow via-accent to-pink bg-clip-text text-transparent truncate"
@@ -301,6 +353,7 @@ function App() {
                     )}
                   </p>
                 </div>
+                {!isOnline && <OfflineIndicator compact />}
               </div>
               
               <div className="flex flex-wrap items-center gap-2">
@@ -378,7 +431,9 @@ function App() {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowTerminal(!showTerminal)}
-                  className="gap-1.5 hover:bg-primary/10 hover:border-primary hover:text-primary text-xs"
+                  disabled={!isOnline}
+                  className="gap-1.5 hover:bg-primary/10 hover:border-primary hover:text-primary text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={!isOnline ? 'Terminal requires internet connection' : 'Toggle Terminal'}
                 >
                   <Terminal className={showTerminal ? 'text-accent' : ''} size={14} />
                   <span className="hidden sm:inline">Terminal</span>
@@ -387,7 +442,9 @@ function App() {
                   variant="default"
                   size="sm"
                   onClick={() => setAddRepoDialogOpen(true)}
-                  className="gap-1.5 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-xs"
+                  disabled={!isOnline}
+                  className="gap-1.5 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={!isOnline ? 'Creating repos requires internet connection' : 'Add new machine'}
                 >
                   <Plus size={14} weight="bold" />
                   <span className="hidden sm:inline">Add Machine</span>
@@ -397,8 +454,9 @@ function App() {
                   variant="outline"
                   size="sm"
                   onClick={loadRepositories}
-                  disabled={loading}
-                  className="gap-1.5 hover:bg-accent/10 hover:border-accent hover:text-accent text-xs"
+                  disabled={loading || !isOnline}
+                  className="gap-1.5 hover:bg-accent/10 hover:border-accent hover:text-accent text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={!isOnline ? 'Refresh requires internet connection' : 'Refresh repositories'}
                 >
                   <ArrowClockwise className={loading ? 'animate-spin' : ''} size={14} />
                   <span className="hidden sm:inline">Refresh</span>
@@ -409,7 +467,14 @@ function App() {
         </header>
 
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {error && (
+          <OfflineBanner 
+            isOnline={isOnline} 
+            wasOffline={wasOffline} 
+            onRetry={loadRepositories}
+            cachedDataCount={cachedRepos?.length || 0}
+          />
+
+          {error && !isOnline && cachedRepos && cachedRepos.length === 0 && (
             <Alert variant="destructive" className="mb-6">
               <Warning size={20} />
               <AlertDescription className="ml-2">

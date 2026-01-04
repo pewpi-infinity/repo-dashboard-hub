@@ -6,9 +6,11 @@ import {
   Lightning,
   Database,
   CloudArrowUp,
-  Gauge
+  Gauge,
+  WifiSlash
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
+import { useOnlineStatus } from '@/hooks/use-online-status'
 
 interface SystemStatusProps {
   repoCount: number
@@ -17,6 +19,7 @@ interface SystemStatusProps {
 
 export function SystemStatus({ repoCount, isLoading }: SystemStatusProps) {
   const [uptime, setUptime] = useState(0)
+  const { isOnline } = useOnlineStatus()
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -43,15 +46,15 @@ export function SystemStatus({ repoCount, isLoading }: SystemStatusProps) {
   const systems = [
     { 
       name: 'API Gateway', 
-      status: 'operational' as const, 
-      icon: <CloudArrowUp size={16} weight="fill" />,
-      latency: '24ms'
+      status: isOnline ? 'operational' as const : 'down' as const, 
+      icon: isOnline ? <CloudArrowUp size={16} weight="fill" /> : <WifiSlash size={16} weight="fill" />,
+      latency: isOnline ? '24ms' : 'N/A'
     },
     { 
       name: 'Data Pipeline', 
-      status: repoCount > 0 ? 'operational' as const : 'degraded' as const,
+      status: !isOnline ? 'down' as const : repoCount > 0 ? 'operational' as const : 'degraded' as const,
       icon: <Database size={16} weight="fill" />,
-      latency: '102ms'
+      latency: isOnline ? '102ms' : 'N/A'
     },
     { 
       name: 'Cache Layer', 
@@ -83,7 +86,7 @@ export function SystemStatus({ repoCount, isLoading }: SystemStatusProps) {
     down: {
       color: 'text-destructive',
       bg: 'bg-destructive/20',
-      label: 'Down',
+      label: 'Offline',
       indicator: 'bg-destructive'
     }
   }
@@ -92,7 +95,11 @@ export function SystemStatus({ repoCount, isLoading }: SystemStatusProps) {
     <Card className="p-4 border-border/50 bg-card/50 backdrop-blur-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <CheckCircle size={20} className="text-accent" weight="fill" />
+          {isOnline ? (
+            <CheckCircle size={20} className="text-accent" weight="fill" />
+          ) : (
+            <WifiSlash size={20} className="text-destructive" weight="fill" />
+          )}
           <h3 className="font-semibold text-sm">System Status</h3>
         </div>
         <Badge variant="outline" className="text-xs">

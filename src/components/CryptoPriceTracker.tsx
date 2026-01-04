@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
 import { Skeleton } from './ui/skeleton'
+import { Alert, AlertDescription } from './ui/alert'
 import { 
   fetchCryptoPrices, 
   formatPrice, 
@@ -12,6 +13,8 @@ import {
   type CryptoPrice 
 } from '../lib/crypto-api'
 import { TrendingUp, TrendingDown, RefreshCw, Coins } from 'lucide-react'
+import { WifiSlash } from '@phosphor-icons/react'
+import { useOnlineStatus } from '@/hooks/use-online-status'
 
 interface CryptoPriceTrackerProps {
   compact?: boolean
@@ -28,8 +31,15 @@ export function CryptoPriceTracker({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
+  const { isOnline } = useOnlineStatus()
 
   const loadPrices = async () => {
+    if (!isOnline) {
+      setError('Offline - crypto prices unavailable')
+      setLoading(false)
+      return
+    }
+    
     setLoading(true)
     setError(null)
     
@@ -80,16 +90,25 @@ export function CryptoPriceTracker({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Coins className="w-5 h-5" />
+            {!isOnline ? <WifiSlash className="w-5 h-5" /> : <Coins className="w-5 h-5" />}
             Crypto Prices
           </CardTitle>
           <CardDescription className="text-destructive">{error}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button onClick={loadPrices} variant="outline" className="w-full">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Retry
-          </Button>
+          {!isOnline ? (
+            <Alert className="border-orange bg-orange/10">
+              <WifiSlash size={20} className="text-orange" weight="fill" />
+              <AlertDescription className="ml-2">
+                Cryptocurrency prices require an internet connection. Reconnect to view live prices.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <Button onClick={loadPrices} variant="outline" className="w-full">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Retry
+            </Button>
+          )}
         </CardContent>
       </Card>
     )

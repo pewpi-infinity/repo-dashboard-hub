@@ -22,13 +22,16 @@ function getOctokit(): Octokit {
   return authenticatedOctokit || octokit
 }
 
-function handleApiError(error: any, context: string): never {
+function handleApiError(error: any, context: string, isOffline: boolean = false): never {
   console.error(`${context}:`, error)
   
   let errorMessage = 'An unexpected error occurred'
   let shouldRetry = false
   
-  if (error?.status === 401) {
+  if (!navigator.onLine || isOffline) {
+    errorMessage = 'You are offline. Please check your internet connection.'
+    shouldRetry = true
+  } else if (error?.status === 401) {
     errorMessage = 'Authentication failed. Please check your GitHub token.'
   } else if (error?.status === 403) {
     if (error?.response?.headers?.['x-ratelimit-remaining'] === '0') {
@@ -46,7 +49,7 @@ function handleApiError(error: any, context: string): never {
   } else if (error?.status >= 500) {
     errorMessage = 'GitHub server error. Please try again later.'
     shouldRetry = true
-  } else if (error?.message?.includes('fetch')) {
+  } else if (error?.message?.includes('fetch') || error?.message?.includes('Failed to fetch')) {
     errorMessage = 'Network error. Please check your connection.'
     shouldRetry = true
   } else if (error?.message) {
@@ -67,6 +70,10 @@ function handleApiError(error: any, context: string): never {
 
 export async function fetchOrgRepositories(): Promise<Repository[]> {
   try {
+    if (!navigator.onLine) {
+      throw new Error('offline')
+    }
+    
     const client = getOctokit()
     const { data } = await client.rest.repos.listForUser({
       username: USERNAME,
@@ -76,12 +83,17 @@ export async function fetchOrgRepositories(): Promise<Repository[]> {
     
     return data as Repository[]
   } catch (error) {
-    handleApiError(error, 'Failed to load repositories')
+    const isOffline = !navigator.onLine || error?.message === 'offline'
+    handleApiError(error, 'Failed to load repositories', isOffline)
   }
 }
 
 export async function fetchRepository(repoName: string): Promise<Repository> {
   try {
+    if (!navigator.onLine) {
+      throw new Error('offline')
+    }
+    
     const client = getOctokit()
     const { data } = await client.rest.repos.get({
       owner: USERNAME,
@@ -90,12 +102,17 @@ export async function fetchRepository(repoName: string): Promise<Repository> {
     
     return data as Repository
   } catch (error) {
-    handleApiError(error, `Failed to fetch repository: ${repoName}`)
+    const isOffline = !navigator.onLine || error?.message === 'offline'
+    handleApiError(error, `Failed to fetch repository: ${repoName}`, isOffline)
   }
 }
 
 export async function fetchCommitActivity(repoName: string): Promise<CommitActivity[]> {
   try {
+    if (!navigator.onLine) {
+      return []
+    }
+    
     const client = getOctokit()
     const { data } = await client.rest.repos.getCommitActivityStats({
       owner: USERNAME,
@@ -105,6 +122,9 @@ export async function fetchCommitActivity(repoName: string): Promise<CommitActiv
     return (data || []) as CommitActivity[]
   } catch (error: any) {
     console.error(`Failed to fetch commit activity for ${repoName}:`, error)
+    if (!navigator.onLine) {
+      return []
+    }
     if (error?.status !== 404) {
       toast.warning(`Unable to load commit activity for ${repoName}`, {
         description: 'Statistics may be temporarily unavailable',
@@ -117,6 +137,10 @@ export async function fetchCommitActivity(repoName: string): Promise<CommitActiv
 
 export async function fetchContributors(repoName: string): Promise<Contributor[]> {
   try {
+    if (!navigator.onLine) {
+      return []
+    }
+    
     const client = getOctokit()
     const { data } = await client.rest.repos.listContributors({
       owner: USERNAME,
@@ -127,6 +151,9 @@ export async function fetchContributors(repoName: string): Promise<Contributor[]
     return (data || []) as Contributor[]
   } catch (error: any) {
     console.error(`Failed to fetch contributors for ${repoName}:`, error)
+    if (!navigator.onLine) {
+      return []
+    }
     if (error?.status !== 404) {
       toast.warning(`Unable to load contributors for ${repoName}`, {
         description: 'Contributor data may be temporarily unavailable',
@@ -139,6 +166,10 @@ export async function fetchContributors(repoName: string): Promise<Contributor[]
 
 export async function fetchLanguages(repoName: string): Promise<Record<string, number>> {
   try {
+    if (!navigator.onLine) {
+      return {}
+    }
+    
     const client = getOctokit()
     const { data } = await client.rest.repos.listLanguages({
       owner: USERNAME,

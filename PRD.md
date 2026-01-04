@@ -61,6 +61,13 @@ A unified dashboard interface to visualize, navigate, and interact with the pewp
 - **Progression**: System analyzes metrics → Detects threshold violations → Generates categorized alerts → Displays in alert panel → User takes action
 - **Success criteria**: Alerts properly categorized by severity, critical alerts appear as toast notifications, alert panel shows all active alerts grouped by repository
 
+### Offline Mode Detection & Graceful Degradation
+- **Functionality**: Automatic detection of network connectivity with intelligent fallback to cached data and disabled features
+- **Purpose**: Allow users to continue using the dashboard even without internet connectivity, with clear indicators of what features are unavailable
+- **Trigger**: Browser online/offline events, failed API requests, manual connection retry
+- **Progression**: Connection lost → System detects offline state → Shows offline banner → Loads cached repos from local storage → Disables network-dependent features (repo creation, health monitoring, terminal) → Updates system status indicators → Connection restored → Shows restoration banner → Reloads fresh data → Re-enables all features
+- **Success criteria**: Offline banner appears immediately when connection lost, cached repositories display properly, create repo and terminal buttons disabled offline, system status shows "Offline" for network services, reconnection auto-detects and reloads data, toast notifications inform user of state changes
+
 ### Health Metrics Dashboard
 - **Functionality**: Detailed health breakdown showing commit frequency, issue health, freshness, and activity trends
 - **Purpose**: Provide deep visibility into repository health factors for informed decision-making
