@@ -16,74 +16,37 @@ import {
 } from '@phosphor-icons/react'
 import { AudioVisualizer } from './AudioVisualizer'
 import { MusicParticles } from './MusicParticles'
+import { useKV } from '@github/spark/hooks'
 
 interface MusicPlayerState {
-  isPlaying: boolean
   volume: number
-  currentTime: number
   isMinimized: boolean
   isVisible: boolean
 }
 
-const STORAGE_KEY = 'quantum-music-player-state'
-// Note: In production, replace this with a local audio file or configurable URL
 const DEFAULT_AUDIO_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
 
 export function GlobalMusicPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null)
-  const [state, setState] = useState<MusicPlayerState>({
-    isPlaying: false,
+  const [persistedState, setPersistedState] = useKV<MusicPlayerState>('quantum-music-player-state', {
     volume: 0.5,
-    currentTime: 0,
     isMinimized: false,
     isVisible: true
   })
+  
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [audioReady, setAudioReady] = useState(false)
 
-  // Load state from localStorage
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        setState(prev => ({
-          ...prev,
-          volume: parsed.volume ?? 0.5,
-          isMinimized: parsed.isMinimized ?? false,
-          isVisible: parsed.isVisible ?? true
-        }))
-      }
-    } catch (error) {
-      console.error('Failed to load music player state:', error)
-    }
-  }, [])
+  const state = persistedState || { volume: 0.5, isMinimized: false, isVisible: true }
 
-  // Save state to localStorage with debouncing
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({
-          volume: state.volume,
-          isMinimized: state.isMinimized,
-          isVisible: state.isVisible
-        }))
-      } catch (error) {
-        console.error('Failed to save music player state:', error)
-      }
-    }, 500) // Debounce by 500ms
-
-    return () => clearTimeout(timeoutId)
-  }, [state.volume, state.isMinimized, state.isVisible])
-
-  // Update audio element volume
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = state.volume
     }
   }, [state.volume])
 
-  // Handle audio events
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
@@ -94,13 +57,13 @@ export function GlobalMusicPlayer() {
     }
 
     const handleTimeUpdate = () => {
-      setState(prev => ({ ...prev, currentTime: audio.currentTime }))
+      setCurrentTime(audio.currentTime)
     }
 
     const handleEnded = () => {
-      // Note: With loop attribute, this shouldn't fire, but keeping for fallback
       if (!audio.loop) {
-        setState(prev => ({ ...prev, isPlaying: false, currentTime: 0 }))
+        setIsPlaying(false)
+        setCurrentTime(0)
       }
     }
 
@@ -119,12 +82,12 @@ export function GlobalMusicPlayer() {
     if (!audioRef.current) return
 
     try {
-      if (state.isPlaying) {
+      if (isPlaying) {
         audioRef.current.pause()
-        setState(prev => ({ ...prev, isPlaying: false }))
+        setIsPlaying(false)
       } else {
         await audioRef.current.play()
-        setState(prev => ({ ...prev, isPlaying: true }))
+        setIsPlaying(true)
       }
     } catch (error) {
       console.error('Failed to play audio:', error)
@@ -132,29 +95,42 @@ export function GlobalMusicPlayer() {
   }
 
   const handleVolumeChange = (values: number[]) => {
-    setState(prev => ({ ...prev, volume: values[0] }))
+    setPersistedState(prev => {
+      const current = prev || { volume: 0.5, isMinimized: false, isVisible: true }
+      return { ...current, volume: values[0] }
+    })
   }
 
   const handleSeek = (values: number[]) => {
     if (audioRef.current) {
       audioRef.current.currentTime = values[0]
-      setState(prev => ({ ...prev, currentTime: values[0] }))
+      setCurrentTime(values[0])
     }
   }
 
   const toggleMinimize = () => {
-    setState(prev => ({ ...prev, isMinimized: !prev.isMinimized }))
+    setPersistedState(prev => {
+      const current = prev || { volume: 0.5, isMinimized: false, isVisible: true }
+      return { ...current, isMinimized: !current.isMinimized }
+    })
   }
 
   const handleClose = () => {
     if (audioRef.current) {
       audioRef.current.pause()
     }
-    setState(prev => ({ ...prev, isVisible: false, isPlaying: false }))
+    setIsPlaying(false)
+    setPersistedState(prev => {
+      const current = prev || { volume: 0.5, isMinimized: false, isVisible: true }
+      return { ...current, isVisible: false }
+    })
   }
 
   const handleShow = () => {
-    setState(prev => ({ ...prev, isVisible: true }))
+    setPersistedState(prev => {
+      const current = prev || { volume: 0.5, isMinimized: false, isVisible: true }
+      return { ...current, isVisible: true }
+    })
   }
 
   const formatTime = (seconds: number) => {
@@ -202,7 +178,7 @@ export function GlobalMusicPlayer() {
           className="fixed bottom-4 left-4 z-[60] w-full max-w-sm"
         >
           <div className="bg-card/95 backdrop-blur-lg border-2 border-purple/30 rounded-xl shadow-2xl overflow-hidden relative">
-            <MusicParticles isPlaying={state.isPlaying} intensity={0.4} particleCount={20} />
+            <MusicParticles isPlaying={isPlaying} intensity={0.4} particleCount={20} />
             
             {/* Header */}
             <div className="flex items-center justify-between p-3 border-b border-border/50 bg-gradient-to-r from-purple/10 via-pink/10 to-gold/10 relative z-10">
@@ -257,7 +233,7 @@ export function GlobalMusicPlayer() {
                     <div className="mb-2">
                       <AudioVisualizer 
                         audioElement={audioRef.current}
-                        isPlaying={state.isPlaying}
+                        isPlaying={isPlaying}
                         variant="circle"
                         barCount={32}
                         color="oklch(0.75 0.18 200)"
@@ -282,7 +258,7 @@ export function GlobalMusicPlayer() {
                     {/* Progress Bar */}
                     <div className="space-y-2">
                       <Slider
-                        value={[state.currentTime]}
+                        value={[currentTime]}
                         max={duration || 100}
                         step={1}
                         onValueChange={handleSeek}
@@ -291,7 +267,7 @@ export function GlobalMusicPlayer() {
                         aria-label="Seek audio"
                       />
                       <div className="flex items-center justify-between text-xs text-muted-foreground" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                        <span>{formatTime(state.currentTime)}</span>
+                        <span>{formatTime(currentTime)}</span>
                         <span>{formatTime(duration)}</span>
                       </div>
                     </div>
@@ -303,9 +279,9 @@ export function GlobalMusicPlayer() {
                         size="lg"
                         disabled={!audioReady}
                         className="h-12 w-12 rounded-full bg-gradient-to-r from-purple to-pink hover:from-purple/90 hover:to-pink/90 shadow-lg shadow-purple/30"
-                        aria-label={state.isPlaying ? "Pause" : "Play"}
+                        aria-label={isPlaying ? "Pause" : "Play"}
                       >
-                        {state.isPlaying ? (
+                        {isPlaying ? (
                           <Pause size={24} weight="fill" />
                         ) : (
                           <Play size={24} weight="fill" />
@@ -332,9 +308,9 @@ export function GlobalMusicPlayer() {
                     {/* Status */}
                     <div className="text-center">
                       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple/10 border border-purple/30">
-                        <div className={`h-2 w-2 rounded-full ${state.isPlaying ? 'bg-green animate-pulse' : 'bg-muted-foreground'}`} />
+                        <div className={`h-2 w-2 rounded-full ${isPlaying ? 'bg-green animate-pulse' : 'bg-muted-foreground'}`} />
                         <span className="text-xs font-mono text-muted-foreground">
-                          {state.isPlaying ? 'PLAYING' : 'PAUSED'}
+                          {isPlaying ? 'PLAYING' : 'PAUSED'}
                         </span>
                       </div>
                     </div>
@@ -349,7 +325,7 @@ export function GlobalMusicPlayer() {
                 <div className="mb-2">
                   <AudioVisualizer 
                     audioElement={audioRef.current}
-                    isPlaying={state.isPlaying}
+                    isPlaying={isPlaying}
                     variant="bars"
                     barCount={20}
                     color="oklch(0.75 0.18 200)"
@@ -365,9 +341,9 @@ export function GlobalMusicPlayer() {
                     size="sm"
                     disabled={!audioReady}
                     className="h-9 w-9 rounded-full bg-gradient-to-r from-purple to-pink hover:from-purple/90 hover:to-pink/90 flex-shrink-0"
-                    aria-label={state.isPlaying ? "Pause" : "Play"}
+                    aria-label={isPlaying ? "Pause" : "Play"}
                   >
-                    {state.isPlaying ? (
+                    {isPlaying ? (
                       <Pause size={16} weight="fill" />
                     ) : (
                       <Play size={16} weight="fill" />
@@ -380,7 +356,7 @@ export function GlobalMusicPlayer() {
                     <div className="w-full bg-muted rounded-full h-1 mt-1">
                       <div 
                         className="bg-gradient-to-r from-purple to-pink h-1 rounded-full transition-all"
-                        style={{ width: `${duration > 0 ? (state.currentTime / duration) * 100 : 0}%` }}
+                        style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
                       />
                     </div>
                   </div>

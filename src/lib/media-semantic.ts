@@ -1489,6 +1489,12 @@ export function getMusicForRepo(repoName: string): MusicTrack[] {
 
 export async function aiMatchMusicToRepo(repoName: string, repoDescription?: string): Promise<MusicTrack | null> {
   try {
+    if (!window.spark || typeof window.spark.llm !== 'function') {
+      console.warn('Spark LLM not available, using fallback music selection')
+      const fallback = getMusicForRepo(repoName)
+      return fallback[0] || musicLibrary[0] || null
+    }
+
     const availableTracks = getMusicForRepo(repoName)
     
     if (availableTracks.length === 0) {

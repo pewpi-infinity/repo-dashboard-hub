@@ -28,6 +28,12 @@ export function SilverPriceDisplay({ compact = false }: SilverPriceDisplayProps)
   useEffect(() => {
     const checkOwnership = async () => {
       try {
+        if (!window.spark || typeof window.spark.user !== 'function') {
+          console.warn('Spark user API not available')
+          setIsOwner(false)
+          setLoading(false)
+          return
+        }
         const user = await window.spark.user()
         setIsOwner(user?.isOwner || false)
       } catch (error) {
