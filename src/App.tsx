@@ -27,6 +27,8 @@ import { CryptoPriceTracker } from './components/CryptoPriceTracker'
 import { GlobalMusicPlayer } from './components/GlobalMusicPlayer'
 import { OfflineBanner } from './components/OfflineBanner'
 import { OfflineIndicator } from './components/OfflineIndicator'
+import { SyncConflictDialog } from './components/SyncConflictDialog'
+import { SyncStatusIndicator } from './components/SyncStatusIndicator'
 import { Skeleton } from './components/ui/skeleton'
 import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
@@ -35,6 +37,7 @@ import { fetchOrgRepositories, fetchCommitActivity, isAuthenticated } from './li
 import { addCategories } from './lib/repo-utils'
 import { calculateHealthMetrics, type HealthMetrics, type HealthAlert } from './lib/health-monitor'
 import { repoEmojiMap } from './lib/emoji-legend'
+import { detectConflicts, performSync, type SyncConflict, type ConflictResolution } from './lib/sync-resolver'
 import type { CategorizedRepo, ComponentCategory } from './lib/types'
 import { ArrowClockwise, Warning, ChartLine, Bell, Plus, Terminal, Atom, Graph, FilmStrip, MusicNotes, CurrencyBtc } from '@phosphor-icons/react'
 import { toast } from 'sonner'
@@ -65,6 +68,11 @@ function App() {
   const [currentView, setCurrentView] = useKV<'dashboard' | 'quantum' | 'clusters' | 'creepshow' | 'music'>('current-view', 'dashboard')
   const [jukeboxTrack, setJukeboxTrack] = useState<any>(null)
   const { isOnline, wasOffline } = useOnlineStatus()
+  const [syncConflicts, setSyncConflicts] = useState<SyncConflict[]>([])
+  const [showSyncDialog, setShowSyncDialog] = useState(false)
+  const [isResolvingConflicts, setIsResolvingConflicts] = useState(false)
+  const [pendingServerRepos, setPendingServerRepos] = useState<CategorizedRepo[]>([])
+  const [lastSyncTimestamp, setLastSyncTimestamp] = useKV<number>('last-sync-timestamp', 0)
 
   const currentViewMode: ViewMode = viewMode || 'grid'
 
@@ -75,12 +83,73 @@ function App() {
   useEffect(() => {
     if (wasOffline && isOnline) {
       toast.success('🌐 Connection restored!', {
-        description: 'Reloading quantum machines...',
+        description: 'Checking for data conflicts...',
         duration: 3000
       })
-      loadRepositories()
+      loadRepositoriesWithSync()
     }
   }, [wasOffline, isOnline])
+
+  const loadRepositoriesWithSync = async () => {
+    setLoading(true)
+    setError(null)
+    
+    if (!isOnline) {
+      if (cachedRepos && cachedRepos.length > 0) {
+        setRepos(cachedRepos)
+        toast.info('📡 Offline Mode', {
+          description: `Using ${cachedRepos.length} cached machine${cachedRepos.length !== 1 ? 's' : ''}`,
+          duration: 4000
+        })
+      } else {
+        setError('No cached data available offline')
+      }
+      setLoading(false)
+      return
+    }
+    
+    try {
+      const fetchedRepos = await fetchOrgRepositories()
+      const categorizedRepos = addCategories(fetchedRepos)
+      
+      if (cachedRepos && cachedRepos.length > 0) {
+        const conflicts = detectConflicts(cachedRepos, categorizedRepos)
+        
+        if (conflicts.length > 0) {
+          setSyncConflicts(conflicts)
+          setPendingServerRepos(categorizedRepos)
+          setShowSyncDialog(true)
+          setLoading(false)
+          return
+        }
+      }
+      
+      setRepos(categorizedRepos)
+      setCachedRepos(categorizedRepos)
+      setLastSyncTimestamp(Date.now())
+      toast.success(`✨ Loaded ${categorizedRepos.length} repositories`, {
+        description: 'All quantum machines online',
+        duration: 3000
+      })
+      
+      if (monitoringEnabled) {
+        loadHealthMetrics(categorizedRepos)
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to load repositories'
+      setError(message)
+      
+      if (cachedRepos && cachedRepos.length > 0) {
+        setRepos(cachedRepos)
+        toast.warning('Using cached data', {
+          description: `Loaded ${cachedRepos.length} cached machine${cachedRepos.length !== 1 ? 's' : ''}`,
+          duration: 4000
+        })
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const loadRepositories = async () => {
     setLoading(true)
@@ -226,7 +295,7 @@ function App() {
       })
 
       setAddRepoDialogOpen(false)
-      await loadRepositories()
+      await loadRepositoriesWithSync()
     } catch (error: any) {
       if (!isOnline) {
         toast.error('Connection lost during creation', {
@@ -237,8 +306,38 @@ function App() {
     }
   }
 
+  const handleSyncResolve = async (strategy: ConflictResolution) => {
+    setIsResolvingConflicts(true)
+    
+    try {
+      const { repos: resolvedRepos } = await performSync(
+        cachedRepos || [],
+        pendingServerRepos,
+        strategy
+      )
+      
+      setRepos(resolvedRepos)
+      setCachedRepos(resolvedRepos)
+      setLastSyncTimestamp(Date.now())
+      setShowSyncDialog(false)
+      setSyncConflicts([])
+      setPendingServerRepos([])
+      
+      if (monitoringEnabled) {
+        loadHealthMetrics(resolvedRepos)
+      }
+    } catch (error) {
+      toast.error('❌ Sync Resolution Failed', {
+        description: 'Could not resolve conflicts. Please try again.',
+        duration: 5000
+      })
+    } finally {
+      setIsResolvingConflicts(false)
+    }
+  }
+
   useEffect(() => {
-    loadRepositories()
+    loadRepositoriesWithSync()
   }, [])
 
   const allAlerts = useMemo(() => {
@@ -339,19 +438,29 @@ function App() {
                      currentView === 'music' ? '🎵 QUANTUM JUKEBOX' :
                      '🎮 AC DASHBOARD'}
                   </h1>
-                  <p className="text-xs sm:text-sm text-muted-foreground truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                    {currentView === 'quantum' ? (
-                      <><span className="text-purple">🪐</span> Real-time System Coordination & Neural Learning Visualization</>
-                    ) : currentView === 'clusters' ? (
-                      <><span className="text-purple">🎯</span> Intelligent Cluster Formation & Group Coordination</>
-                    ) : currentView === 'creepshow' ? (
-                      <><span className="text-red">🎬</span> Interactive Branching Story - Correct Scripts to Change Fate</>
-                    ) : currentView === 'music' ? (
-                      <><span className="text-pink">🎵</span> Semantic Music Library - Songs Matched to Machine Journeys</>
-                    ) : (
-                      <><span className="text-gold">👑</span> Pewpi Infinity Quantum Computing & Time Machine System</>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                      {currentView === 'quantum' ? (
+                        <><span className="text-purple">🪐</span> Real-time System Coordination & Neural Learning Visualization</>
+                      ) : currentView === 'clusters' ? (
+                        <><span className="text-purple">🎯</span> Intelligent Cluster Formation & Group Coordination</>
+                      ) : currentView === 'creepshow' ? (
+                        <><span className="text-red">🎬</span> Interactive Branching Story - Correct Scripts to Change Fate</>
+                      ) : currentView === 'music' ? (
+                        <><span className="text-pink">🎵</span> Semantic Music Library - Songs Matched to Machine Journeys</>
+                      ) : (
+                        <><span className="text-gold">👑</span> Pewpi Infinity Quantum Computing & Time Machine System</>
+                      )}
+                    </p>
+                    {isOnline && (
+                      <SyncStatusIndicator 
+                        isSyncing={loading && isOnline}
+                        hasConflicts={syncConflicts.length > 0}
+                        conflictCount={syncConflicts.length}
+                        compact
+                      />
                     )}
-                  </p>
+                  </div>
                 </div>
                 {!isOnline && <OfflineIndicator compact />}
               </div>
@@ -453,7 +562,7 @@ function App() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={loadRepositories}
+                  onClick={loadRepositoriesWithSync}
                   disabled={loading || !isOnline}
                   className="gap-1.5 hover:bg-accent/10 hover:border-accent hover:text-accent text-xs disabled:opacity-50 disabled:cursor-not-allowed"
                   title={!isOnline ? 'Refresh requires internet connection' : 'Refresh repositories'}
@@ -470,7 +579,7 @@ function App() {
           <OfflineBanner 
             isOnline={isOnline} 
             wasOffline={wasOffline} 
-            onRetry={loadRepositories}
+            onRetry={loadRepositoriesWithSync}
             cachedDataCount={cachedRepos?.length || 0}
           />
 
@@ -489,7 +598,7 @@ function App() {
             <div className="flex flex-col lg:flex-row gap-6">
               <div className="lg:w-64 flex-shrink-0 space-y-4">
                 <GitHubAuth onAuthChange={setGithubAuthenticated} />
-                <SystemStatus repoCount={repos.length} isLoading={loading} />
+                <SystemStatus repoCount={repos.length} isLoading={loading} lastSyncTime={lastSyncTimestamp} />
                 <LegendPanel />
               </div>
 
@@ -504,7 +613,7 @@ function App() {
             <div className="flex flex-col lg:flex-row gap-6">
               <div className="lg:w-64 flex-shrink-0 space-y-4">
                 <GitHubAuth onAuthChange={setGithubAuthenticated} />
-                <SystemStatus repoCount={repos.length} isLoading={loading} />
+                <SystemStatus repoCount={repos.length} isLoading={loading} lastSyncTime={lastSyncTimestamp} />
                 {healthMetrics.size > 0 && (
                   <HealthOverview allMetrics={healthMetrics} />
                 )}
@@ -529,7 +638,7 @@ function App() {
             <div className="flex flex-col lg:flex-row gap-6">
               <div className="lg:w-64 flex-shrink-0 space-y-4">
                 <GitHubAuth onAuthChange={setGithubAuthenticated} />
-                <SystemStatus repoCount={repos.length} isLoading={loading} />
+                <SystemStatus repoCount={repos.length} isLoading={loading} lastSyncTime={lastSyncTimestamp} />
                 {healthMetrics.size > 0 && (
                   <HealthOverview allMetrics={healthMetrics} />
                 )}
@@ -555,7 +664,7 @@ function App() {
             <div className="lg:w-64 flex-shrink-0 space-y-4">
               <GitHubAuth onAuthChange={setGithubAuthenticated} />
               <SilverPriceDisplay compact />
-              <SystemStatus repoCount={repos.length} isLoading={loading} />
+              <SystemStatus repoCount={repos.length} isLoading={loading} lastSyncTime={lastSyncTimestamp} />
               {healthMetrics.size > 0 && (
                 <HealthOverview allMetrics={healthMetrics} />
               )}
@@ -774,6 +883,14 @@ function App() {
         open={addRepoDialogOpen}
         onOpenChange={setAddRepoDialogOpen}
         onAdd={handleAddRepo}
+      />
+
+      <SyncConflictDialog
+        open={showSyncDialog}
+        onOpenChange={setShowSyncDialog}
+        conflicts={syncConflicts}
+        onResolve={handleSyncResolve}
+        isResolving={isResolvingConflicts}
       />
 
       <FloatingJukebox 

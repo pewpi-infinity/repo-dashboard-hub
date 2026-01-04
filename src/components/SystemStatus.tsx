@@ -1,5 +1,6 @@
 import { Card } from './ui/card'
 import { Badge } from './ui/badge'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
 import { useState, useEffect } from 'react'
 import { 
   CheckCircle, 
@@ -7,7 +8,8 @@ import {
   Database,
   CloudArrowUp,
   Gauge,
-  WifiSlash
+  WifiSlash,
+  ArrowsClockwise
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { useOnlineStatus } from '@/hooks/use-online-status'
@@ -15,19 +17,32 @@ import { useOnlineStatus } from '@/hooks/use-online-status'
 interface SystemStatusProps {
   repoCount: number
   isLoading: boolean
+  lastSyncTime?: number
 }
 
-export function SystemStatus({ repoCount, isLoading }: SystemStatusProps) {
+export function SystemStatus({ repoCount, isLoading, lastSyncTime }: SystemStatusProps) {
   const [uptime, setUptime] = useState(0)
+  const [timeSinceSync, setTimeSinceSync] = useState('')
   const { isOnline } = useOnlineStatus()
   
   useEffect(() => {
     const interval = setInterval(() => {
       setUptime(prev => prev + 1)
+      
+      if (lastSyncTime) {
+        const seconds = Math.floor((Date.now() - lastSyncTime) / 1000)
+        if (seconds < 60) {
+          setTimeSinceSync(`${seconds}s ago`)
+        } else if (seconds < 3600) {
+          setTimeSinceSync(`${Math.floor(seconds / 60)}m ago`)
+        } else {
+          setTimeSinceSync(`${Math.floor(seconds / 3600)}h ago`)
+        }
+      }
     }, 1000)
     
     return () => clearInterval(interval)
-  }, [])
+  }, [lastSyncTime])
   
   const formatUptime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600)
@@ -102,9 +117,28 @@ export function SystemStatus({ repoCount, isLoading }: SystemStatusProps) {
           )}
           <h3 className="font-semibold text-sm">System Status</h3>
         </div>
-        <Badge variant="outline" className="text-xs">
-          Uptime: {formatUptime(uptime)}
-        </Badge>
+        <div className="flex items-center gap-2">
+          {lastSyncTime && timeSinceSync && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" className="text-xs gap-1">
+                    <ArrowsClockwise size={12} />
+                    {timeSinceSync}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">
+                    Last sync: {new Date(lastSyncTime).toLocaleTimeString()}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+          <Badge variant="outline" className="text-xs">
+            {formatUptime(uptime)}
+          </Badge>
+        </div>
       </div>
       
       <div className="grid grid-cols-2 gap-3">
