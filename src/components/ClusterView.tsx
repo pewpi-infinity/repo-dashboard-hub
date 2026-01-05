@@ -12,6 +12,8 @@ import {
   Cluster,
   ClusterFormation
 } from '@/lib/cluster-system'
+import { isAuthenticated } from '@/lib/auth-unified.js'
+import { earnTokens } from '@/lib/wallet-unified.js'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
 import { Badge } from './ui/badge'
@@ -903,7 +905,13 @@ export function ClusterView({ repos, healthMetrics, onRepoClick }: ClusterViewPr
                 key={option.value}
                 size="sm"
                 variant="outline"
-                onClick={() => setClusterFormation(option.value)}
+                onClick={() => {
+                  setClusterFormation(option.value)
+                  // Award token for creating cluster
+                  if (isAuthenticated() && option.value !== clusterFormation) {
+                    earnTokens('infinity_tokens', 5, 'repo-dashboard-hub', `Created ${option.label} cluster`)
+                  }
+                }}
                 disabled={!!clusterTransition}
                 className={`w-full gap-2 bg-card/90 backdrop-blur-sm ${
                   clusterFormation === option.value

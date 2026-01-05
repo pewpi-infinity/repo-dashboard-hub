@@ -35,8 +35,8 @@ import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
 import { fetchOrgRepositories, fetchCommitActivity, isAuthenticated } from './lib/github-api'
-import { syncSession } from './lib/auth-unified.js'
-import { updateWallet } from './lib/wallet-unified.js'
+import { syncSession, isAuthenticated as isUnifiedAuth } from './lib/auth-unified.js'
+import { updateWallet, earnTokens } from './lib/wallet-unified.js'
 import { addCategories } from './lib/repo-utils'
 import { calculateHealthMetrics, type HealthMetrics, type HealthAlert } from './lib/health-monitor'
 import { repoEmojiMap } from './lib/emoji-legend'
@@ -204,12 +204,19 @@ function App() {
   const loadHealthMetrics = async (reposToMonitor: CategorizedRepo[]) => {
     const metricsMap = new Map<string, HealthMetrics>()
     let failedCount = 0
+    let healthyReposCount = 0
     
     const promises = reposToMonitor.map(async (repo) => {
       try {
         const commitActivity = await fetchCommitActivity(repo.name)
         const metrics = calculateHealthMetrics(repo, commitActivity)
         metricsMap.set(repo.name, metrics)
+        
+        // Award tokens for healthy repos (score > 80)
+        if (isUnifiedAuth() && metrics.score > 80) {
+          earnTokens('infinity_tokens', 2, 'repo-dashboard-hub', `Health check for ${repo.name}`)
+          healthyReposCount++
+        }
         
         if (metrics.alerts.length > 0) {
           const criticalAlerts = metrics.alerts.filter(a => a.severity === 'critical')
@@ -228,6 +235,13 @@ function App() {
     
     await Promise.all(promises)
     setHealthMetrics(metricsMap)
+    
+    if (healthyReposCount > 0 && isUnifiedAuth()) {
+      toast.success(`+${healthyReposCount * 2} 💎 Infinity Tokens earned!`, {
+        description: `${healthyReposCount} healthy ${healthyReposCount === 1 ? 'repo' : 'repos'} detected`,
+        duration: 4000
+      })
+    }
     
     if (failedCount > 0) {
       toast.warning('Health monitoring incomplete', {
