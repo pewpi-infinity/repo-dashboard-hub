@@ -17,6 +17,7 @@ import { LegendPanel } from './components/LegendPanel'
 import { TerminalChat } from './components/TerminalChat'
 import { AddRepoDialog } from './components/AddRepoDialog'
 import { GitHubAuth } from './components/GitHubAuth'
+import { UnifiedNav } from './components/UnifiedNav'
 import { QuantumCockpit } from './components/QuantumCockpit'
 import { ClusterView } from './components/ClusterView'
 import { CreepshowStory } from './components/CreepshowStory'
@@ -34,6 +35,8 @@ import { Alert, AlertDescription } from './components/ui/alert'
 import { Button } from './components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
 import { fetchOrgRepositories, fetchCommitActivity, isAuthenticated } from './lib/github-api'
+import { syncSession, isAuthenticated as isUnifiedAuth } from './lib/auth-unified.js'
+import { updateWallet, earnTokens } from './lib/wallet-unified.js'
 import { addCategories } from './lib/repo-utils'
 import { calculateHealthMetrics, type HealthMetrics, type HealthAlert } from './lib/health-monitor'
 import { repoEmojiMap } from './lib/emoji-legend'
@@ -201,12 +204,19 @@ function App() {
   const loadHealthMetrics = async (reposToMonitor: CategorizedRepo[]) => {
     const metricsMap = new Map<string, HealthMetrics>()
     let failedCount = 0
+    let healthyReposCount = 0
     
     const promises = reposToMonitor.map(async (repo) => {
       try {
         const commitActivity = await fetchCommitActivity(repo.name)
         const metrics = calculateHealthMetrics(repo, commitActivity)
         metricsMap.set(repo.name, metrics)
+        
+        // Award tokens for healthy repos (score > 80)
+        if (isUnifiedAuth() && metrics.score > 80) {
+          earnTokens('infinity_tokens', 2, 'repo-dashboard-hub', `Health check for ${repo.name}`)
+          healthyReposCount++
+        }
         
         if (metrics.alerts.length > 0) {
           const criticalAlerts = metrics.alerts.filter(a => a.severity === 'critical')
@@ -225,6 +235,13 @@ function App() {
     
     await Promise.all(promises)
     setHealthMetrics(metricsMap)
+    
+    if (healthyReposCount > 0 && isUnifiedAuth()) {
+      toast.success(`+${healthyReposCount * 2} 💎 Infinity Tokens earned!`, {
+        description: `${healthyReposCount} healthy ${healthyReposCount === 1 ? 'repo' : 'repos'} detected`,
+        duration: 4000
+      })
+    }
     
     if (failedCount > 0) {
       toast.warning('Health monitoring incomplete', {
@@ -409,11 +426,41 @@ function App() {
     return acc
   }, { all: repos.length, brain: 0, quantum: 0, time: 0, os: 0, other: 0 } as Record<ComponentCategory | 'all', number>)
 
+  // Sync auth and wallet across tabs
+  useEffect(() => {
+    // Initial sync
+    syncSession()
+    updateWallet()
+    
+    // Listen for storage changes
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'pewpi_unified_auth' || e.key === 'pewpi_unified_wallet') {
+        syncSession()
+        updateWallet()
+      }
+    }
+    
+    window.addEventListener('storage', handleStorage)
+    
+    // Heartbeat sync every 5 seconds
+    const interval = setInterval(() => {
+      syncSession()
+      updateWallet()
+    }, 5000)
+    
+    return () => {
+      window.removeEventListener('storage', handleStorage)
+      clearInterval(interval)
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-background text-foreground circuit-bg">
-      <div className="absolute inset-0 bg-gradient-to-br from-purple/10 via-blue/5 to-accent/10 pointer-events-none" />
+      <UnifiedNav />
+      <div className="absolute inset-0 bg-gradient-to-br from-purple/10 via-blue/5 to-accent/10 pointer-events-none" style={{ top: '64px' }} />
       <div className="absolute inset-0 opacity-30 pointer-events-none" 
         style={{
+          top: '64px',
           backgroundImage: `
             radial-gradient(circle at 20% 50%, oklch(0.60 0.25 250 / 0.15) 0%, transparent 50%),
             radial-gradient(circle at 80% 80%, oklch(0.75 0.18 200 / 0.15) 0%, transparent 50%),

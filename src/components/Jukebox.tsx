@@ -16,6 +16,9 @@ import {
   Circle
 } from '@phosphor-icons/react'
 import { musicLibrary, type MusicTrack, getMusicForRepo, aiMatchMusicToRepo } from '@/lib/media-semantic'
+import { isAuthenticated } from '@/lib/auth-unified.js'
+import { earnTokens } from '@/lib/wallet-unified.js'
+import { toast } from 'sonner'
 import { MusicSemanticInfo } from './MusicSemanticInfo'
 import { SemanticMusicControls } from './SemanticMusicControls'
 import { AudioVisualizer } from './AudioVisualizer'
@@ -120,6 +123,14 @@ export function Jukebox({ repoName, repo, compact = false, autoPlay = false, ext
       })
       
       audioRef.current.addEventListener('ended', () => {
+        // Award music token for completing a song
+        if (isAuthenticated() && currentTrack) {
+          earnTokens('music_tokens', 1, 'repo-dashboard-hub', `Listened to ${currentTrack.title}`)
+          toast.success('+1 🎵 Music Token earned!', {
+            description: `You earned a token for listening to ${currentTrack.title}`,
+            duration: 3000
+          })
+        }
         nextTrack()
       })
     } else if (audioRef.current.src !== currentTrack.url) {
