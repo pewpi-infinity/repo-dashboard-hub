@@ -193,3 +193,117 @@
 .bounce-gentle {
   animation: bounce-gentle 2s ease-in-out infinite;
 }
+
+/* Unified Navigation Styles */
+.unified-nav {
+  background: linear-gradient(135deg, oklch(0.14 0.08 280) 0%, oklch(0.18 0.10 275) 100%);
+  border-bottom: 2px solid oklch(0.60 0.25 250);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.nav-brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: oklch(0.95 0.01 280);
+  font-family: 'Space Grotesk', sans-serif;
+  white-space: nowrap;
+}
+
+.nav-repos {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-link {
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s;
+  text-decoration: none;
+  color: oklch(0.80 0.05 280);
+  font-weight: 500;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.nav-link:hover {
+  background: oklch(0.60 0.25 250 / 0.2);
+  transform: translateY(-2px);
+  color: oklch(0.95 0.01 280);
+}
+
+.nav-link.active {
+  background: oklch(0.60 0.25 250);
+  color: white;
+  box-shadow: 0 0 12px oklch(0.60 0.25 250 / 0.6);
+}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.wallet-display {
+  display: flex;
+  gap: 12px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+}
+
+.wallet-item {
+  cursor: help;
+  transition: transform 0.2s;
+  white-space: nowrap;
+}
+
+.wallet-item:hover {
+  transform: scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .unified-nav {
+    padding: 8px 16px;
+  }
+  
+  .nav-brand {
+    font-size: 1rem;
+  }
+  
+  .nav-repos {
+    gap: 8px;
+  }
+  
+  .nav-link {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .wallet-display {
+    gap: 8px;
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .nav-user {
+    gap: 8px;
+  }
+}

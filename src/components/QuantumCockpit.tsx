@@ -4,6 +4,8 @@ import { CategorizedRepo } from '@/lib/types'
 import { getEmojiForRepo, getColorClass, getGlowClass } from '@/lib/emoji-legend'
 import { HealthMetrics } from '@/lib/health-monitor'
 import { collisionSoundEngine } from '@/lib/collision-sound'
+import { getTotalValue, updateWallet } from '@/lib/wallet-unified.js'
+import { isAuthenticated } from '@/lib/auth-unified.js'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
 import { Slider } from './ui/slider'
@@ -67,8 +69,26 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
   const [rotationSpeed, setRotationSpeed] = useState(1)
   const rotationTimerRef = useRef<NodeJS.Timeout | null>(null)
   const [scaffoldingVisible, setScaffoldingVisible] = useState(true)
+  const [totalWalletValue, setTotalWalletValue] = useState(0)
 
   const brainRepo = useMemo(() => repos.find(r => r.name.toLowerCase().includes('mongoose')), [repos])
+
+  // Update wallet value periodically
+  useEffect(() => {
+    const updateWalletValue = () => {
+      if (isAuthenticated()) {
+        updateWallet()
+        setTotalWalletValue(getTotalValue())
+      } else {
+        setTotalWalletValue(0)
+      }
+    }
+    
+    updateWalletValue()
+    const interval = setInterval(updateWalletValue, 2000)
+    
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     collisionSoundEngine.initialize()
@@ -787,6 +807,11 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
     const currentIndex = modes.indexOf(connectionMode)
     const nextIndex = (currentIndex + 1) % modes.length
     setConnectionMode(modes[nextIndex])
+    
+    // Award token for using quantum feature
+    if (isAuthenticated()) {
+      earnTokens('infinity_tokens', 1, 'repo-dashboard-hub', `Used ${modes[nextIndex]} mode`)
+    }
   }
 
   const modeIcons = {
@@ -846,7 +871,14 @@ export function QuantumCockpit({ repos, healthMetrics, onRepoClick }: QuantumCoc
 
       <div className="absolute top-4 left-4 flex flex-col gap-2" style={{ zIndex: 10 }}>
         <Card className="p-3 bg-card/90 backdrop-blur-sm border-primary/30">
-          <div className="text-sm font-mono text-muted-foreground mb-2">QUANTUM COCKPIT</div>
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm font-mono text-muted-foreground">QUANTUM COCKPIT</div>
+            {isAuthenticated() && totalWalletValue > 0 && (
+              <div className="text-xs font-mono text-gold">
+                💎 {totalWalletValue} tokens
+              </div>
+            )}
+          </div>
           <div className="text-2xl font-bold text-primary" style={{ fontFamily: "'Orbitron', sans-serif" }}>
             {particles.filter(p => p.isConnecting).length} / {particles.length}
           </div>
