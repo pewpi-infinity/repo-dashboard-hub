@@ -110,7 +110,7 @@ export function earnTokens(tokenType, amount, source, description) {
   
   // Save transaction
   saveTransaction({
-    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+    id: Date.now().toString() + Math.random().toString(36).slice(2, 11),
     type: 'earn',
     tokenType,
     amount,
@@ -145,8 +145,9 @@ export function spendTokens(tokenType, amount, source, description) {
   loadWalletState()
   
   // Check balance
-  if ((walletState[tokenType] || 0) < amount) {
-    console.error('Insufficient balance')
+  const currentBalance = walletState[tokenType] || 0
+  if (currentBalance < amount) {
+    console.error(`Insufficient ${tokenType} balance. Required: ${amount}, Available: ${currentBalance}`)
     return false
   }
 
@@ -158,7 +159,7 @@ export function spendTokens(tokenType, amount, source, description) {
   
   // Save transaction
   saveTransaction({
-    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+    id: Date.now().toString() + Math.random().toString(36).slice(2, 11),
     type: 'spend',
     tokenType,
     amount,

@@ -36,8 +36,8 @@ export function WalletDisplay() {
     
     window.addEventListener('storage', handleStorageChange)
     
-    // Poll for updates every 2 seconds
-    const interval = setInterval(updateBalances, 2000)
+    // Poll for updates every 5 seconds to reduce load
+    const interval = setInterval(updateBalances, 5000)
     
     return () => {
       window.removeEventListener('storage', handleStorageChange)

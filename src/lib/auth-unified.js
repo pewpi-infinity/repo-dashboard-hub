@@ -47,7 +47,12 @@ function saveAuthState() {
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState))
     
     // Trigger storage event for cross-tab sync
-    window.dispatchEvent(new Event('storage'))
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: AUTH_STORAGE_KEY,
+      newValue: JSON.stringify(authState),
+      url: window.location.href,
+      storageArea: localStorage
+    }))
   } catch (error) {
     console.error('Failed to save auth state:', error)
   }
@@ -114,7 +119,8 @@ export async function register(username, email, password) {
   }
 
   // Validate email format
-  if (!email.includes('@')) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
     return { success: false, error: 'Invalid email format' }
   }
 
