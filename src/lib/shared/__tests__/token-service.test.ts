@@ -4,18 +4,34 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TokenService } from '../token-service';
+import Dexie from 'dexie';
 
 describe('TokenService', () => {
   let service: TokenService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    // Clear all IndexedDB databases before each test
+    const databases = await Dexie.getDatabaseNames();
+    for (const dbName of databases) {
+      await Dexie.delete(dbName);
+    }
+    
     service = new TokenService();
+    
     // Clear localStorage before each test
     localStorage.clear();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    // Clean up
+    await service.clearAll();
     localStorage.clear();
+    
+    // Delete databases
+    const databases = await Dexie.getDatabaseNames();
+    for (const dbName of databases) {
+      await Dexie.delete(dbName);
+    }
   });
 
   describe('createToken', () => {

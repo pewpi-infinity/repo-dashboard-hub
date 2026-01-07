@@ -244,10 +244,20 @@ const repos = await Repository.find({ owner: 'your-username' })
 src/
 ├── components/         # React components
 │   ├── ui/            # Reusable UI components
+│   ├── Login.tsx      # Production login component
+│   ├── Wallet.tsx     # Comprehensive wallet UI
 │   ├── CryptoPriceTracker.tsx
 │   ├── DashboardMetrics.tsx
 │   └── ...
 ├── lib/               # Utility libraries
+│   ├── shared/        # Shared pewpi-token system
+│   │   ├── token-service.ts     # Token management (Dexie)
+│   │   ├── auth-service.ts      # Authentication service
+│   │   ├── client-model.ts      # Mongoose-style frontend models
+│   │   ├── crypto-helpers.ts    # AES-GCM & ECDH encryption
+│   │   ├── integration-listener.ts # Event subscription helpers
+│   │   ├── peer-sync.ts         # Optional P2P sync
+│   │   └── theme.css            # Shared theme variables
 │   ├── models/        # MongoDB models
 │   │   ├── Repository.ts
 │   │   ├── File.ts
@@ -267,6 +277,32 @@ src/
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
+- `npm test` - Run unit tests
+- `npm run test:ui` - Run tests with UI
+- `npm run test:coverage` - Run tests with coverage report
+
+### Testing
+
+The project includes comprehensive tests:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm test -- --watch
+
+# Run tests with UI
+npm run test:ui
+
+# Generate coverage report
+npm run test:coverage
+```
+
+Test coverage includes:
+- **TokenService**: Unit tests for token creation, retrieval, balances, and events
+- **ClientModel**: Unit tests for CRUD operations and mongoose-style queries
+- **E2E Tests**: Full user journey from login to wallet management
 
 ## 🌐 Deployment
 

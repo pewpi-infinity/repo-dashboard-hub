@@ -4,6 +4,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ClientModel, createModel } from '../client-model';
+import Dexie from 'dexie';
 
 interface TestDoc {
   name: string;
@@ -16,7 +17,13 @@ interface TestDoc {
 describe('ClientModel', () => {
   let model: ClientModel<TestDoc>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    // Clear all IndexedDB databases before each test
+    const databases = await Dexie.getDatabaseNames();
+    for (const dbName of databases) {
+      await Dexie.delete(dbName);
+    }
+    
     model = createModel<TestDoc>('test_collection', {
       name: { type: String, index: true },
       email: { type: String, unique: true, index: true },
@@ -26,6 +33,12 @@ describe('ClientModel', () => {
 
   afterEach(async () => {
     await model.clear();
+    
+    // Delete databases
+    const databases = await Dexie.getDatabaseNames();
+    for (const dbName of databases) {
+      await Dexie.delete(dbName);
+    }
   });
 
   describe('create', () => {
