@@ -1,0 +1,280 @@
+/**
+ * Pewpi Infinity Theme CSS Variables
+ * Standardized theme for consistent styling across repos
+ */
+
+:root {
+  /* Primary Colors */
+  --pewpi-primary: #8b5cf6;
+  --pewpi-primary-hover: #7c3aed;
+  --pewpi-primary-light: #a78bfa;
+  --pewpi-primary-dark: #6d28d9;
+
+  /* Secondary Colors */
+  --pewpi-secondary: #06b6d4;
+  --pewpi-secondary-hover: #0891b2;
+  --pewpi-secondary-light: #22d3ee;
+  --pewpi-secondary-dark: #0e7490;
+
+  /* Accent Colors */
+  --pewpi-accent-infinity: #8b5cf6;
+  --pewpi-accent-research: #3b82f6;
+  --pewpi-accent-art: #ec4899;
+  --pewpi-accent-music: #10b981;
+
+  /* Token Colors */
+  --pewpi-token-infinity: #8b5cf6;
+  --pewpi-token-research: #3b82f6;
+  --pewpi-token-art: #ec4899;
+  --pewpi-token-music: #10b981;
+
+  /* Background Colors */
+  --pewpi-bg-primary: #ffffff;
+  --pewpi-bg-secondary: #f9fafb;
+  --pewpi-bg-tertiary: #f3f4f6;
+  --pewpi-bg-hover: #f3f4f6;
+  --pewpi-bg-active: #e5e7eb;
+
+  /* Dark Mode Background Colors */
+  --pewpi-dark-bg-primary: #0f172a;
+  --pewpi-dark-bg-secondary: #1e293b;
+  --pewpi-dark-bg-tertiary: #334155;
+  --pewpi-dark-bg-hover: #334155;
+  --pewpi-dark-bg-active: #475569;
+
+  /* Text Colors */
+  --pewpi-text-primary: #0f172a;
+  --pewpi-text-secondary: #64748b;
+  --pewpi-text-tertiary: #94a3b8;
+  --pewpi-text-inverse: #ffffff;
+
+  /* Dark Mode Text Colors */
+  --pewpi-dark-text-primary: #f1f5f9;
+  --pewpi-dark-text-secondary: #cbd5e1;
+  --pewpi-dark-text-tertiary: #94a3b8;
+  --pewpi-dark-text-inverse: #0f172a;
+
+  /* Border Colors */
+  --pewpi-border: #e5e7eb;
+  --pewpi-border-hover: #d1d5db;
+  --pewpi-border-focus: var(--pewpi-primary);
+
+  /* Dark Mode Border Colors */
+  --pewpi-dark-border: #334155;
+  --pewpi-dark-border-hover: #475569;
+  --pewpi-dark-border-focus: var(--pewpi-primary-light);
+
+  /* Status Colors */
+  --pewpi-success: #10b981;
+  --pewpi-warning: #f59e0b;
+  --pewpi-error: #ef4444;
+  --pewpi-info: #3b82f6;
+
+  /* Shadows */
+  --pewpi-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --pewpi-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --pewpi-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --pewpi-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --pewpi-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* Spacing */
+  --pewpi-spacing-xs: 0.25rem;
+  --pewpi-spacing-sm: 0.5rem;
+  --pewpi-spacing-md: 1rem;
+  --pewpi-spacing-lg: 1.5rem;
+  --pewpi-spacing-xl: 2rem;
+  --pewpi-spacing-2xl: 3rem;
+
+  /* Border Radius */
+  --pewpi-radius-sm: 0.25rem;
+  --pewpi-radius: 0.5rem;
+  --pewpi-radius-md: 0.75rem;
+  --pewpi-radius-lg: 1rem;
+  --pewpi-radius-full: 9999px;
+
+  /* Transitions */
+  --pewpi-transition-fast: 150ms ease-in-out;
+  --pewpi-transition: 200ms ease-in-out;
+  --pewpi-transition-slow: 300ms ease-in-out;
+
+  /* Typography */
+  --pewpi-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --pewpi-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+/* Dark mode */
+.dark {
+  color-scheme: dark;
+}
+
+/* Login Component Styles */
+.login-container {
+  --bg: var(--pewpi-bg-primary);
+  --text: var(--pewpi-text-primary);
+  --border: var(--pewpi-border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.dark .login-container {
+  --bg: var(--pewpi-dark-bg-primary);
+  --text: var(--pewpi-dark-text-primary);
+  --border: var(--pewpi-dark-border);
+}
+
+/* Wallet Component Styles */
+.wallet-container {
+  --bg: var(--pewpi-bg-primary);
+  --text: var(--pewpi-text-primary);
+  --border: var(--pewpi-border);
+}
+
+.dark .wallet-container {
+  --bg: var(--pewpi-dark-bg-primary);
+  --text: var(--pewpi-dark-text-primary);
+  --border: var(--pewpi-dark-border);
+}
+
+.wallet-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--pewpi-radius);
+  background: var(--pewpi-bg-secondary);
+  border: 1px solid var(--pewpi-border);
+  transition: all var(--pewpi-transition);
+}
+
+.dark .wallet-item {
+  background: var(--pewpi-dark-bg-secondary);
+  border-color: var(--pewpi-dark-border);
+}
+
+.wallet-item:hover {
+  background: var(--pewpi-bg-hover);
+  border-color: var(--pewpi-border-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--pewpi-shadow-sm);
+}
+
+.dark .wallet-item:hover {
+  background: var(--pewpi-dark-bg-hover);
+  border-color: var(--pewpi-dark-border-hover);
+}
+
+/* Token Badge Styles */
+.token-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--pewpi-radius-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all var(--pewpi-transition-fast);
+}
+
+.token-badge-infinity {
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--pewpi-token-infinity);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.token-badge-research {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--pewpi-token-research);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.token-badge-art {
+  background: rgba(236, 72, 153, 0.1);
+  color: var(--pewpi-token-art);
+  border: 1px solid rgba(236, 72, 153, 0.3);
+}
+
+.token-badge-music {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--pewpi-token-music);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Animation Classes */
+@keyframes slide-in-from-top {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in.slide-in-from-top {
+  animation: slide-in-from-top 0.3s ease-out;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Utility Classes */
+.pewpi-card {
+  background: var(--pewpi-bg-primary);
+  border: 1px solid var(--pewpi-border);
+  border-radius: var(--pewpi-radius-md);
+  padding: var(--pewpi-spacing-lg);
+  box-shadow: var(--pewpi-shadow);
+  transition: all var(--pewpi-transition);
+}
+
+.dark .pewpi-card {
+  background: var(--pewpi-dark-bg-secondary);
+  border-color: var(--pewpi-dark-border);
+}
+
+.pewpi-card:hover {
+  box-shadow: var(--pewpi-shadow-md);
+  transform: translateY(-2px);
+}
+
+.pewpi-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--pewpi-radius);
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all var(--pewpi-transition-fast);
+  background: var(--pewpi-primary);
+  color: var(--pewpi-text-inverse);
+}
+
+.pewpi-button:hover {
+  background: var(--pewpi-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--pewpi-shadow-sm);
+}
+
+.pewpi-button:active {
+  transform: translateY(0);
+}
+
+.pewpi-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}

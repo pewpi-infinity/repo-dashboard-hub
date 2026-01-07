@@ -1,35 +1,68 @@
 # 🎮 AC Dashboard - Pewpi Infinity Quantum System
 
-A comprehensive repository dashboard for monitoring GitHub repositories with real-time cryptocurrency tracking, health monitoring, and MongoDB integration.
+A comprehensive repository dashboard for monitoring GitHub repositories with real-time cryptocurrency tracking, health monitoring, and production-grade authentication and wallet management.
 
 ## ✨ Features
 
 - **Repository Dashboard**: Monitor all your GitHub repositories in one place
+- **Production Authentication**: Passwordless magic-link login + optional GitHub OAuth
+- **Unified Wallet System**: Track tokens across all Pewpi Infinity repos with real-time sync
 - **Real-time Crypto Tracking**: Track cryptocurrency prices powered by CoinGecko API
 - **Health Monitoring**: Track repository health scores and activity metrics
 - **MongoDB Integration**: Direct client-side connection for automated multi-repo systems
 - **Repository Scanning**: Automatic file scanning with change detection
 - **Multiple Views**: Dashboard, Quantum Cockpit, Cluster View, and more
 - **Dark Theme**: Beautiful quantum-themed UI with animations
-- **Automated System Ready**: Designed to work with automatic token management and credential rotation
+- **Cross-Repo Sync**: Automatic wallet and login state sync across tabs and repos
+- **Optional P2P Sync**: WebRTC-based peer-to-peer synchronization with encryption
 
 ## 🤖 Automated Multi-Repo Systems
 
 This dashboard is built to integrate seamlessly with automated multi-repository systems:
 
+- **Production Authentication**: Magic-link (passwordless) login that works without GitHub accounts
+- **Unified Token System**: IndexedDB-backed token management with localStorage fallback
+- **Cross-Repo Synchronization**: Automatic wallet/login state sync via window events
 - **Direct Client-Side MongoDB**: No backend required - connects directly from browser
 - **Token Management**: Works with automatic token rotation and credential management systems
 - **Terminal Commits**: Supports programmatic commits through terminal/Python scripts
 - **Research Scraping**: Built to aggregate and tie together research data from multiple sources
 - **Continuous Integration**: Designed for never-ending automatic website builder workflows
 
+## 🔐 Authentication & Wallet
+
+### Production Login Flow
+
+No GitHub account required! Users can authenticate using:
+- **Magic-link (default)**: Passwordless email authentication with dev-mode support
+- **GitHub OAuth (optional)**: Opt-in GitHub authentication for users who prefer it
+
+### Unified Wallet System
+
+Track tokens across all Pewpi Infinity repositories:
+- **Infinity Tokens** 💎 - Core system tokens
+- **Research Tokens** 📚 - Earned from infinity-brain-search and research activities
+- **Art Tokens** 🎨 - Earned from banksy and art-related activities  
+- **Music Tokens** 🎵 - Earned from v and music-related activities
+
+### Cross-Repo Integration
+
+The wallet system automatically syncs across:
+- repo-dashboard-hub
+- banksy
+- v
+- infinity-brain-search
+- Any other Pewpi Infinity repository
+
+See [docs/INTEGRATION.md](docs/INTEGRATION.md) for integration guide.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 18+ and npm
-- MongoDB database (MongoDB Atlas recommended)
-- GitHub Personal Access Token
+- MongoDB database (MongoDB Atlas recommended) - Optional
+- GitHub Personal Access Token - Optional (for GitHub features only)
 - CoinGecko API (free tier, no key required)
 
 ### Installation
