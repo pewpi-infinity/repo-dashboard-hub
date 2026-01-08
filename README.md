@@ -56,6 +56,69 @@ The wallet system automatically syncs across:
 
 See [docs/INTEGRATION.md](docs/INTEGRATION.md) for integration guide.
 
+## 📦 Canonical Pewpi Shared Library
+
+This repository now includes the **canonical pewpi-shared library** from [GPT-Vector-Design](https://github.com/pewpi-infinity/GPT-Vector-Design), providing production-grade authentication and wallet management:
+
+### What's Included
+
+The shared library is located at `src/pewpi-shared/` and includes:
+
+- **token-service.js** - Token management with IndexedDB (Dexie) + localStorage fallback
+- **auth/login-component.js** - Production passwordless login with magic-link + optional GitHub OAuth
+- **wallet/wallet-component.js** - Wallet UI with balance, token list, and live feed
+- **integration-listener.js** - Event-based integration for cross-repo state sync
+- **models/client-model.js** - Mongoose-like model emulator for front-end
+- **theme.css** - Shared theme CSS variables
+- **INTEGRATION.md** - Complete integration guide
+
+### Auto-Initialization
+
+The pewpi-shared services are automatically initialized on app startup in `src/main.tsx`:
+
+```typescript
+// Token service auto-tracking
+tokenService.initAutoTracking();
+
+// Integration listeners for cross-repo events
+setupIntegration({
+  onTokenCreated: (token) => { /* ... */ },
+  onLoginChanged: (data) => { /* ... */ }
+});
+```
+
+### Using Pewpi Shared Components
+
+See `src/pewpi-shared/INTEGRATION.md` for detailed usage examples and API documentation.
+
+**Quick example:**
+
+```javascript
+import { tokenService } from './pewpi-shared/token-service.js';
+import { LoginComponent } from './pewpi-shared/auth/login-component.js';
+
+// Create a token
+const token = await tokenService.createToken({
+  type: 'bronze',
+  value: 1,
+  userId: 'user_123'
+});
+
+// Render login UI
+const login = new LoginComponent({ devMode: true });
+login.render('login-container');
+```
+
+### Migration Notes
+
+This repository maintains **backward compatibility** with existing auth/wallet implementations:
+- Existing files in `src/components/` (Login.tsx, Wallet.tsx, etc.) remain unchanged
+- Existing services in `src/lib/shared/` (TypeScript versions) remain available
+- The canonical JavaScript library in `src/pewpi-shared/` can be adopted gradually
+- All initialization is wrapped in try/catch to avoid breaking builds
+
+Maintainers can choose to migrate to the canonical implementation at their own pace.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
