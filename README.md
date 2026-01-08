@@ -15,6 +15,7 @@ A comprehensive repository dashboard for monitoring GitHub repositories with rea
 - **Dark Theme**: Beautiful quantum-themed UI with animations
 - **Cross-Repo Sync**: Automatic wallet and login state sync across tabs and repos
 - **Optional P2P Sync**: WebRTC-based peer-to-peer synchronization with encryption
+- **Pewpi-Shared Library**: Unified auth + wallet + token system (see `src/pewpi-shared/`)
 
 ## 🤖 Automated Multi-Repo Systems
 
@@ -44,6 +45,31 @@ Track tokens across all Pewpi Infinity repositories:
 - **Research Tokens** 📚 - Earned from infinity-brain-search and research activities
 - **Art Tokens** 🎨 - Earned from banksy and art-related activities  
 - **Music Tokens** 🎵 - Earned from v and music-related activities
+
+### Pewpi-Shared Library
+
+**NEW**: This repository now includes the `src/pewpi-shared/` library - a unified authentication, wallet, and token management system synthesized from the best implementations across the Pewpi Infinity organization.
+
+**Key Features:**
+- Production-grade token service with IndexedDB (Dexie) and localStorage fallback
+- Magic-link and password authentication with cross-tab sync
+- Wallet helpers: `earnTokens()`, `spendTokens()`, `getAllBalances()`
+- React components: `UnifiedLoginModal`, `WalletDisplay`
+- Event system: `pewpi.token.created`, `pewpi.login.changed`
+- Full integration guide: [src/pewpi-shared/docs/INTEGRATION.md](src/pewpi-shared/docs/INTEGRATION.md)
+
+**Quick Start:**
+```typescript
+import { tokenService } from '@/pewpi-shared/token-service';
+import { authService } from '@/pewpi-shared/auth-service';
+import { earnTokens, getAllBalances } from '@/pewpi-shared/wallet-unified';
+
+// Services auto-initialize on app start
+// Use them anywhere in your code!
+await earnTokens('infinity_tokens', 100, 'repo-dashboard-hub', 'Completed scan');
+```
+
+**To enable feature flag:** The pewpi-shared services are already initialized in `src/main.tsx` with defensive try/catch blocks. They work alongside existing auth/wallet code without conflicts.
 
 ### Cross-Repo Integration
 
