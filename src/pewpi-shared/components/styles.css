@@ -1,0 +1,325 @@
+/**
+ * Pewpi-Shared Component Styles
+ * Basic styles for UnifiedLoginModal and WalletDisplay
+ * Can be customized per repository
+ */
+
+/* Wallet Display */
+.pewpi-wallet-display {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.pewpi-wallet-display.compact {
+  gap: 0;
+}
+
+.pewpi-wallet-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.1);
+  transition: background 0.2s;
+}
+
+.pewpi-wallet-item:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.pewpi-wallet-item.total {
+  background: rgba(16, 185, 129, 0.1);
+  font-weight: 600;
+}
+
+.pewpi-wallet-item.total:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.pewpi-wallet-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.pewpi-wallet-amount {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Login Modal */
+.pewpi-login-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pewpi-login-modal {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.pewpi-login-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.pewpi-login-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.pewpi-login-modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.pewpi-login-modal-close:hover {
+  background: #f3f4f6;
+}
+
+.pewpi-login-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.pewpi-login-tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 500;
+  color: #6b7280;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.pewpi-login-tab:hover {
+  color: #3b82f6;
+}
+
+.pewpi-login-tab.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+.pewpi-login-content {
+  min-height: 250px;
+}
+
+.pewpi-login-panel {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.pewpi-login-field {
+  margin-bottom: 1rem;
+}
+
+.pewpi-login-field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.pewpi-login-field input {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.pewpi-login-field input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.pewpi-login-field input:disabled {
+  background: #f9fafb;
+  cursor: not-allowed;
+}
+
+.pewpi-login-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  transition: background 0.2s;
+  font-size: 0.95rem;
+}
+
+.pewpi-login-button:hover {
+  background: #2563eb;
+}
+
+.pewpi-login-button:active {
+  background: #1d4ed8;
+}
+
+.pewpi-login-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pewpi-login-button-secondary {
+  width: 100%;
+  padding: 0.5rem;
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  font-size: 0.875rem;
+}
+
+.pewpi-login-button-secondary:hover {
+  background: #f9fafb;
+  color: #374151;
+}
+
+.pewpi-login-error {
+  padding: 0.75rem;
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  border: 1px solid #fecaca;
+}
+
+.pewpi-login-help {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .pewpi-login-modal {
+    background: #1f2937;
+  }
+
+  .pewpi-login-modal-header h2 {
+    color: #f9fafb;
+  }
+
+  .pewpi-login-modal-close {
+    color: #9ca3af;
+  }
+
+  .pewpi-login-modal-close:hover {
+    background: #374151;
+  }
+
+  .pewpi-login-tabs {
+    border-bottom-color: #374151;
+  }
+
+  .pewpi-login-tab {
+    color: #9ca3af;
+  }
+
+  .pewpi-login-tab:hover,
+  .pewpi-login-tab.active {
+    color: #60a5fa;
+  }
+
+  .pewpi-login-tab.active {
+    border-bottom-color: #60a5fa;
+  }
+
+  .pewpi-login-field label {
+    color: #d1d5db;
+  }
+
+  .pewpi-login-field input {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+
+  .pewpi-login-field input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  }
+
+  .pewpi-login-field input:disabled {
+    background: #1f2937;
+  }
+
+  .pewpi-login-button-secondary {
+    color: #9ca3af;
+    border-color: #4b5563;
+  }
+
+  .pewpi-login-button-secondary:hover {
+    background: #374151;
+    color: #d1d5db;
+  }
+
+  .pewpi-login-help {
+    color: #9ca3af;
+  }
+}
